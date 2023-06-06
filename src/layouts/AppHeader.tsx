@@ -1,50 +1,51 @@
-import * as React from "react";
-import { styled, useTheme } from "@mui/material/styles";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import { Box } from "@mui/material";
+import * as React from 'react'
+import { styled, useTheme } from '@mui/material/styles'
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import MenuIcon from '@mui/icons-material/Menu'
+import FullscreenIcon from '@mui/icons-material/Fullscreen'
+import { Box, Tooltip } from '@mui/material'
+import { Logout, Settings } from '@mui/icons-material'
 
-const drawerWidth = 240;
+const drawerWidth = 240
 
 interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
+  open?: boolean
 }
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
+  shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(["margin", "width"], {
+  transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(["margin", "width"], {
+    transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
-}));
+}))
 
 type AppHeader = {
-  open: boolean;
-  onDrawerOpen: () => void;
-};
+  open: boolean
+  onDrawerOpen: () => void
+}
 
 export default function AppHeader({ open, onDrawerOpen }: AppHeader) {
   const handleDrawerOpen = () => {
-    onDrawerOpen();
-  };
+    onDrawerOpen()
+  }
 
   const handleFullscreen = () => {
-    const element = document.documentElement;
-    element.requestFullscreen();
-  };
+    const element = document.documentElement
+    element.requestFullscreen()
+  }
 
   return (
     <AppBar position="fixed" open={open}>
@@ -54,7 +55,7 @@ export default function AppHeader({ open, onDrawerOpen }: AppHeader) {
           aria-label="open drawer"
           onClick={handleDrawerOpen}
           edge="start"
-          sx={{ mr: 2, ...(open && { display: "none" }) }}
+          sx={{ mr: 2, ...(open && { display: 'none' }) }}
         >
           <MenuIcon />
         </IconButton>
@@ -62,16 +63,41 @@ export default function AppHeader({ open, onDrawerOpen }: AppHeader) {
           HICM Warincamrab
         </Typography>
         <Box flexGrow={1}></Box>
-        <IconButton
-          color="inherit"
-          aria-label="full screen"
-          onClick={handleFullscreen}
-          edge="start"
-          sx={{ ml: 5, ...(open && { display: "none" }) }}
-        >
-          <FullscreenIcon />
-        </IconButton>
+        <Tooltip title="Full Screen">
+          <IconButton
+            color="inherit"
+            aria-label="full screen"
+            onClick={handleFullscreen}
+            edge="start"
+            sx={{ ml: 2, ...(open && { display: 'none' }) }}
+          >
+            <FullscreenIcon />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Settings">
+          <IconButton
+            color="inherit"
+            aria-label="Settings"
+            edge="start"
+            sx={{ ml: 2, ...(open && { display: 'none' }) }}
+          >
+            <Settings />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Logout">
+          <IconButton
+            color="inherit"
+            aria-label="logout"
+            edge="start"
+            sx={{ ml: 2, ...(open && { display: 'none' }) }}
+          >
+            <Logout />
+          </IconButton>
+        </Tooltip>
+
       </Toolbar>
     </AppBar>
-  );
+  )
 }

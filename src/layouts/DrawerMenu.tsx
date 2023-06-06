@@ -12,7 +12,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
+import SummarizeIcon from '@mui/icons-material/Summarize';
 import { useNavigate } from "react-router-dom";
+import { Avatar, Box, Menu, MenuItem } from "@mui/material";
+import { Logout, PersonAdd, Settings } from "@mui/icons-material";
 
 const drawerWidth = 240;
 
@@ -50,6 +53,16 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
     {icon: <MailIcon/>,title: "Report" , nav: "/report"},
   ]
 
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const openMenu = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const navigate = useNavigate()
 
   return (
@@ -77,30 +90,98 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
       </DrawerHeader>
       <Divider />
       <List>
+        
+          <ListItem  disablePadding>
+            <ListItemButton onClick={handleClick}>
+              <ListItemIcon>
+                <SummarizeIcon />
+              </ListItemIcon>
+              <ListItemText primary={'Report'} />
+            </ListItemButton>
+          </ListItem>
+      
+      </List>
+      <Menu
+        anchorEl={anchorEl}
+        id="account-menu"
+        open={openMenu}
+        onClose={handleClose}
+        onClick={handleClose}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem onClick={()=>navigate('/report')}>
+          <Avatar /> IPD จ่ายตรง
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Avatar /> My account
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={handleClose}>
+          <ListItemIcon>
+            <PersonAdd fontSize="small" />
+          </ListItemIcon>
+          Add another account
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <ListItemIcon>
+            <Settings fontSize="small" />
+          </ListItemIcon>
+          Settings
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+      </Menu>
+
+      <Divider />
+
+      <Box>
+      
+      <List>
         {menus.map((menu, index) => (
           <ListItem key={index} disablePadding>
-            <ListItemButton onClick={()=> navigate(menu.nav)}>
+            <ListItemButton onClick={()=>navigate(menu.nav)}>
               <ListItemIcon>
-                {menu.icon}
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
               <ListItemText primary={menu.title} />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
-      <Divider />
-      <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+        
+      </Box>
+     
     </Drawer>
   );
 }
