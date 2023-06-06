@@ -18,7 +18,7 @@ import { DatePicker, LocalizationProvider, deDE } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import 'dayjs/locale/th'
 import dayjs, { Dayjs } from 'dayjs'
-import CardHeader1 from '../assets/amy.jpg';
+import CardHeader1 from '../assets/amy.jpg'
 
 type DataType = {
   startDate: Date
@@ -48,9 +48,6 @@ type DataType = {
 type FormValues = {
   startDate: Date
   endDate: Date
-  firstName: string
-  lastName: string
-  email: string
 }
 
 const dataDbipofcacc = {
@@ -64,8 +61,21 @@ const dataDbipofcacc = {
   sum_diff: 0,
 }
 
+const dataNull0 = {
+  all_nullcase: 0,
+  debit_null: 0,
+}
+const dataNotNull0 = {
+  all_notnullcase: 0,
+  debit_notnull: 0,
+  recieve: '',
+  sum_diff: 0,
+}
+
 export default function ReportPage() {
   const [dataResponse, setDataResponse] = useState(dataDbipofcacc)
+  const [dataNull, setDataNull] = useState(dataNull0)
+  const [dataNotNull, setDataNotNull] = useState(dataNotNull0)
   const [startDate, setStartDate] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDate, setEndDate] = useState<Dayjs | null>(dayjs(new Date()))
 
@@ -84,9 +94,38 @@ export default function ReportPage() {
     } catch (error) {
       console.log('ERROR', error)
     }
-  }
-  
 
+    try {
+      const responsenull = await axios.post(
+        `http://localhost:8085/dbipstofcaccnull`,
+        {
+          startDate,
+          endDate,
+        }
+      )
+
+      // setData(jsonData)
+      console.log(responsenull.data[0])
+      setDataNull(responsenull.data[0])
+      console.log(dataNull)
+    } catch (error) {
+      console.log('ERROR', error)
+    }
+    try {
+      const responsenotnull = await axios.post(
+        `http://localhost:8085/dbipstofcaccnotnull`,
+        {
+          startDate,
+          endDate,
+        }
+      )
+      console.log(responsenotnull.data[0])
+      setDataNotNull(responsenotnull.data[0])
+      console.log(dataNotNull)
+    } catch (error) {
+      console.log('ERROR', error)
+    }
+  }
 
   return (
     <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
@@ -94,8 +133,8 @@ export default function ReportPage() {
         <CardActionArea>
           <CardMedia
             component={'img'}
-            sx={{ height: 140 , width:'100%'}}
-            image = {CardHeader1}
+            sx={{ height: 140, width: '100%' }}
+            image={CardHeader1}
             // src ="https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
             title="green iguana"
           />
@@ -136,36 +175,40 @@ export default function ReportPage() {
           <Typography>ลูกหนี้ ผู้ป่วยใน จ่ายตรง</Typography>
         </Box>
         <Stack direction={'row'} gap={2} padding={'10px'}>
-          <Typography>จำนวน : {dataResponse.all_case}</Typography>
-          <Typography>รอดำเนินการ : {dataResponse.null_case}</Typography>
-          <Typography>สำเร็จ : {dataResponse.notnull_case}</Typography>
+          <Typography>
+            จำนวน : 
+            {(dataNull.all_nullcase + dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
+          </Typography>
+          <Typography>
+            รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')}
+          </Typography>
+          <Typography>
+            สำเร็จ : {dataNotNull.all_notnullcase.toLocaleString('en-US')}
+          </Typography>
         </Stack>
 
         <Stack direction={'column'} gap={2} padding={'10px'}>
           <Typography>
-            ลูกหนี้ทั้งหมด : {dataResponse.debit_all.toLocaleString('en-US')}{' '}
-            บาท
+            ลูกหนี้ทั้งหมด :
+            {(dataNull.debit_null + dataNotNull.debit_notnull).toLocaleString(
+              'en-US'
+            )} บาท
           </Typography>
           <Typography>
             ลูกหนี้ดำเนินการสำเร็จ :{' '}
-            {dataResponse.debit_notnull.toLocaleString('en-US')} บาท
+            {dataNotNull.debit_notnull.toLocaleString('en-US')} บาท
           </Typography>
           <Typography>
-            ได้รับจัดสรร :{' '}
-            {Number(dataResponse.recieve).toLocaleString('en-US')} บาท
+            ได้รับจัดสรร : {Number(dataNotNull.recieve).toLocaleString('en-US')}{' '}
+            บาท
           </Typography>
           <Typography>
-            ส่วนต่าง : {dataResponse.sum_diff.toLocaleString('en-US')} บาท
+            ส่วนต่าง : {dataNotNull.sum_diff.toLocaleString('en-US')} บาท
           </Typography>
           <Divider />
           <Typography>
-            ลูกหนี้คงเหลือ : รอดำเนินการ : {dataResponse.null_case} ราย จำนวน :{' '}
-            {(
-              dataResponse.debit_all -
-              (Number(dataResponse.recieve) + dataResponse.sum_diff)
-            ).toLocaleString('en-US')}
-            {' : '}
-            {dataResponse.debit_null.toLocaleString('en-US')}
+            ลูกหนี้คงเหลือ : รอดำเนินการ : {dataNull.all_nullcase} ราย จำนวน :{' '}
+            {dataNull.debit_null.toLocaleString('en-US')}
             บาท
           </Typography>
         </Stack>
