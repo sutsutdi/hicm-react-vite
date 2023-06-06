@@ -59,7 +59,7 @@ export default function AppHeader({ open, onDrawerOpen }: AppHeader) {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap component="div">
-          Persistent drawer
+          HICM Warincamrab
         </Typography>
         <Box flexGrow={1}></Box>
         <IconButton
