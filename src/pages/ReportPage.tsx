@@ -11,14 +11,17 @@ import {
   TextField,
 } from '@mui/material'
 import axios from 'axios'
-import { useEffect, useState } from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form'
+import { useState } from 'react'
 import { Typography } from '@mui/material'
-import { DatePicker, LocalizationProvider, deDE } from '@mui/x-date-pickers'
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import 'dayjs/locale/th'
 import dayjs, { Dayjs } from 'dayjs'
 import CardHeader1 from '../assets/amy.jpg'
+import { DataGrid, GridRowsProp, GridColDef  } from '@mui/x-data-grid';
+
+
+
 
 type DataType = {
   startDate: Date
@@ -28,22 +31,6 @@ type DataType = {
   aboutYou: string
 }
 
-// useEffect(() => {
-//   const fecthData = async () => {
-//     try {
-//       const response = await axios.post(
-//         `http://localhost:8085/dbipstofcacc`,
-//         dataSubmit
-//       )
-
-//       // setData(jsonData)
-//       console.log(response)
-//     } catch (error) {
-//       console.log('ERROR', error)
-//     }
-//   }
-//   fecthData()
-// }, [])
 
 type FormValues = {
   startDate: Date
@@ -65,6 +52,7 @@ const dataNull0 = {
   all_nullcase: 0,
   debit_null: 0,
 }
+
 const dataNotNull0 = {
   all_notnullcase: 0,
   debit_notnull: 0,
@@ -72,15 +60,72 @@ const dataNotNull0 = {
   sum_diff: 0,
 }
 
+type DataDabitNotNull = {
+  
+    hn: string,
+    an: string,
+    cid: string,
+    fname: string,
+    admitdate: string,
+    dchdate: string,
+    charge: string,
+    paid: string,
+    outstanding: string,
+    repno: string,
+    total_summary: string,
+    diff: number
+  
+}
+
+type DataDabitNull = {
+  
+  hn: string,
+  an: string,
+  cid: string,
+  fname: string,
+  admitdate: string,
+  dchdate: string,
+  charge: string,
+  paid: string,
+  outstanding: string,
+  repno: string,
+  total_summary: string,
+  diff: 0
+
+}
+
+
 export default function ReportPage() {
   const [dataResponse, setDataResponse] = useState(dataDbipofcacc)
   const [dataNull, setDataNull] = useState(dataNull0)
   const [dataNotNull, setDataNotNull] = useState(dataNotNull0)
+  const [dataCaseNotNull, setDataCaseNotNull] = useState<GridRowsProp>([])
+  const [dataCaseNull, setDataCaseNull] = useState<GridRowsProp>([])
   const [startDate, setStartDate] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDate, setEndDate] = useState<Dayjs | null>(dayjs(new Date()))
 
+  
+  
+  
+  const columns: GridColDef[] = [
+
+    { field: 'hn', headerName: 'HN', width: 100 },
+    { field: 'an', headerName: 'AN', width: 120 },
+    { field: 'cid', headerName: 'CID', width: 150 },
+    { field: 'fname', headerName: 'ชื่อ นามสสกุล', width: 150 },
+    { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
+    { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
+    { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
+    { field: 'paid', headerName: 'ชำระ', width: 110 },
+    { field: 'outstanding', headerName: 'คงเหลือ', width: 110 },
+    { field: 'repno', headerName: 'RepNo', width: 110 },
+    { field: 'total_summary', headerName: 'ได้รับจัดสรร', width: 110 },
+    { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
+  ];
+
   const onSubmit = async () => {
     console.log({ startDate, endDate })
+   
     try {
       const response = await axios.post(`http://localhost:8085/dbipstofcacc`, {
         startDate,
@@ -95,6 +140,7 @@ export default function ReportPage() {
       console.log('ERROR', error)
     }
 
+    // Ofc Acc null
     try {
       const responsenull = await axios.post(
         `http://localhost:8085/dbipstofcaccnull`,
@@ -111,24 +157,69 @@ export default function ReportPage() {
     } catch (error) {
       console.log('ERROR', error)
     }
+
+
+    // Ofc Acc Not Null
     try {
-      const responsenotnull = await axios.post(
+      const responseNotNull = await axios.post(
         `http://localhost:8085/dbipstofcaccnotnull`,
         {
           startDate,
           endDate,
         }
       )
-      console.log(responsenotnull.data[0])
-      setDataNotNull(responsenotnull.data[0])
+      console.log(responseNotNull.data[0])
+      
+      
+      setDataNotNull(responseNotNull.data[0])
       console.log(dataNotNull)
     } catch (error) {
       console.log('ERROR', error)
     }
+
+    // Null Cases
+    
+    try {
+      const responseCaseNull = await axios.post(
+        `http://localhost:8085/dbipstofcnull`,
+        {
+          startDate,
+          endDate,
+        }
+      )
+      console.log(responseCaseNull.data)
+      setDataCaseNull(responseCaseNull.data)
+     
+      console.log(dataCaseNull)
+    } catch (error) {
+      console.log('ERROR', error)
+    }
+
+     // Not Null Cases
+    
+     try {
+      const responseCaseNotNull = await axios.post(
+        `http://localhost:8085/dbipstofcnotnull`,
+        {
+          startDate,
+          endDate,
+        }
+      )
+      console.log(responseCaseNotNull.data)
+      setDataCaseNotNull(responseCaseNotNull.data)
+    
+    } catch (error) {
+      console.log('ERROR', error)
+    }
+
+
   }
 
+
+
   return (
-    <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+    <>
+     <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
       <Card sx={{ maxWidth: 345 }}>
         <CardActionArea>
           <CardMedia
@@ -170,7 +261,7 @@ export default function ReportPage() {
       </Card>
 
       <Divider />
-      <Card sx={{ width: 445, marginLeft: '50px' }}>
+      <Card sx={{ width: 645, marginLeft: '50px' }}>
         <Box padding={4}>
           <Typography>ลูกหนี้ ผู้ป่วยใน จ่ายตรง</Typography>
         </Box>
@@ -213,6 +304,19 @@ export default function ReportPage() {
           </Typography>
         </Stack>
       </Card>
+    </Box> 
+    <Divider sx={{marginY: '30px'}}/>
+    <Typography> บัญชีลูกหนี้ ที่ยังดำเนินการเบิกไม่เสร็จ </Typography>
+    <Box style={{ height: 300, width: '100%' }}>
+      <DataGrid rows={dataCaseNull} columns={columns} getRowId={(row) => row.an} />
     </Box>
+    <Divider sx={{marginY: '30px'}}/>
+    <Typography> บัญชีลูกหนี้ ที่ดำเนินการเสร็จสิ้นแล้ว </Typography>
+    <Box style={{ height: 300, width: '100%' }}>
+      <DataGrid rows={dataCaseNotNull} columns={columns} getRowId={(row) => row.an} />
+    </Box>
+    </>
+   
+    
   )
 }
