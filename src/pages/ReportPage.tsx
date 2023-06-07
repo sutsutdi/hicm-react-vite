@@ -126,11 +126,17 @@ export default function ReportPage() {
   const onSubmit = async () => {
     console.log({ startDate, endDate })
 
+    // OFC IPD ALL
     try {
-      const response = await axios.post(`http://localhost:8085/dbipstofcacc`, {
-        startDate,
-        endDate,
-      })
+
+      // const queryString1 = `SELECT d.hn,d.an,d.cid,d.fname ,d.admitdate,d.dchdate ,d.charge ,d.paid ,d.outstanding ,s.repno,s.total_summary,(d.outstanding-s.total_summary) AS 'diff' FROM debit_ip AS d    INNER JOIN stm_ip_ofc AS s ON d.an = s.an WHERE  d.debtor = 'จ่ายตรง IP' and d.dchdate BETWEEN '${startDate}' AND '${endDate}' ORDER BY d.dchdate`
+          // const response = await axios.get(
+      //   `http://192.168.8.107:6002/hicm/${queryString1}`
+      // )
+
+      const response = await axios.post(
+        `http://localhost:8085/dbipstofc`,
+        {startDate , endDate})
 
       // setData(jsonData)
       console.log(response.data[0])
@@ -142,14 +148,16 @@ export default function ReportPage() {
 
     // Ofc Acc null
     try {
+     
+      // const queryString3 = `SELECT  COUNT(ds.an)  AS 'all_nullcase' , SUM(ds.outstanding) AS  'debit_null' FROM (SELECT d.hn,d.an,d.cid,d.fname ,d.admitdate,d.dchdate ,d.charge ,d.paid ,d.outstanding ,s.repno,s.total_summary,(d.outstanding-s.total_summary) AS 'diff' FROM debit_ip AS d LEFT OUTER JOIN stm_ip_ofc AS s ON d.an = s.an WHERE  d.debtor = 'จ่ายตรง IP' and d.dchdate BETWEEN "${startDate}" AND "${endDate}" AND s.repno IS NULL ORDER BY an) AS ds`
+     
+      // const responsenull = await axios.get(
+      //   `http://192.168.8.107:6002/hicm/${queryString3}`
+      // )
+
       const responsenull = await axios.post(
         `http://localhost:8085/dbipstofcaccnull`,
-        {
-          startDate,
-          endDate,
-        }
-      )
-
+        {startDate , endDate})
       // setData(jsonData)
       console.log(responsenull.data[0])
       setDataNull(responsenull.data[0])
@@ -160,13 +168,17 @@ export default function ReportPage() {
 
     // Ofc Acc Not Null
     try {
+      // const queryString4 = `SELECT COUNT(ds.an)  AS 'all_notnullcase' , SUM(ds.outstanding) AS  'debit_notnull', SUM(ds.total_summary) AS 'recieve' , SUM(ds.diff) AS 'sum_diff' FROM (SELECT d.hn,d.an,d.cid,d.fname ,d.admitdate,d.dchdate ,d.charge ,d.paid ,d.outstanding ,s.repno,s.total_summary,(d.outstanding-s.total_summary) AS 'diff' FROM debit_ip AS d LEFT OUTER JOIN stm_ip_ofc AS s ON d.an = s.an WHERE  d.debtor = 'จ่ายตรง IP' and d.dchdate BETWEEN "${startDate}" AND "${endDate}" AND s.repno IS NOT NULL ORDER BY an) AS ds`
+    
+      // const responseNotNull = await axios.get(
+      //   `http://192.168.8.107:6002/hicm/${queryString4}`
+      // )
+
+
       const responseNotNull = await axios.post(
         `http://localhost:8085/dbipstofcaccnotnull`,
-        {
-          startDate,
-          endDate,
-        }
-      )
+      {startDate , endDate})
+
       console.log(responseNotNull.data[0])
 
       setDataNotNull(responseNotNull.data[0])
@@ -178,13 +190,15 @@ export default function ReportPage() {
     // Null Cases
 
     try {
+      // const queryString5 = `SELECT d.hn,d.an,d.cid,d.fname ,d.admitdate,d.dchdate ,FORMAT(d.charge,2) AS charge ,FORMAT(d.paid,2) AS paid ,FORMAT(d.outstanding,2) AS outstanding,s.repno,FORMAT(s.total_summary,2) AS total_summary,FORMAT((d.outstanding-s.total_summary),2) AS 'diff' FROM debit_ip AS d   LEFT OUTER JOIN stm_ip_ofc AS s ON d.an = s.an WHERE  d.debtor = 'จ่ายตรง IP' and d.dchdate BETWEEN '${startDate}' AND '${endDate}' AND s.repno IS NULL ORDER BY d.dchdate`
+   
+      // const responseCaseNull = await axios.get(
+      //   `http://192.168.8.107:6002/hicm/${queryString5}`
+      // )
       const responseCaseNull = await axios.post(
         `http://localhost:8085/dbipstofcnull`,
-        {
-          startDate,
-          endDate,
-        }
-      )
+      {startDate , endDate})
+
       console.log(responseCaseNull.data)
       setDataCaseNull(responseCaseNull.data)
 
@@ -196,13 +210,15 @@ export default function ReportPage() {
     // Not Null Cases
 
     try {
+      // const queryString6 = `SELECT d.hn,d.an,d.cid,d.fname ,d.admitdate,d.dchdate ,FORMAT(d.charge,2) AS charge ,FORMAT(d.paid,2) AS paid ,FORMAT(d.outstanding,2) AS outstanding,s.repno,FORMAT(s.total_summary,2) AS total_summary,FORMAT((d.outstanding-s.total_summary),2) AS 'diff' FROM debit_ip AS d   LEFT OUTER JOIN stm_ip_ofc AS s ON d.an = s.an WHERE  d.debtor = 'จ่ายตรง IP' and d.dchdate BETWEEN '${startDate}' AND '${endDate}' AND s.repno IS NOT NULL ORDER BY d.dchdate`
+      // const responseCaseNotNull = await axios.get(
+      //   `http://192.168.8.107:6002/hicm/${queryString6}`
+      // )
+
       const responseCaseNotNull = await axios.post(
         `http://localhost:8085/dbipstofcnotnull`,
-        {
-          startDate,
-          endDate,
-        }
-      )
+      {startDate , endDate})
+
       console.log(responseCaseNotNull.data)
       setDataCaseNotNull(responseCaseNotNull.data)
     } catch (error) {
@@ -230,20 +246,12 @@ export default function ReportPage() {
       {
         // label: ['รอดำเนินการ', 'สำเร็จ'],
         data: [dataNull.all_nullcase, dataNotNull.all_notnullcase],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          ],
+        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
+        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
         borderWidth: 1,
       },
     ],
   }
-  
 
   return (
     <>
