@@ -49,8 +49,8 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   const menus = [
     {icon: <InboxIcon/>,title: "Stock" , nav: "/stock"},
     {icon: <MailIcon/>,title: "Stock Edit" , nav: "/stockedit"},
-    {icon: <MailIcon/>,title: "Stock Create" , nav: "/stockcreate"},
-    {icon: <MailIcon/>,title: "Report" , nav: "/report"},
+    {icon: <MailIcon/>,title: "Pie Chart" , nav: "/piechart"},
+    {icon: <MailIcon/>,title: "Bar Chart" , nav: "/barchart"},
   ]
 
 

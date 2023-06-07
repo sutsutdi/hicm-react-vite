@@ -12,6 +12,9 @@ import ReportPage from "../pages/ReportPage";
 import StockEditPage from "../pages/StockEditPage";
 import StockCreatePage from "../pages/StockCreatePage";
 import StockPage from "../pages/StockPage";
+import { BarChartPage } from "../pages/BarChart";
+import { PieChartPage } from "../pages/PieChart";
+
 
 
 const drawerWidth = 240;
@@ -74,6 +77,8 @@ export default function MainLayout() {
             <Route path="/stockcreate" element={<StockCreatePage />} />
             <Route path="/stockedit" element={<StockEditPage />} />
             <Route path="/stock" element={<StockPage />} />
+            <Route path="/barchart" element={<BarChartPage/>} />
+            <Route path="/piechart" element={<PieChartPage/>} />
             <Route path="/" element={<Navigate to={"/login"} />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

@@ -31,6 +31,7 @@ import {
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
+import { Pie } from 'react-chartjs-2'
 
 type DataType = {
   startDate: Date
@@ -223,6 +224,27 @@ export default function ReportPage() {
     setValueTab(newValue)
   }
 
+  const dataChart = {
+    labels: ['รอดำเนินการ', 'สำเร็จ'],
+    datasets: [
+      {
+        // label: ['รอดำเนินการ', 'สำเร็จ'],
+        data: [dataNull.all_nullcase, dataNotNull.all_notnullcase],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          ],
+        borderWidth: 1,
+      },
+    ],
+  }
+  
+
   return (
     <>
       <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
@@ -310,7 +332,7 @@ export default function ReportPage() {
               ส่วนต่าง : {dataNotNull.sum_diff.toLocaleString('en-US')} บาท
             </Typography>
             <Divider />
-            <Typography variant='h6'>
+            <Typography variant="h6">
               ลูกหนี้คงเหลือ : รอดำเนินการ : {dataNull.all_nullcase} ราย จำนวน :{' '}
               {dataNull.debit_null.toLocaleString('en-US')}
               บาท
@@ -334,20 +356,17 @@ export default function ReportPage() {
             </TabList>
           </Box>
           <TabPanel value="1">
-          <Stack direction={'row'} gap={2}>
+            <Stack direction={'row'} gap={2}>
               <Typography sx={{ marginBottom: '15px' }}>
                 {' '}
                 บัญชีลูกหนี้ ระหว่างดำเนินการ{' '}
               </Typography>
               <Typography>
-                จำนวน : {dataNull.all_nullcase.toLocaleString('en-US')}{' '}
-                ราย
+                จำนวน : {dataNull.all_nullcase.toLocaleString('en-US')} ราย
               </Typography>
               <Typography>
-                ทั้งหมด : {dataNull.debit_null.toLocaleString('en-US')}{' '}
-                บาท
+                ทั้งหมด : {dataNull.debit_null.toLocaleString('en-US')} บาท
               </Typography>
-              
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
@@ -393,7 +412,17 @@ export default function ReportPage() {
               />
             </Box>
           </TabPanel>
-          <TabPanel value="3">Item Three</TabPanel>
+          <TabPanel value="3">
+            <Box
+              width={'100%'}
+              height={500}
+              display={'flex'}
+              alignItems={'center'}
+              justifyContent={'center'}
+            >
+              <Pie data={dataChart} />
+            </Box>
+          </TabPanel>
         </TabContext>
       </Box>
     </>
