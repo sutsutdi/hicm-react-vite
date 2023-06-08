@@ -127,40 +127,33 @@ export default function ReportPage() {
     console.log({ startDate, endDate })
 
     // OFC IPD ALL
-    try {
+    // try {
+    //   const response = await axios.post(`http://localhost:8085/dbipstofc`, {
+    //     startDate,
+    //     endDate,
+    //   })
 
-      // const queryString1 = `SELECT d.hn,d.an,d.cid,d.fname ,d.admitdate,d.dchdate ,d.charge ,d.paid ,d.outstanding ,s.repno,s.total_summary,(d.outstanding-s.total_summary) AS 'diff' FROM debit_ip AS d    INNER JOIN stm_ip_ofc AS s ON d.an = s.an WHERE  d.debtor = 'จ่ายตรง IP' and d.dchdate BETWEEN '${startDate}' AND '${endDate}' ORDER BY d.dchdate`
-          // const response = await axios.get(
-      //   `http://192.168.8.107:6002/hicm/${queryString1}`
-      // )
+    //   // setData(jsonData)
+    //   console.log(response.data[0])
+    //   if (response.data[0]){setDataResponse(response.data[0])}
+    //   else {setDataResponse(dataDbipofcacc)}
 
-      const response = await axios.post(
-        `http://localhost:8085/dbipstofc`,
-        {startDate , endDate})
-
-      // setData(jsonData)
-      console.log(response.data[0])
-      setDataResponse(response.data[0])
-      console.log(dataResponse)
-    } catch (error) {
-      console.log('ERROR', error)
-    }
+    //   console.log(dataResponse)
+    // } catch (error) {
+    //   console.log('ERROR', error)
+    // }
 
     // Ofc Acc null
     try {
-     
-      // const queryString3 = `SELECT  COUNT(ds.an)  AS 'all_nullcase' , SUM(ds.outstanding) AS  'debit_null' FROM (SELECT d.hn,d.an,d.cid,d.fname ,d.admitdate,d.dchdate ,d.charge ,d.paid ,d.outstanding ,s.repno,s.total_summary,(d.outstanding-s.total_summary) AS 'diff' FROM debit_ip AS d LEFT OUTER JOIN stm_ip_ofc AS s ON d.an = s.an WHERE  d.debtor = 'จ่ายตรง IP' and d.dchdate BETWEEN "${startDate}" AND "${endDate}" AND s.repno IS NULL ORDER BY an) AS ds`
-     
-      // const responsenull = await axios.get(
-      //   `http://192.168.8.107:6002/hicm/${queryString3}`
-      // )
-
-      const responsenull = await axios.post(
+      const responseNull = await axios.post(
         `http://localhost:8085/dbipstofcaccnull`,
-        {startDate , endDate})
+        { startDate, endDate }
+      )
       // setData(jsonData)
-      console.log(responsenull.data[0])
-      setDataNull(responsenull.data[0])
+      console.log(responseNull.data[0])
+
+      setDataNull(responseNull.data[0])
+
       console.log(dataNull)
     } catch (error) {
       console.log('ERROR', error)
@@ -168,20 +161,15 @@ export default function ReportPage() {
 
     // Ofc Acc Not Null
     try {
-      // const queryString4 = `SELECT COUNT(ds.an)  AS 'all_notnullcase' , SUM(ds.outstanding) AS  'debit_notnull', SUM(ds.total_summary) AS 'recieve' , SUM(ds.diff) AS 'sum_diff' FROM (SELECT d.hn,d.an,d.cid,d.fname ,d.admitdate,d.dchdate ,d.charge ,d.paid ,d.outstanding ,s.repno,s.total_summary,(d.outstanding-s.total_summary) AS 'diff' FROM debit_ip AS d LEFT OUTER JOIN stm_ip_ofc AS s ON d.an = s.an WHERE  d.debtor = 'จ่ายตรง IP' and d.dchdate BETWEEN "${startDate}" AND "${endDate}" AND s.repno IS NOT NULL ORDER BY an) AS ds`
-    
-      // const responseNotNull = await axios.get(
-      //   `http://192.168.8.107:6002/hicm/${queryString4}`
-      // )
-
-
       const responseNotNull = await axios.post(
         `http://localhost:8085/dbipstofcaccnotnull`,
-      {startDate , endDate})
+        { startDate, endDate }
+      )
 
       console.log(responseNotNull.data[0])
 
       setDataNotNull(responseNotNull.data[0])
+
       console.log(dataNotNull)
     } catch (error) {
       console.log('ERROR', error)
@@ -190,14 +178,10 @@ export default function ReportPage() {
     // Null Cases
 
     try {
-      // const queryString5 = `SELECT d.hn,d.an,d.cid,d.fname ,d.admitdate,d.dchdate ,FORMAT(d.charge,2) AS charge ,FORMAT(d.paid,2) AS paid ,FORMAT(d.outstanding,2) AS outstanding,s.repno,FORMAT(s.total_summary,2) AS total_summary,FORMAT((d.outstanding-s.total_summary),2) AS 'diff' FROM debit_ip AS d   LEFT OUTER JOIN stm_ip_ofc AS s ON d.an = s.an WHERE  d.debtor = 'จ่ายตรง IP' and d.dchdate BETWEEN '${startDate}' AND '${endDate}' AND s.repno IS NULL ORDER BY d.dchdate`
-   
-      // const responseCaseNull = await axios.get(
-      //   `http://192.168.8.107:6002/hicm/${queryString5}`
-      // )
       const responseCaseNull = await axios.post(
         `http://localhost:8085/dbipstofcnull`,
-      {startDate , endDate})
+        { startDate, endDate }
+      )
 
       console.log(responseCaseNull.data)
       setDataCaseNull(responseCaseNull.data)
@@ -210,14 +194,10 @@ export default function ReportPage() {
     // Not Null Cases
 
     try {
-      // const queryString6 = `SELECT d.hn,d.an,d.cid,d.fname ,d.admitdate,d.dchdate ,FORMAT(d.charge,2) AS charge ,FORMAT(d.paid,2) AS paid ,FORMAT(d.outstanding,2) AS outstanding,s.repno,FORMAT(s.total_summary,2) AS total_summary,FORMAT((d.outstanding-s.total_summary),2) AS 'diff' FROM debit_ip AS d   LEFT OUTER JOIN stm_ip_ofc AS s ON d.an = s.an WHERE  d.debtor = 'จ่ายตรง IP' and d.dchdate BETWEEN '${startDate}' AND '${endDate}' AND s.repno IS NOT NULL ORDER BY d.dchdate`
-      // const responseCaseNotNull = await axios.get(
-      //   `http://192.168.8.107:6002/hicm/${queryString6}`
-      // )
-
       const responseCaseNotNull = await axios.post(
         `http://localhost:8085/dbipstofcnotnull`,
-      {startDate , endDate})
+        { startDate, endDate }
+      )
 
       console.log(responseCaseNotNull.data)
       setDataCaseNotNull(responseCaseNotNull.data)
@@ -302,9 +282,9 @@ export default function ReportPage() {
 
         <Divider />
         <Card sx={{ width: 645, marginLeft: '50px' }}>
-          <Box padding={4}>
+          {/* <Box padding={4}>
             <Typography>ลูกหนี้ ผู้ป่วยใน จ่ายตรง</Typography>
-          </Box>
+          </Box> */}
           <Stack direction={'row'} gap={2} padding={'10px'}>
             <Typography>
               จำนวน :
@@ -313,7 +293,8 @@ export default function ReportPage() {
               ).toLocaleString('en-US')}{' '}
             </Typography>
             <Typography>
-              รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')}
+              รอดำเนินการ : {dataNull.all_nullcase}
+              {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
             </Typography>
             <Typography>
               สำเร็จ : {dataNotNull.all_notnullcase.toLocaleString('en-US')}
@@ -330,19 +311,20 @@ export default function ReportPage() {
             </Typography>
             <Typography>
               ลูกหนี้ดำเนินการสำเร็จ :{' '}
-              {dataNotNull.debit_notnull.toLocaleString('en-US')} บาท
+              {dataNotNull.debit_notnull === null ? 0 : dataNotNull.debit_notnull.toLocaleString('en-US')} บาท
             </Typography>
             <Typography>
               ได้รับจัดสรร :{' '}
               {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
             </Typography>
             <Typography>
-              ส่วนต่าง : {dataNotNull.sum_diff.toLocaleString('en-US')} บาท
+              ส่วนต่าง : {dataNotNull.sum_diff === null? 0 : dataNotNull.sum_diff.toLocaleString('en-US')} บาท
             </Typography>
             <Divider />
             <Typography variant="h6">
               ลูกหนี้คงเหลือ : รอดำเนินการ : {dataNull.all_nullcase} ราย จำนวน :{' '}
-              {dataNull.debit_null.toLocaleString('en-US')}
+              {/* {dataNull.debit_null.toLocaleString('en-US')} */}
+              {dataNull.debit_null}
               บาท
             </Typography>
           </Stack>
@@ -370,10 +352,12 @@ export default function ReportPage() {
                 บัญชีลูกหนี้ ระหว่างดำเนินการ{' '}
               </Typography>
               <Typography>
-                จำนวน : {dataNull.all_nullcase.toLocaleString('en-US')} ราย
+                จำนวน : {dataNull.all_nullcase} ราย
+                {/* จำนวน : {dataNull.all_nullcase.toLocaleString('en-US')} ราย */}
               </Typography>
               <Typography>
-                ทั้งหมด : {dataNull.debit_null.toLocaleString('en-US')} บาท
+                ทั้งหมด : {dataNull.debit_null} บาท
+                {/* ทั้งหมด : {dataNull.debit_null.toLocaleString('en-US')} บาท */}
               </Typography>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
@@ -398,7 +382,7 @@ export default function ReportPage() {
                 ราย
               </Typography>
               <Typography>
-                ทั้งหมด : {dataNotNull.debit_notnull.toLocaleString('en-US')}{' '}
+                ทั้งหมด : {dataNotNull.debit_notnull === null? 0 : dataNotNull.debit_notnull.toLocaleString('en-US')}{' '}
                 บาท
               </Typography>
               <Typography>
@@ -406,7 +390,7 @@ export default function ReportPage() {
                 {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
               </Typography>
               <Typography>
-                ส่วนต่าง : {dataNotNull.sum_diff.toLocaleString('en-US')} บาท
+                ส่วนต่าง : {dataNotNull.sum_diff === null ? 0 : dataNotNull.sum_diff.toLocaleString('en-US')} บาท
               </Typography>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
