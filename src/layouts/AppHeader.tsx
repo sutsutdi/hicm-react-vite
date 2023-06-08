@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { styled, useTheme } from '@mui/material/styles'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
@@ -6,9 +5,9 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import FullscreenIcon from '@mui/icons-material/Fullscreen'
-import { Box, Tooltip } from '@mui/material'
+import { Avatar, Box, CardMedia, Paper, Tooltip } from '@mui/material'
 import { Logout, Settings } from '@mui/icons-material'
-
+import LogoImg from '../assets/logo.png'
 const drawerWidth = 240
 
 interface AppBarProps extends MuiAppBarProps {
@@ -59,7 +58,15 @@ export default function AppHeader({ open, onDrawerOpen }: AppHeader) {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap component="div">
+        <CardMedia
+          component={'img'}
+          sx={{ height: 50, width: 50 ,borderRadius: '50%', }}
+          image={LogoImg}
+          // src ="https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
+          title="logo"
+        />
+
+        <Typography variant="h6" noWrap component="div" marginLeft={3}>
           HICM Warincamrab
         </Typography>
         <Box flexGrow={1}></Box>
@@ -96,7 +103,6 @@ export default function AppHeader({ open, onDrawerOpen }: AppHeader) {
             <Logout />
           </IconButton>
         </Tooltip>
-
       </Toolbar>
     </AppBar>
   )
