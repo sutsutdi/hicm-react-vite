@@ -303,7 +303,7 @@ export default function ReportPage() {
 
           <Stack direction={'column'} gap={2} padding={'10px'}>
             <Typography>
-              ลูกหนี้ทั้งหมด :
+              ลูกหนี้ทั้งหมด :{' '}
               {(dataNull.debit_null + dataNotNull.debit_notnull).toLocaleString(
                 'en-US'
               )}{' '}
@@ -322,9 +322,11 @@ export default function ReportPage() {
             </Typography>
             <Divider />
             <Typography variant="h6">
-              ลูกหนี้คงเหลือ : รอดำเนินการ : {dataNull.all_nullcase} ราย จำนวน :{' '}
+              ลูกหนี้คงเหลือ : รอดำเนินการ : {dataNull.all_nullcase === null ? 0:dataNull.all_nullcase.toLocaleString(
+                'en-US')} ราย จำนวน :{' '}
               {/* {dataNull.debit_null.toLocaleString('en-US')} */}
-              {dataNull.debit_null}
+              {dataNull.debit_null === null ? 0 : dataNull.debit_null.toLocaleString(
+                'en-US')}
               บาท
             </Typography>
           </Stack>
@@ -352,11 +354,13 @@ export default function ReportPage() {
                 บัญชีลูกหนี้ ระหว่างดำเนินการ{' '}
               </Typography>
               <Typography>
-                จำนวน : {dataNull.all_nullcase} ราย
+                จำนวน : {dataNull.all_nullcase === null ? 0 :dataNull.all_nullcase.toLocaleString(
+                'en-US')} ราย
                 {/* จำนวน : {dataNull.all_nullcase.toLocaleString('en-US')} ราย */}
               </Typography>
               <Typography>
-                ทั้งหมด : {dataNull.debit_null} บาท
+                ทั้งหมด : {dataNull.debit_null === null ? 0 :dataNull.debit_null.toLocaleString(
+                'en-US')} บาท
                 {/* ทั้งหมด : {dataNull.debit_null.toLocaleString('en-US')} บาท */}
               </Typography>
             </Stack>{' '}

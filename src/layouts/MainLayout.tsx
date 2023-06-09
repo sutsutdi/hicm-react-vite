@@ -14,6 +14,7 @@ import StockCreatePage from "../pages/StockCreatePage";
 import StockPage from "../pages/StockPage";
 import { BarChartPage } from "../pages/BarChart";
 import { PieChartPage } from "../pages/PieChart";
+import ReportIpUcPage from "../pages/ReportIpUc";
 
 
 
@@ -74,6 +75,7 @@ export default function MainLayout() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/report" element={<ReportPage />} />
+            <Route path="/ipuc/report" element={< ReportIpUcPage />} />
             <Route path="/stockcreate" element={<StockCreatePage />} />
             <Route path="/stockedit" element={<StockEditPage />} />
             <Route path="/stock" element={<StockPage />} />
