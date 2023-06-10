@@ -99,8 +99,9 @@ type DataDabitNull = {
   diff: 0
 }
 
+const apiUrl = import.meta.env.VITE_API_URL
+
 export default function ReportPage() {
-  const [dataResponse, setDataResponse] = useState(dataDbipofcacc)
   const [dataNull, setDataNull] = useState(dataNull0)
   const [dataNotNull, setDataNotNull] = useState(dataNotNull0)
   const [dataCaseNotNull, setDataCaseNotNull] = useState<GridRowsProp>([])
@@ -115,10 +116,13 @@ export default function ReportPage() {
     { field: 'fname', headerName: 'ชื่อ นามสสกุล', width: 150 },
     { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
     { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
+    { field: 'l_stay', headerName: 'วันนอน', width: 110 },
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
     { field: 'outstanding', headerName: 'คงเหลือ', width: 110 },
+    { field: 'acctype', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
+    { field: 'adjrw', headerName: 'AdjRw', width: 110 },
     { field: 'total_summary', headerName: 'ได้รับจัดสรร', width: 110 },
     { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
   ]
@@ -126,29 +130,12 @@ export default function ReportPage() {
   const onSubmit = async () => {
     console.log({ startDate, endDate })
 
-    // OFC IPD ALL
-    // try {
-    //   const response = await axios.post(`http://localhost:8085/dbipstofc`, {
-    //     startDate,
-    //     endDate,
-    //   })
-
-    //   // setData(jsonData)
-    //   console.log(response.data[0])
-    //   if (response.data[0]){setDataResponse(response.data[0])}
-    //   else {setDataResponse(dataDbipofcacc)}
-
-    //   console.log(dataResponse)
-    // } catch (error) {
-    //   console.log('ERROR', error)
-    // }
-
     // Ofc Acc null
     try {
-      const responseNull = await axios.post(
-        `http://localhost:8085/dbipstofcaccnull`,
-        { startDate, endDate }
-      )
+      const responseNull = await axios.post(`${apiUrl}/ipofc/ipofcaccnull`, {
+        startDate,
+        endDate,
+      })
       // setData(jsonData)
       console.log(responseNull.data[0])
 
@@ -162,7 +149,7 @@ export default function ReportPage() {
     // Ofc Acc Not Null
     try {
       const responseNotNull = await axios.post(
-        `http://localhost:8085/dbipstofcaccnotnull`,
+        `${apiUrl}/ipofc/ipofcaccnotnull`,
         { startDate, endDate }
       )
 
@@ -178,10 +165,10 @@ export default function ReportPage() {
     // Null Cases
 
     try {
-      const responseCaseNull = await axios.post(
-        `http://localhost:8085/dbipstofcnull`,
-        { startDate, endDate }
-      )
+      const responseCaseNull = await axios.post(`${apiUrl}/ipofc/ipofcnull`, {
+        startDate,
+        endDate,
+      })
 
       console.log(responseCaseNull.data)
       setDataCaseNull(responseCaseNull.data)
@@ -195,7 +182,7 @@ export default function ReportPage() {
 
     try {
       const responseCaseNotNull = await axios.post(
-        `http://localhost:8085/dbipstofcnotnull`,
+        `${apiUrl}/ipofc/ipofcnotnull`,
         { startDate, endDate }
       )
 
@@ -282,9 +269,6 @@ export default function ReportPage() {
 
         <Divider />
         <Card sx={{ width: 645, marginLeft: '50px' }}>
-          {/* <Box padding={4}>
-            <Typography>ลูกหนี้ ผู้ป่วยใน จ่ายตรง</Typography>
-          </Box> */}
           <Stack direction={'row'} gap={2} padding={'10px'}>
             <Typography>
               จำนวน :
@@ -311,22 +295,32 @@ export default function ReportPage() {
             </Typography>
             <Typography>
               ลูกหนี้ดำเนินการสำเร็จ :{' '}
-              {dataNotNull.debit_notnull === null ? 0 : dataNotNull.debit_notnull.toLocaleString('en-US')} บาท
+              {dataNotNull.debit_notnull === null
+                ? 0
+                : dataNotNull.debit_notnull.toLocaleString('en-US')}{' '}
+              บาท
             </Typography>
             <Typography>
               ได้รับจัดสรร :{' '}
               {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
             </Typography>
             <Typography>
-              ส่วนต่าง : {dataNotNull.sum_diff === null? 0 : dataNotNull.sum_diff.toLocaleString('en-US')} บาท
+              ส่วนต่าง :{' '}
+              {dataNotNull.sum_diff === null
+                ? 0
+                : dataNotNull.sum_diff.toLocaleString('en-US')}{' '}
+              บาท
             </Typography>
             <Divider />
             <Typography variant="h6">
-              ลูกหนี้คงเหลือ : รอดำเนินการ : {dataNull.all_nullcase === null ? 0:dataNull.all_nullcase.toLocaleString(
-                'en-US')} ราย จำนวน :{' '}
-              {/* {dataNull.debit_null.toLocaleString('en-US')} */}
-              {dataNull.debit_null === null ? 0 : dataNull.debit_null.toLocaleString(
-                'en-US')}
+              ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
+              {dataNull.all_nullcase === null
+                ? 0
+                : dataNull.all_nullcase.toLocaleString('en-US')}{' '}
+              ราย จำนวน : {/* {dataNull.debit_null.toLocaleString('en-US')} */}
+              {dataNull.debit_null === null
+                ? 0
+                : dataNull.debit_null.toLocaleString('en-US')}{' '}
               บาท
             </Typography>
           </Stack>
@@ -354,14 +348,18 @@ export default function ReportPage() {
                 บัญชีลูกหนี้ ระหว่างดำเนินการ{' '}
               </Typography>
               <Typography>
-                จำนวน : {dataNull.all_nullcase === null ? 0 :dataNull.all_nullcase.toLocaleString(
-                'en-US')} ราย
-                {/* จำนวน : {dataNull.all_nullcase.toLocaleString('en-US')} ราย */}
+                จำนวน :{' '}
+                {dataNull.all_nullcase === null
+                  ? 0
+                  : dataNull.all_nullcase.toLocaleString('en-US')}{' '}
+                ราย
               </Typography>
               <Typography>
-                ทั้งหมด : {dataNull.debit_null === null ? 0 :dataNull.debit_null.toLocaleString(
-                'en-US')} บาท
-                {/* ทั้งหมด : {dataNull.debit_null.toLocaleString('en-US')} บาท */}
+                ทั้งหมด :{' '}
+                {dataNull.debit_null === null
+                  ? 0
+                  : dataNull.debit_null.toLocaleString('en-US')}{' '}
+                บาท
               </Typography>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
@@ -386,7 +384,10 @@ export default function ReportPage() {
                 ราย
               </Typography>
               <Typography>
-                ทั้งหมด : {dataNotNull.debit_notnull === null? 0 : dataNotNull.debit_notnull.toLocaleString('en-US')}{' '}
+                ทั้งหมด :{' '}
+                {dataNotNull.debit_notnull === null
+                  ? 0
+                  : dataNotNull.debit_notnull.toLocaleString('en-US')}{' '}
                 บาท
               </Typography>
               <Typography>
@@ -394,7 +395,11 @@ export default function ReportPage() {
                 {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
               </Typography>
               <Typography>
-                ส่วนต่าง : {dataNotNull.sum_diff === null ? 0 : dataNotNull.sum_diff.toLocaleString('en-US')} บาท
+                ส่วนต่าง :{' '}
+                {dataNotNull.sum_diff === null
+                  ? 0
+                  : dataNotNull.sum_diff.toLocaleString('en-US')}{' '}
+                บาท
               </Typography>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>

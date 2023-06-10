@@ -47,7 +47,7 @@ import {
     sum_diff: 0,
   }
   
-
+  const apiUrl = import.meta.env.VITE_API_URL;
   
   export default function ReportIpUcPage() {
    
@@ -65,11 +65,13 @@ import {
       { field: 'fname', headerName: 'ชื่อ นามสสกุล', width: 150 },
       { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
       { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
+      { field: 'l_stay', headerName: 'วันนอน', width: 110 },
       { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
       { field: 'paid', headerName: 'ชำระ', width: 110 },
       { field: 'outstanding', headerName: 'คงเหลือ', width: 110 },
       { field: 'acctype', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
       { field: 'repno', headerName: 'RepNo', width: 110 },
+      { field: 'adjrw', headerName: 'AdjRw', width: 110 },
       { field: 'total_summary', headerName: 'ได้รับจัดสรร', width: 110 },
       { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
     ]
@@ -79,7 +81,7 @@ import {
         // Uc Acc Null
       try {
         const responseNull = await axios.post(
-          `http://localhost:8085/ipuc/ipucaccnull`,
+          `${apiUrl}/ipuc/ipucaccnull`,
           { startDate, endDate }
         )
         // setData(jsonData)
@@ -95,7 +97,7 @@ import {
       // Uc Acc Not Null
       try {
         const responseNotNull = await axios.post(
-          `http://localhost:8085/ipuc/ipucaccnotnull`,
+          `${apiUrl}/ipuc/ipucaccnotnull`,
           { startDate, endDate }
         )
   
@@ -112,7 +114,7 @@ import {
   
       try {
         const responseCaseNull = await axios.post(
-          `http://localhost:8085/ipuc/ipucnull`,
+          `${apiUrl}/ipuc/ipucnull`,
           { startDate, endDate }
         )
   
@@ -128,7 +130,7 @@ import {
   
       try {
         const responseCaseNotNull = await axios.post(
-          `http://localhost:8085/ipuc/ipucnotnull`,
+          `${apiUrl}/ipuc/ipucnotnull`,
           { startDate, endDate }
         )
   
@@ -199,7 +201,7 @@ import {
                     <TextField
                       label="Outlined secondary"
                       color="secondary"
-                      value={'ผู้ป่วยใน UC'}
+                      value={'ผู้ป่วยใน ประกันสุขภาพถ้วนหน้า UCS'}
                       focused
                     />
                   </Stack>
@@ -260,7 +262,7 @@ import {
                   'en-US')} ราย จำนวน :{' '}
                 {/* {dataNull.debit_null.toLocaleString('en-US')} */}
                 {dataNull.debit_null === null ? 0 : dataNull.debit_null.toLocaleString(
-                  'en-US')}
+                  'en-US')}{' '}
                 บาท
               </Typography>
             </Stack>

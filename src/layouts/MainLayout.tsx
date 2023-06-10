@@ -8,14 +8,13 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import NotFoundPage from "../pages/NotFoundPage";
-import ReportPage from "../pages/ReportPage";
 import StockEditPage from "../pages/StockEditPage";
 import StockCreatePage from "../pages/StockCreatePage";
 import StockPage from "../pages/StockPage";
 import { BarChartPage } from "../pages/BarChart";
 import { PieChartPage } from "../pages/PieChart";
 import ReportIpUcPage from "../pages/ReportIpUc";
-
+import ReportIpOfcPage from "../pages/ReportIpOfc";
 
 
 const drawerWidth = 240;
@@ -74,7 +73,7 @@ export default function MainLayout() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/report" element={<ReportPage />} />
+            <Route path="/ipofc/report" element={<ReportIpOfcPage />} />
             <Route path="/ipuc/report" element={< ReportIpUcPage />} />
             <Route path="/stockcreate" element={<StockCreatePage />} />
             <Route path="/stockedit" element={<StockEditPage />} />

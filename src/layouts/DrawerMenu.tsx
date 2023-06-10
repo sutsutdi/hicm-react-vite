@@ -1,82 +1,106 @@
-import * as React from "react";
-import { styled, useTheme } from "@mui/material/styles";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
-import SummarizeIcon from '@mui/icons-material/Summarize';
-import { useNavigate } from "react-router-dom";
-import { Avatar, Box, Menu, MenuItem } from "@mui/material";
-import { Logout, PersonAdd, Settings,Grading } from "@mui/icons-material";
+import * as React from 'react'
+import { styled, useTheme } from '@mui/material/styles'
+import Drawer from '@mui/material/Drawer'
+import List from '@mui/material/List'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import InboxIcon from '@mui/icons-material/MoveToInbox'
+import MailIcon from '@mui/icons-material/Mail'
+import SummarizeIcon from '@mui/icons-material/Summarize'
+import { useNavigate } from 'react-router-dom'
+import { Avatar, Box, Menu, MenuItem } from '@mui/material'
+import { Logout, PersonAdd, Settings, Grading } from '@mui/icons-material'
 
+const drawerWidth = 240
 
-const drawerWidth = 240;
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: "flex-end",
-}));
+  justifyContent: 'flex-end',
+}))
 
 type DrawerMenu = {
-  open: boolean;
-  onDrawerClose: () => void;
-};
+  open: boolean
+  onDrawerClose: () => void
+}
 
 export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
-  const theme = useTheme();
+  const theme = useTheme()
 
   const handleDrawerClose = () => {
-    onDrawerClose();
-  };
+    onDrawerClose()
+  }
 
   interface MenuProp {
-    icon: React.Component;
-    title: string;
-    nav: string;
+    icon: React.Component
+    title: string
+    nav: string
   }
 
   const menus = [
-    {icon: <InboxIcon/>,title: "Stock" , nav: "/stock"},
-    {icon: <MailIcon/>,title: "Stock Edit" , nav: "/stockedit"},
-    {icon: <MailIcon/>,title: "Pie Chart" , nav: "/piechart"},
-    {icon: <MailIcon/>,title: "Bar Chart" , nav: "/barchart"},
+    { icon: <InboxIcon />, title: 'Stock', nav: '/stock' },
+    { icon: <MailIcon />, title: 'Stock Edit', nav: '/stockedit' },
+    { icon: <MailIcon />, title: 'Pie Chart', nav: '/piechart' },
+    { icon: <MailIcon />, title: 'Bar Chart', nav: '/barchart' },
   ]
 
+  const ipMenus = [
+    { icon: <InboxIcon />, title: 'IP OFC', nav: '/ipofc/report' },
+    { icon: <MailIcon />, title: 'IP UCS', nav: '/ipuc/report' },
+    { icon: <MailIcon />, title: 'IP SSS', nav: '' },
+    { icon: <MailIcon />, title: 'IP LGO', nav: '' },
+    { icon: <MailIcon />, title: 'IP ต่างด้าว', nav: '' },
+    { icon: <MailIcon />, title: 'IP STP ', nav: '' },
+  ]
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null);
+  const opMenus = [
+    { icon: <InboxIcon />, title: 'OP OFC', nav: '' },
+    { icon: <MailIcon />, title: 'OP UCS', nav: '' },
+    { icon: <MailIcon />, title: 'OP SSS', nav: '' },
+    { icon: <MailIcon />, title: 'OP LGO', nav: '' },
+    { icon: <MailIcon />, title: 'OP ต่างด้าว', nav: '' },
+    { icon: <MailIcon />, title: 'OP STP', nav: '' },
+  ]
 
-  const openMenu = Boolean(anchorEl);
-  const openMenu2 = Boolean(anchorEl2);
+  const feeScheduleMenus = [
+    { icon: <InboxIcon />, title: 'Telemedicine', nav: '' },
+    { icon: <MailIcon />, title: 'Palliative', nav: '' },
+    { icon: <MailIcon />, title: 'ANC', nav: '' },
+    { icon: <MailIcon />, title: 'AE', nav: '' },
+    { icon: <MailIcon />, title: 'ER คุณภาพ', nav: '' },
+   
+  ]
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null)
+
+  const openMenu = Boolean(anchorEl)
+  const openMenu2 = Boolean(anchorEl2)
 
   // Debit-statment
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   // Fee Schedule Menu
   const handleClick2 = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl2(event.currentTarget);
-  };
+    setAnchorEl2(event.currentTarget)
+  }
   const handleClose2 = () => {
-    setAnchorEl2(null);
-  };
-
+    setAnchorEl2(null)
+  }
 
   const navigate = useNavigate()
 
@@ -85,9 +109,9 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
       sx={{
         width: drawerWidth,
         flexShrink: 0,
-        "& .MuiDrawer-paper": {
+        '& .MuiDrawer-paper': {
           width: drawerWidth,
-          boxSizing: "border-box",
+          boxSizing: 'border-box',
         },
       }}
       variant="persistent"
@@ -96,7 +120,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
     >
       <DrawerHeader>
         <IconButton onClick={handleDrawerClose}>
-          {theme.direction === "ltr" ? (
+          {theme.direction === 'ltr' ? (
             <ChevronLeftIcon />
           ) : (
             <ChevronRightIcon />
@@ -105,21 +129,20 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
       </DrawerHeader>
       <Divider />
       <List>
-        
-          <ListItem  disablePadding>
-            <ListItemButton onClick={handleClick}>
-              <ListItemIcon>
-                <SummarizeIcon />
-              </ListItemIcon>
-              <ListItemText primary={'Debit-Statment'} />
-            </ListItemButton>
-          </ListItem>
-          <ListItemButton onClick={handleClick2}>
-              <ListItemIcon>
-                <Grading />
-              </ListItemIcon>
-              <ListItemText primary={'Fee Schedule'} />
-            </ListItemButton>
+        <ListItem disablePadding>
+          <ListItemButton onClick={handleClick}>
+            <ListItemIcon>
+              <SummarizeIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Debit-Statment'} />
+          </ListItemButton>
+        </ListItem>
+        <ListItemButton onClick={handleClick2}>
+          <ListItemIcon>
+            <Grading />
+          </ListItemIcon>
+          <ListItemText primary={'Fee Schedule'} />
+        </ListItemButton>
       </List>
       {/* // debit statement */}
       <Menu
@@ -157,79 +180,27 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={()=>navigate('/report')}>
-          <Avatar /> IPD จ่ายตรง
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <Avatar /> OPD จ่ายตรง
-        </MenuItem>
+        {ipMenus.map((menu, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton onClick={() => navigate(menu.nav)}>
+              <ListItemIcon>{menu.icon}</ListItemIcon>
+              <ListItemText primary={menu.title} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+
         <Divider />
-        <MenuItem onClick={()=>navigate('/ipuc/report')}>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          IP UCS 
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          OP UCS
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          IP SSS
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          OP SSS
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          IP STP
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          OP STP
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          IP LGO
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          OP LGO
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          IP ต่างด้าว
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          OP ต่างด้าว
-        </MenuItem>
-       
+
+        {opMenus.map((menu, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton onClick={() => navigate(menu.nav)}>
+              <ListItemIcon>{menu.icon}</ListItemIcon>
+              <ListItemText primary={menu.title} />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </Menu>
+
       {/* fee schedule */}
       <Menu
         anchorEl={anchorEl2}
@@ -266,53 +237,33 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={()=>alert('Telemed')}>
-          <Avatar /> Telemed
-        </MenuItem>
-        <MenuItem onClick={handleClose2}>
-          <Avatar /> ER คุณภาพ
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose2}>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          UC 
-        </MenuItem>
-        <MenuItem onClick={handleClose2}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          ประกันสังคม
-        </MenuItem>
-        <MenuItem onClick={handleClose2}>
-          <ListItemIcon>
-            <Logout fontSize="small" />
-          </ListItemIcon>
-          Logout
-        </MenuItem>
-      </Menu>
-
-
-      <Divider />
-
-      <Box>
-      
-      <List>
-        {menus.map((menu, index) => (
+        {feeScheduleMenus.map((menu, index) => (
           <ListItem key={index} disablePadding>
-            <ListItemButton onClick={()=>navigate(menu.nav)}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
+            <ListItemButton onClick={() => navigate(menu.nav)}>
+              <ListItemIcon>{menu.icon}</ListItemIcon>
               <ListItemText primary={menu.title} />
             </ListItemButton>
           </ListItem>
         ))}
-      </List>
-        
-      </Box>
      
+
+          
+      </Menu>
+      <Divider />
+      <Box>
+        <List>
+          {menus.map((menu, index) => (
+            <ListItem key={index} disablePadding>
+              <ListItemButton onClick={() => navigate(menu.nav)}>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                </ListItemIcon>
+                <ListItemText primary={menu.title} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
     </Drawer>
-  );
+  )
 }
