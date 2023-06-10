@@ -47,6 +47,8 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   }
 
   const menus = [
+    { icon: <InboxIcon />, title: 'บัญชีลูกหนี้ ผู้ป่วยนอก Debit OP', nav: '/debitop/opreport' },
+    { icon: <InboxIcon />, title: 'บัญชีลูกหนี้ ผู้ป่วยใน  Debit IP', nav: '/debitip/ipreport' },
     { icon: <InboxIcon />, title: 'Stock', nav: '/stock' },
     { icon: <MailIcon />, title: 'Stock Edit', nav: '/stockedit' },
     { icon: <MailIcon />, title: 'Pie Chart', nav: '/piechart' },
@@ -249,6 +251,8 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
 
           
       </Menu>
+
+
       <Divider />
       <Box>
         <List>

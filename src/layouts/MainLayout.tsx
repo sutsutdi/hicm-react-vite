@@ -15,6 +15,7 @@ import { BarChartPage } from "../pages/BarChart";
 import { PieChartPage } from "../pages/PieChart";
 import ReportIpUcPage from "../pages/ReportIpUc";
 import ReportIpOfcPage from "../pages/ReportIpOfc";
+import ReportIpAllPage from "../pages/ReportIpAll";
 
 
 const drawerWidth = 240;
@@ -73,6 +74,7 @@ export default function MainLayout() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/debitip/ipreport" element={<ReportIpAllPage/>} />
             <Route path="/ipofc/report" element={<ReportIpOfcPage />} />
             <Route path="/ipuc/report" element={< ReportIpUcPage />} />
             <Route path="/stockcreate" element={<StockCreatePage />} />
