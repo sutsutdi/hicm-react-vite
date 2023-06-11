@@ -34,7 +34,7 @@ import TabPanel from '@mui/lab/TabPanel'
 import { Pie } from 'react-chartjs-2'
 
 type DataType = {
-  startDate: Date
+  startDt: Date
   endDate: Date
   firstName: string
   category: string
@@ -42,7 +42,7 @@ type DataType = {
 }
 
 type FormValues = {
-  startDate: Date
+  startDt: Date
   endDate: Date
 }
 
@@ -107,8 +107,11 @@ export default function ReportIpOfcPage() {
   const [dataNotNull, setDataNotNull] = useState(dataNotNull0)
   const [dataCaseNotNull, setDataCaseNotNull] = useState<GridRowsProp>([])
   const [dataCaseNull, setDataCaseNull] = useState<GridRowsProp>([])
-  const [startDate, setStartDate] = useState<Dayjs | null>(dayjs(new Date()))
-  const [endDate, setEndDate] = useState<Dayjs | null>(dayjs(new Date()))
+  const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
+  const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
+ 
+
+
 
   const columns: GridColDef[] = [
     { field: 'hn', headerName: 'HN', width: 100 },
@@ -129,7 +132,14 @@ export default function ReportIpOfcPage() {
   ]
 
   const onSubmit = async () => {
-    console.log({ startDate, endDate })
+
+    console.log({ startDt, endDt })
+    
+    let startDate = startDt?.format('YYYY-MM-DD')
+    let endDate = endDt?.format('YYYY-MM-DD')
+    
+    console.log(startDt)
+    console.log(endDt)
 
     // Ofc Acc null
     try {
@@ -138,6 +148,10 @@ export default function ReportIpOfcPage() {
         endDate,
       })
       // setData(jsonData)
+      
+      console.log(`${startDate}`)
+      console.log(`${endDate}`)
+
       console.log(responseNull.data[0])
 
       setDataNull(responseNull.data[0])
@@ -154,6 +168,10 @@ export default function ReportIpOfcPage() {
         { startDate, endDate }
       )
 
+      console.log(`${apiUrl}/ipofc/ipofcaccnotnull`);
+      console.log(`${startDate}`);
+      console.log(`${endDate}`);
+      
       console.log(responseNotNull.data[0])
 
       setDataNotNull(responseNotNull.data[0])
@@ -186,7 +204,9 @@ export default function ReportIpOfcPage() {
         `${apiUrl}/ipofc/ipofcnotnull`,
         { startDate, endDate }
       )
-
+      
+      console.log(`${startDate}`)
+      console.log(`${endDate}`)
       console.log(responseCaseNotNull.data)
       setDataCaseNotNull(responseCaseNotNull.data)
     } catch (error) {
@@ -238,17 +258,18 @@ export default function ReportIpOfcPage() {
               <LocalizationProvider
                 dateAdapter={AdapterDayjs}
                 adapterLocale="th"
+                // adapterLocale="th"
               >
                 <Stack direction={'column'} gap={2}>
-                  <DatePicker
+                <DatePicker
                     label="Start Date"
-                    value={startDate}
-                    onChange={(newValue) => setStartDate(newValue)}
+                    value={startDt}
+                    onChange={(newValue) => setStartDt(newValue)}
                   />
                   <DatePicker
                     label="End Date"
-                    value={endDate}
-                    onChange={(newValue) => setEndDate(newValue)}
+                    value={endDt}
+                    onChange={(newValue) => setEndDt(newValue)}
                   />
                   <TextField
                     label="Outlined secondary"

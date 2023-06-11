@@ -58,14 +58,22 @@ const dataIp = {
   payDebit: 0,
 }
 
+
+
 const apiUrl = import.meta.env.VITE_API_URL
 
+
+
+
 export default function ReportIpAllPage() {
+
   const [dataAccIp, setDataAccIp] = useState(dataIp)
   const [dataCaseIp, setDataCaseIp] = useState<GridRowsProp>([])
   const [dataCaseIpOfc, setDataCaseIpOfc] = useState<GridRowsProp>([])
   const [startDate, setStartDate] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDate, setEndDate] = useState<Dayjs | null>(dayjs(new Date()))
+
+ 
 
   const columns: GridColDef[] = [
     { field: 'hn', headerName: 'HN', width: 100 },
@@ -75,23 +83,28 @@ export default function ReportIpAllPage() {
     { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
     { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
     { field: 'l_stay', headerName: 'วันนอน', width: 110 },
+    { field: 'cln', headerName: 'แผนก', width: 110 },
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
     { field: 'outstanding', headerName: 'คงเหลือ', width: 110 },
+    { field: 'pttype_debtor', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
     { field: 'acctype', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
-    { field: 'ward', headerName: 'แผนก', width: 110 },
-    { field: 'adjrw', headerName: 'AdjRw', width: 110 },
   ]
 
   const onSubmit = async () => {
     console.log({ startDate, endDate })
-
+    
     // IP Acc
     try {
       const responseIpAcc = await axios.post(`${apiUrl}/debitip/ipacc`, {
         startDate,
         endDate,
       })
+
+      console.log(`${apiUrl}/debitip/ipacc`);
+      console.log({startDate});
+      console.log({endDate});
+     
       // setData(jsonData)
       console.log(responseIpAcc.data[0])
 
@@ -104,11 +117,16 @@ export default function ReportIpAllPage() {
 
     // IP Case
     try {
-      const responseIp = await axios.post(`${apiUrl}/debitip/debitipall`, {
+      const responseIp = await axios.post(`${apiUrl}/debitip/ipallcase`, {
         startDate,
         endDate,
       })
       // setData(jsonData)
+      console.log(`${apiUrl}/debitip/ipallcase`);
+      console.log({startDate});
+      console.log({endDate});
+
+      
       console.log(responseIp.data)
 
       setDataCaseIp(responseIp.data)
@@ -120,11 +138,16 @@ export default function ReportIpAllPage() {
 
     // OFC IP Case
     try {
-      const responseIpOfc = await axios.post(`${apiUrl}/debitip/debitipofc`, {
+      const responseIpOfc = await axios.post(`${apiUrl}/debitip/ipofccase`, {
         startDate,
         endDate,
       })
       // setData(jsonData)
+      console.log(`${apiUrl}/debitip/ipofccase`);
+      console.log({startDate});
+      console.log({endDate});
+
+
       console.log(responseIpOfc.data)
 
       setDataCaseIpOfc(responseIpOfc.data)
@@ -195,7 +218,7 @@ export default function ReportIpAllPage() {
                 adapterLocale="th"
               >
                 <Stack direction={'column'} gap={2}>
-                  <DatePicker
+                <DatePicker
                     label="Start Date"
                     value={startDate}
                     onChange={(newValue) => setStartDate(newValue)}
@@ -246,40 +269,64 @@ export default function ReportIpAllPage() {
             <Stack direction={'row'} gap={2} padding={'2px'}>
               <Typography>
                 UCS ในเขต จำนวน :{' '}
-                {dataAccIp.ucsInCase === null ? 0 : dataAccIp.ucsInCase.toLocaleString('en-US')} ราย
+                {dataAccIp.ucsInCase === null
+                  ? 0
+                  : dataAccIp.ucsInCase.toLocaleString('en-US')}{' '}
+                ราย
               </Typography>
               <Typography>
-                รวมค่าใช้จ่าย : {dataAccIp.ucsInDebit === null? 0 : dataAccIp.ucsInDebit.toLocaleString('en-US')}{' '}
+                รวมค่าใช้จ่าย :{' '}
+                {dataAccIp.ucsInDebit === null
+                  ? 0
+                  : dataAccIp.ucsInDebit.toLocaleString('en-US')}{' '}
                 บาท
               </Typography>
             </Stack>
             <Stack direction={'row'} gap={2} padding={'2px'}>
               <Typography>
                 UCS นอกเขต จำนวน :{' '}
-                {dataAccIp.ucsOutCase === null ? 0 : dataAccIp.ucsOutCase.toLocaleString('en-US')} ราย
+                {dataAccIp.ucsOutCase === null
+                  ? 0
+                  : dataAccIp.ucsOutCase.toLocaleString('en-US')}{' '}
+                ราย
               </Typography>
               <Typography>
-                รวมค่าใช้จ่าย : {dataAccIp.ucsOutDebit === null? 0 : dataAccIp.ucsOutDebit.toLocaleString('en-US')}{' '}
+                รวมค่าใช้จ่าย :{' '}
+                {dataAccIp.ucsOutDebit === null
+                  ? 0
+                  : dataAccIp.ucsOutDebit.toLocaleString('en-US')}{' '}
                 บาท
               </Typography>
             </Stack>
             <Stack direction={'row'} gap={2} padding={'2px'}>
               <Typography>
                 ประกันสังคมในเขต จำนวน :{' '}
-                {dataAccIp.sssInCase === null ? 0 : dataAccIp.sssInCase.toLocaleString('en-US')} ราย
+                {dataAccIp.sssInCase === null
+                  ? 0
+                  : dataAccIp.sssInCase.toLocaleString('en-US')}{' '}
+                ราย
               </Typography>
               <Typography>
-                รวมค่าใช้จ่าย : {dataAccIp.sssInDebit === null? 0 : dataAccIp.sssInDebit.toLocaleString('en-US')}{' '}
+                รวมค่าใช้จ่าย :{' '}
+                {dataAccIp.sssInDebit === null
+                  ? 0
+                  : dataAccIp.sssInDebit.toLocaleString('en-US')}{' '}
                 บาท
               </Typography>
             </Stack>
             <Stack direction={'row'} gap={2} padding={'2px'}>
               <Typography>
                 ประกันสังคมนอกเขต จำนวน :{' '}
-                {dataAccIp.sssOutCase === null ? 0 : dataAccIp.sssOutCase.toLocaleString('en-US')} ราย
+                {dataAccIp.sssOutCase === null
+                  ? 0
+                  : dataAccIp.sssOutCase.toLocaleString('en-US')}{' '}
+                ราย
               </Typography>
               <Typography>
-                รวมค่าใช้จ่าย : {dataAccIp.sssOutDebit === null ? 0 : dataAccIp.sssOutDebit.toLocaleString('en-US')}{' '}
+                รวมค่าใช้จ่าย :{' '}
+                {dataAccIp.sssOutDebit === null
+                  ? 0
+                  : dataAccIp.sssOutDebit.toLocaleString('en-US')}{' '}
                 บาท
               </Typography>
             </Stack>
@@ -288,10 +335,18 @@ export default function ReportIpAllPage() {
           <Divider />
           <Stack direction={'row'} gap={2} padding={'10px'}>
             <Typography variant="h6">
-              ลูกหนี้ทั้งหมด จำนวน :{' '}{dataAccIp.allCase === null ? 0 : dataAccIp.allCase.toLocaleString('en-US')}{' '} ราย
+              ลูกหนี้ทั้งหมด จำนวน :{' '}
+              {dataAccIp.allCase === null
+                ? 0
+                : dataAccIp.allCase.toLocaleString('en-US')}{' '}
+              ราย
             </Typography>
             <Typography variant="h6">
-              รวมค่าใช้จ่าย :{' '} {dataAccIp.allDebit === null ? 0 : dataAccIp.allDebit.toLocaleString('en-US')}{' '} บาท
+              รวมค่าใช้จ่าย :{' '}
+              {dataAccIp.allDebit === null
+                ? 0
+                : dataAccIp.allDebit.toLocaleString('en-US')}{' '}
+              บาท
             </Typography>
           </Stack>
         </Card>
@@ -333,14 +388,14 @@ export default function ReportIpAllPage() {
               </Typography>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
-              {/* <DataGrid
+              <DataGrid
                 rows={dataCaseIp}
                 columns={columns}
                 getRowId={(row) => row.an}
                 slots={{
                   toolbar: CustomToolbar,
                 }}
-              /> */}
+              />
             </Box>
           </TabPanel>
           <TabPanel value="2">

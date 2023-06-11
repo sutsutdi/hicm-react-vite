@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { Avatar, Box, Menu, MenuItem } from '@mui/material'
 import { Logout, PersonAdd, Settings, Grading } from '@mui/icons-material'
 
-const drawerWidth = 240
+const drawerWidth = 260
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -47,8 +47,8 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   }
 
   const menus = [
-    { icon: <InboxIcon />, title: 'บัญชีลูกหนี้ ผู้ป่วยนอก Debit OP', nav: '/debitop/opreport' },
-    { icon: <InboxIcon />, title: 'บัญชีลูกหนี้ ผู้ป่วยใน  Debit IP', nav: '/debitip/ipreport' },
+    { icon: <InboxIcon />, title: 'บัญชีลูกหนี้ ผู้ป่วยใน', nav: '/debitip/ipreport' },
+    { icon: <InboxIcon />, title: 'บัญชีลูกหนี้ ผู้ป่วยนอก', nav: '/debitop/opreport' },
     { icon: <InboxIcon />, title: 'Stock', nav: '/stock' },
     { icon: <MailIcon />, title: 'Stock Edit', nav: '/stockedit' },
     { icon: <MailIcon />, title: 'Pie Chart', nav: '/piechart' },
