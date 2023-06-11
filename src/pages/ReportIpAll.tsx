@@ -58,22 +58,14 @@ const dataIp = {
   payDebit: 0,
 }
 
-
-
 const apiUrl = import.meta.env.VITE_API_URL
 
-
-
-
 export default function ReportIpAllPage() {
-
   const [dataAccIp, setDataAccIp] = useState(dataIp)
   const [dataCaseIp, setDataCaseIp] = useState<GridRowsProp>([])
   const [dataCaseIpOfc, setDataCaseIpOfc] = useState<GridRowsProp>([])
-  const [startDate, setStartDate] = useState<Dayjs | null>(dayjs(new Date()))
-  const [endDate, setEndDate] = useState<Dayjs | null>(dayjs(new Date()))
-
- 
+  const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
+  const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
 
   const columns: GridColDef[] = [
     { field: 'hn', headerName: 'HN', width: 100 },
@@ -82,18 +74,20 @@ export default function ReportIpAllPage() {
     { field: 'fname', headerName: 'ชื่อ นามสสกุล', width: 150 },
     { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
     { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
-    { field: 'l_stay', headerName: 'วันนอน', width: 110 },
-    { field: 'cln', headerName: 'แผนก', width: 110 },
+    { field: 'l_stay', headerName: 'วันนอน', width: 70 },
+    { field: 'cln', headerName: 'แผนก', width: 130 },
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
     { field: 'outstanding', headerName: 'คงเหลือ', width: 110 },
-    { field: 'pttype_debtor', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
-    { field: 'acctype', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
+    { field: 'debtor', headerName: 'ลูกหนี้สิทธิ์', width: 150 },
   ]
 
   const onSubmit = async () => {
-    console.log({ startDate, endDate })
-    
+    console.log({ startDt, endDt })
+
+    let startDate = startDt?.format('YYYY-MM-DD')
+    let endDate = endDt?.format('YYYY-MM-DD')
+
     // IP Acc
     try {
       const responseIpAcc = await axios.post(`${apiUrl}/debitip/ipacc`, {
@@ -101,10 +95,6 @@ export default function ReportIpAllPage() {
         endDate,
       })
 
-      console.log(`${apiUrl}/debitip/ipacc`);
-      console.log({startDate});
-      console.log({endDate});
-     
       // setData(jsonData)
       console.log(responseIpAcc.data[0])
 
@@ -122,11 +112,7 @@ export default function ReportIpAllPage() {
         endDate,
       })
       // setData(jsonData)
-      console.log(`${apiUrl}/debitip/ipallcase`);
-      console.log({startDate});
-      console.log({endDate});
 
-      
       console.log(responseIp.data)
 
       setDataCaseIp(responseIp.data)
@@ -143,10 +129,6 @@ export default function ReportIpAllPage() {
         endDate,
       })
       // setData(jsonData)
-      console.log(`${apiUrl}/debitip/ipofccase`);
-      console.log({startDate});
-      console.log({endDate});
-
 
       console.log(responseIpOfc.data)
 
@@ -172,16 +154,16 @@ export default function ReportIpAllPage() {
     setValueTab(newValue)
   }
 
+  
   const dataChart = {
-    labels: ['รอดำเนินการ', 'สำเร็จ'],
+    labels: ['จ่ายตรง', 'UC ในเขต', 'UC นอกเขต', "ปกส ในเขต"],
     datasets: [
       {
-        // label: ['รอดำเนินการ', 'สำเร็จ'],
         data: [
-          dataIp.ofcCase,
-          dataIp.ucsInCase,
-          dataIp.ucsOutCase,
-          dataIp.sssInCase,
+          dataAccIp.ofcCase,
+          dataAccIp.ucsInCase,
+          dataAccIp.ucsOutCase,
+          dataAccIp.sssInCase,
         ],
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
@@ -218,15 +200,15 @@ export default function ReportIpAllPage() {
                 adapterLocale="th"
               >
                 <Stack direction={'column'} gap={2}>
-                <DatePicker
+                  <DatePicker
                     label="Start Date"
-                    value={startDate}
-                    onChange={(newValue) => setStartDate(newValue)}
+                    value={startDt}
+                    onChange={(newValue) => setStartDt(newValue)}
                   />
                   <DatePicker
                     label="End Date"
-                    value={endDate}
-                    onChange={(newValue) => setEndDate(newValue)}
+                    value={endDt}
+                    onChange={(newValue) => setEndDt(newValue)}
                   />
                   <TextField
                     label="Outlined secondary"
@@ -400,30 +382,30 @@ export default function ReportIpAllPage() {
           </TabPanel>
           <TabPanel value="2">
             <Stack direction={'row'} gap={2}>
-              {/* <Typography sx={{ marginBottom: '15px' }}>
-                {' '}
-                บัญชีลูกหนี้ ที่ดำเนินการเสร็จสิ้นแล้ว{' '}
-              </Typography>
-              <Typography>
-                จำนวน : {dataIp.ofcCase.toLocaleString('en-US')} ราย
-              </Typography>
-              <Typography>
-                ทั้งหมด :{' '}
-                {dataIp.ofcDebit === null
+              <Typography sx={{ marginBottom: '15px' }}>
+                จ่ายตรง จำนวน :{' '}
+                {dataAccIp.ofcCase === null
                   ? 0
-                  : dataIp.ofcDebit.toLocaleString('en-US')}{' '}
+                  : dataAccIp.ofcCase.toLocaleString('en-US')}{' '}
+                ราย
+              </Typography>
+              <Typography>
+                รวมค่าใช้จ่าย :{' '}
+                {dataAccIp.ofcDebit === null
+                  ? 0
+                  : dataAccIp.ofcDebit.toLocaleString('en-US')}{' '}
                 บาท
-              </Typography> */}
+              </Typography>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
-              {/* <DataGrid
+              <DataGrid
                 rows={dataCaseIpOfc}
                 columns={columns}
                 getRowId={(row) => row.an}
                 slots={{
                   toolbar: CustomToolbar,
                 }}
-              /> */}
+              />
             </Box>
           </TabPanel>
           <TabPanel value="3">

@@ -55,8 +55,8 @@ import {
     const [dataNotNull, setDataNotNull] = useState(dataNotNull0)
     const [dataCaseNotNull, setDataCaseNotNull] = useState<GridRowsProp>([])
     const [dataCaseNull, setDataCaseNull] = useState<GridRowsProp>([])
-    const [startDate, setStartDate] = useState<Dayjs | null>(dayjs(new Date()))
-    const [endDate, setEndDate] = useState<Dayjs | null>(dayjs(new Date()))
+    const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
+    const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
   
     const columns: GridColDef[] = [
       { field: 'hn', headerName: 'HN', width: 100 },
@@ -69,7 +69,7 @@ import {
       { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
       { field: 'paid', headerName: 'ชำระ', width: 110 },
       { field: 'outstanding', headerName: 'คงเหลือ', width: 110 },
-      { field: 'acctype', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
+      { field: 'debtor', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
       { field: 'repno', headerName: 'RepNo', width: 110 },
       { field: 'adjrw', headerName: 'AdjRw', width: 110 },
       { field: 'total_summary', headerName: 'ได้รับจัดสรร', width: 110 },
@@ -77,7 +77,9 @@ import {
     ]
   
     const onSubmit = async () => {
-       
+           
+    let startDate = startDt?.format('YYYY-MM-DD')
+    let endDate = endDt?.format('YYYY-MM-DD')
         // Uc Acc Null
       try {
         const responseNull = await axios.post(
@@ -190,13 +192,13 @@ import {
                   <Stack direction={'column'} gap={2}>
                     <DatePicker
                       label="Start Date"
-                      value={startDate}
-                      onChange={(newValue) => setStartDate(newValue)}
+                      value={startDt}
+                      onChange={(newValue) => setStartDt(newValue)}
                     />
                     <DatePicker
                       label="End Date"
-                      value={endDate}
-                      onChange={(newValue) => setEndDate(newValue)}
+                      value={endDt}
+                      onChange={(newValue) => setEndDt(newValue)}
                     />
                     <TextField
                       label="Outlined secondary"
