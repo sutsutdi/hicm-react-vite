@@ -42,15 +42,15 @@ export default function FsErQualityPage() {
 
   const columns: GridColDef[] = [
     { field: 'vn', headerName: 'VN', width: 100 },
-    { field: 'hn', headerName: 'HN', width: 120 },
+    { field: 'hn', headerName: 'HN', width: 100 },
     { field: 'fname', headerName: 'ชื่อ', width: 150 },
     { field: 'lname', headerName: 'นามสกุล', width: 150 },
     { field: 'dateserv', headerName: 'วันที่', width: 110 },
     { field: 'timeserv', headerName: 'เวลา', width: 110 },
-    { field: 'pttype', headerName: 'pttype', width: 110 },
-    { field: 'namepttype', headerName: 'สิทธิ์', width: 110 },
-    { field: 'inscl', headerName: 'inscl', width: 110 },
-    { field: 'triage', headerName: 'triage', width: 110 },
+    { field: 'pttype', headerName: 'pttype', width: 80 },
+    { field: 'namepttype', headerName: 'สิทธิ์', width: 200 },
+    { field: 'inscl', headerName: 'inscl', width: 80 },
+    { field: 'triage', headerName: 'triage', width: 80 },
     { field: 'nametri', headerName: 'name', width: 110 },
     { field: 'cday', headerName: 'cday', width: 110 },
   ]
@@ -58,14 +58,14 @@ export default function FsErQualityPage() {
   const onSubmit = async () => {
     console.log({ startDt, endDt })
 
-    let startDate = startDt?.format('YYYY-MM-DD')
-    let endDate = endDt?.format('YYYY-MM-DD')
+    let startDate = startDt?.format('YYYYMMDD')
+    let endDate = endDt?.format('YYYYMMDD')
 
     console.log(startDt)
     console.log(endDt)
 
     try {
-      const responseNull = await axios.post(`${apiHiUrl}/fs/erquality`, {
+      const response = await axios.post(`${apiHiUrl}/fs/erquality`, {
         startDate,
         endDate,
       })
@@ -74,15 +74,19 @@ export default function FsErQualityPage() {
       console.log(`${startDate}`)
       console.log(`${endDate}`)
 
-      console.log(responseNull.data[0])
+      console.log(response.data)
 
-      setDataCase(responseNull.data[0])
+      setDataCase(response.data)
 
       console.log(dataCase)
     } catch (error) {
       console.log('ERROR', error)
     }
   }
+   
+  const totalCases = dataCase.length
+  const totalClaim = dataCase.length*50
+
 
   const CustomToolbar = () => {
     return (
@@ -146,7 +150,7 @@ export default function FsErQualityPage() {
                     onChange={(newValue) => setEndDt(newValue)}
                   />
                   <TextField
-                    label="Outlined secondary"
+                    label="Fee Schedule"
                     color="secondary"
                     value={'Fee Schedule ER Quality'}
                     focused
@@ -165,10 +169,14 @@ export default function FsErQualityPage() {
 
         <Divider />
         <Card sx={{ width: 645, marginLeft: '50px' }}>
-          <Stack direction={'row'} gap={2} padding={'10px'}></Stack>
-
-          <Stack direction={'column'} gap={2} padding={'10px'}>
-            <Divider />
+          <Stack direction={'row'} gap={2} padding={'10px'}>
+            <Typography variant='h6'>Case ER Triage ระดับ 2-5  นอกเวลาราชการ</Typography>
+          </Stack>
+          <Divider/>
+          <Stack direction={'row'} gap={2} padding={'10px'}>
+            <Typography variant='h6'>จำนวนทั้งหมด :{' '} </Typography>           
+            <Typography variant='h6'>{ totalCases.toLocaleString('en-US')} {' '}ราย</Typography>
+            <Typography variant='h6'>Estimate Claim : {' '}{ totalClaim.toLocaleString('en-US')} {' '}บาท</Typography>
           </Stack>
         </Card>
       </Box>
@@ -182,14 +190,17 @@ export default function FsErQualityPage() {
               onChange={handleChangeTab}
               aria-label="lab API tabs example"
             >
-              <Tab label="บัญชีลูกหนี้ ระหว่างดำเนินการ" value="1" />
+              <Tab label="Case ER Triage ระดับ 2-5  นอกเวลาราชการ" value="1" />
               <Tab label="Chart" value="2" />
             </TabList>
           </Box>
           <TabPanel value="1">
             <Stack direction={'row'} gap={2}>
               <Typography sx={{ marginBottom: '15px' }}>
-                
+                 Total Cases :{''} { totalCases.toLocaleString('en-US')} {' '}ราย
+              </Typography>
+              <Typography sx={{ marginBottom: '15px' }}>
+                 Total Estimat :{''} { totalClaim.toLocaleString('en-US')} {' '}บาท
               </Typography>
               
              
@@ -198,7 +209,7 @@ export default function FsErQualityPage() {
               <DataGrid
                 rows={dataCase}
                 columns={columns}
-                getRowId={(row) => row.an}
+                getRowId={(row) => row.vn}
                 slots={{
                   toolbar: CustomToolbar,
                 }}
