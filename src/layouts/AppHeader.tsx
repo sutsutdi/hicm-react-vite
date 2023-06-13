@@ -8,6 +8,7 @@ import FullscreenIcon from '@mui/icons-material/Fullscreen'
 import { Avatar, Box, CardMedia, Paper, Tooltip } from '@mui/material'
 import { Logout, Settings } from '@mui/icons-material'
 import LogoImg from '../assets/logo.png'
+import { useEffect } from 'react'
 const drawerWidth = 240
 
 interface AppBarProps extends MuiAppBarProps {
@@ -37,8 +38,20 @@ type AppHeader = {
 }
 
 export default function AppHeader({ open, onDrawerOpen }: AppHeader) {
+  
+  useEffect(() => {
+    const element = document.documentElement
+   
+    return () => {
+      element.requestFullscreen()
+  
+    }
+  }, [])
+  
   const handleDrawerOpen = () => {
     onDrawerOpen()
+    const element = document.documentElement
+    element.requestFullscreen()
   }
 
   const handleFullscreen = () => {

@@ -49,7 +49,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   const menus = [
     { icon: <InboxIcon />, title: 'บัญชีลูกหนี้ ผู้ป่วยใน', nav: '/debitip/ipreport' },
     { icon: <InboxIcon />, title: 'บัญชีลูกหนี้ ผู้ป่วยนอก', nav: '/debitop/opreport' },
-    { icon: <InboxIcon />, title: 'Stock', nav: '/stock' },
+    { icon: <InboxIcon />, title: 'Debit Edit', nav: '/debit/edit' },
     { icon: <MailIcon />, title: 'Stock Edit', nav: '/stockedit' },
     { icon: <MailIcon />, title: 'Pie Chart', nav: '/piechart' },
     { icon: <MailIcon />, title: 'Bar Chart', nav: '/barchart' },
@@ -65,7 +65,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   ]
 
   const opMenus = [
-    { icon: <InboxIcon />, title: 'OP OFC', nav: '' },
+    { icon: <InboxIcon />, title: 'OP OFC', nav: '/opofc/report' },
     { icon: <MailIcon />, title: 'OP UCS', nav: '' },
     { icon: <MailIcon />, title: 'OP SSS', nav: '' },
     { icon: <MailIcon />, title: 'OP LGO', nav: '' },
@@ -75,10 +75,11 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
 
   const feeScheduleMenus = [
     { icon: <InboxIcon />, title: 'Telemedicine', nav: '' },
+    { icon: <MailIcon />, title: 'ER คุณภาพ', nav: '/fs/erquality' },
     { icon: <MailIcon />, title: 'Palliative', nav: '' },
     { icon: <MailIcon />, title: 'ANC', nav: '' },
     { icon: <MailIcon />, title: 'AE', nav: '' },
-    { icon: <MailIcon />, title: 'ER คุณภาพ', nav: '' },
+    
    
   ]
 

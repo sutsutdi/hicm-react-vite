@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -9,13 +9,16 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import StockEditPage from "../pages/StockEditPage";
-import StockCreatePage from "../pages/StockCreatePage";
+import DebitEditPage from "../pages/DebitEdit";
 import StockPage from "../pages/StockPage";
 import { BarChartPage } from "../pages/BarChart";
 import { PieChartPage } from "../pages/PieChart";
 import ReportIpUcPage from "../pages/ReportIpUc";
 import ReportIpOfcPage from "../pages/ReportIpOfc";
 import ReportIpAllPage from "../pages/ReportIpAll";
+import ReportOpOfcPage from "../pages/ReportOpOfc";
+import FsErQualityPage from "../pages/FsErQuality";
+
 
 
 const drawerWidth = 240;
@@ -76,9 +79,10 @@ export default function MainLayout() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/debitip/ipreport" element={<ReportIpAllPage/>} />
             <Route path="/ipofc/report" element={<ReportIpOfcPage />} />
+            <Route path="/opofc/report" element={<ReportOpOfcPage />} />
             <Route path="/ipuc/report" element={< ReportIpUcPage />} />
-            <Route path="/stockcreate" element={<StockCreatePage />} />
-            <Route path="/stockedit" element={<StockEditPage />} />
+            <Route path="/debit/edit" element={<DebitEditPage />} />
+            <Route path="/fs/erquality" element={<FsErQualityPage />} />
             <Route path="/stock" element={<StockPage />} />
             <Route path="/barchart" element={<BarChartPage/>} />
             <Route path="/piechart" element={<PieChartPage/>} />

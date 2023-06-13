@@ -173,7 +173,7 @@ import {
   
     return (
       <>
-        <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+        <Box display={'flex'} justifyContent={'center'} alignItems={'center'} marginTop={5}>
           <Card sx={{ maxWidth: 345 }}>
             <CardActionArea>
               <CardMedia

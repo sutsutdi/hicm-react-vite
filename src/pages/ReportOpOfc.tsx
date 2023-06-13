@@ -46,7 +46,7 @@ type FormValues = {
   endDate: Date
 }
 
-const dataDbipofcacc = {
+const dataDbopofcacc = {
   all_case: 0,
   debit_all: 0,
   notnull_case: 0,
@@ -63,16 +63,8 @@ const dataNull0 = {
 }
 
 const dataNotNull0 = {
-  dchdate: '2023-01-01',
   all_notnullcase: 0,
   debit_notnull: 0,
-  recieve: '',
-  sum_diff: 0,
-}
-
-const dataBydate0 = {
-  allcase: 0,
-  debit: 0,
   recieve: '',
   sum_diff: 0,
 }
@@ -109,57 +101,46 @@ type DataDabitNull = {
 
 const apiUrl = import.meta.env.VITE_API_URL
 
-export default function ReportIpOfcPage() {
+export default function ReportOpOfcPage() {
+
   const [dataNull, setDataNull] = useState(dataNull0)
   const [dataNotNull, setDataNotNull] = useState(dataNotNull0)
-  const [dataByDate, setDataByDate] = useState<GridRowsProp>([])
   const [dataCaseNotNull, setDataCaseNotNull] = useState<GridRowsProp>([])
   const [dataCaseNull, setDataCaseNull] = useState<GridRowsProp>([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
+ 
+
+
 
   const columns: GridColDef[] = [
     { field: 'hn', headerName: 'HN', width: 100 },
-    { field: 'an', headerName: 'AN', width: 120 },
     { field: 'cid', headerName: 'CID', width: 150 },
-    { field: 'fname', headerName: 'ชื่อ นามสสกุล', width: 150 },
-    { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
-    { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
-    { field: 'l_stay', headerName: 'วันนอน', width: 110 },
+    { field: 'fullname', headerName: 'ชื่อ นามสสกุล', width: 150 },
+    { field: 'visit_date', headerName: 'วันที่', width: 110 },
+    { field: 'cln', headerName: 'clinic', width: 180 },
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
     { field: 'outstanding', headerName: 'คงเหลือ', width: 110 },
-    { field: 'acctype', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
+    { field: 'debtor', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
-    { field: 'adjrw', headerName: 'AdjRw', width: 110 },
     { field: 'total_summary', headerName: 'ได้รับจัดสรร', width: 110 },
     { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
   ]
 
-  const columns2: GridColDef[] = [
-    { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
-    { field: 'allcase', headerName: 'จำนวนผู้ป่วย', width: 110 },
-    { field: 'debit', headerName: 'ค่าใช้จ่าย', width: 110 },
-    { field: 'nullcase', headerName: 'รอดำเนินการ', width: 110 },
-    { field: 'nulldebit', headerName: 'หนี้คงค้าง', width: 110 },
-    { field: 'notnullcase', headerName: 'ดำเนินการสำเร็จ', width: 110 },
-    { field: 'notnulldebit', headerName: 'ตัดหนี้รับชำระ', width: 110 },
-    { field: 'recieve', headerName: 'ยอดรวมชดเชย', width: 110 },
-    { field: 'diff', headerName: 'ผลรวมส่วนต่าง', width: 110 },
-  ]
-
   const onSubmit = async () => {
-    console.log({ startDt, endDt })
 
+    console.log({ startDt, endDt })
+    
     let startDate = startDt?.format('YYYY-MM-DD')
     let endDate = endDt?.format('YYYY-MM-DD')
-
+    
     console.log(startDt)
     console.log(endDt)
 
     // Ofc Acc null
     try {
-      const responseNull = await axios.post(`${apiUrl}/ipofc/ipofcaccnull`, {
+      const responseNull = await axios.post(`${apiUrl}/opofc/opofcaccnull`, {
         startDate,
         endDate,
       })
@@ -177,14 +158,11 @@ export default function ReportIpOfcPage() {
     // Ofc Acc Not Null
     try {
       const responseNotNull = await axios.post(
-        `${apiUrl}/ipofc/ipofcaccnotnull`,
+        `${apiUrl}/opofc/opofcaccnotnull`,
         { startDate, endDate }
       )
 
-      console.log(`${apiUrl}/ipofc/ipofcaccnotnull`)
-      console.log(`${startDate}`)
-      console.log(`${endDate}`)
-
+      
       console.log(responseNotNull.data[0])
 
       setDataNotNull(responseNotNull.data[0])
@@ -197,7 +175,7 @@ export default function ReportIpOfcPage() {
     // Null Cases
 
     try {
-      const responseCaseNull = await axios.post(`${apiUrl}/ipofc/ipofcnull`, {
+      const responseCaseNull = await axios.post(`${apiUrl}/opofc/opofcnull`, {
         startDate,
         endDate,
       })
@@ -214,51 +192,12 @@ export default function ReportIpOfcPage() {
 
     try {
       const responseCaseNotNull = await axios.post(
-        `${apiUrl}/ipofc/ipofcnotnull`,
+        `${apiUrl}/opofc/opofcnotnull`,
         { startDate, endDate }
       )
-
-      console.log(`${startDate}`)
-      console.log(`${endDate}`)
-      console.log(responseCaseNotNull.data)
+      
+         console.log(responseCaseNotNull.data)
       setDataCaseNotNull(responseCaseNotNull.data)
-    } catch (error) {
-      console.log('ERROR', error)
-    }
-
-    // Ofc Acc null
-    try {
-      const responseNull = await axios.post(`${apiUrl}/ipofc/ipofcaccnull`, {
-        startDate,
-        endDate,
-      })
-      // setData(jsonData)
-
-      console.log(responseNull.data[0])
-
-      setDataNull(responseNull.data[0])
-
-      console.log(dataNull)
-    } catch (error) {
-      console.log('ERROR', error)
-    }
-
-    // Account  by date
-    try {
-      const responseByDate = await axios.post(
-        `${apiUrl}/ipofc/ipofcaccbydate`,
-        {
-          startDate,
-          endDate,
-        }
-      )
-      // setData(jsonData)
-      console.log('acc by date')
-      console.log(responseByDate.data)
-
-      setDataByDate(responseByDate.data)
-
-      console.log(dataByDate)
     } catch (error) {
       console.log('ERROR', error)
     }
@@ -293,18 +232,14 @@ export default function ReportIpOfcPage() {
 
   return (
     <>
-      <Box
-        display={'flex'}
-        justifyContent={'center'}
-        alignItems={'center'}
-        marginTop={5}
-      >
+      <Box display={'flex'} justifyContent={'center'} alignItems={'center'} marginTop={5}>
         <Card sx={{ maxWidth: 345 }}>
           <CardActionArea>
             <CardMedia
               component={'img'}
               sx={{ height: 140, width: '100%' }}
               image={CardHeader1}
+              
               title="green iguana"
             />
 
@@ -315,7 +250,7 @@ export default function ReportIpOfcPage() {
                 // adapterLocale="th"
               >
                 <Stack direction={'column'} gap={2}>
-                  <DatePicker
+                <DatePicker
                     label="Start Date"
                     value={startDt}
                     onChange={(newValue) => setStartDt(newValue)}
@@ -328,7 +263,7 @@ export default function ReportIpOfcPage() {
                   <TextField
                     label="Outlined secondary"
                     color="secondary"
-                    value={'ผู้ป่วยใน จ่ายตรงกรมบัญชีกลาง'}
+                    value={'ผู้ป่วยนอก จ่ายตรงกรมบัญชีกลาง'}
                     focused
                   />
                 </Stack>
@@ -347,14 +282,14 @@ export default function ReportIpOfcPage() {
         <Card sx={{ width: 645, marginLeft: '50px' }}>
           <Stack direction={'row'} gap={2} padding={'10px'}>
             <Typography>
-              จำนวน :{' '}
+              จำนวน :
               {(
                 dataNull.all_nullcase + dataNotNull.all_notnullcase
               ).toLocaleString('en-US')}{' '}
             </Typography>
             <Typography>
               รอดำเนินการ : {dataNull.all_nullcase}
-              {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
+             
             </Typography>
             <Typography>
               สำเร็จ : {dataNotNull.all_notnullcase.toLocaleString('en-US')}
@@ -364,31 +299,29 @@ export default function ReportIpOfcPage() {
           <Stack direction={'column'} gap={2} padding={'10px'}>
             <Typography>
               ลูกหนี้ทั้งหมด :{' '}
-              {(dataNull.debit_null + dataNotNull.debit_notnull).toLocaleString(
+              {(Number(dataNull.debit_null) + Number(dataNotNull.debit_notnull)).toLocaleString(
                 'en-US'
               )}{' '}
               บาท
             </Typography>
             <Typography>
               ลูกหนี้ดำเนินการสำเร็จ :{' '}
-              {dataNotNull.debit_notnull === null
+              {Number(dataNotNull.debit_notnull) === null
                 ? 0
-                : dataNotNull.debit_notnull.toLocaleString('en-US')}{' '}
+                : Number(dataNotNull.debit_notnull).toLocaleString('en-US')}{' '}
               บาท
             </Typography>
             <Typography>
               ได้รับจัดสรร :{' '}
               {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
             </Typography>
-
             <Typography>
               ส่วนต่าง :{' '}
-              {dataNotNull.sum_diff === null
+              {Number(dataNotNull.sum_diff) === null
                 ? 0
-                : dataNotNull.sum_diff.toLocaleString('en-US')}{' '}
+                : Number(dataNotNull.sum_diff).toLocaleString('en-US')}{' '}
               บาท
             </Typography>
-
             <Divider />
             <Typography variant="h6">
               ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
@@ -396,9 +329,9 @@ export default function ReportIpOfcPage() {
                 ? 0
                 : dataNull.all_nullcase.toLocaleString('en-US')}{' '}
               ราย จำนวน : {/* {dataNull.debit_null.toLocaleString('en-US')} */}
-              {dataNull.debit_null === null
+              {Number(dataNull.debit_null) === null
                 ? 0
-                : dataNull.debit_null.toLocaleString('en-US')}{' '}
+                : Number(dataNull.debit_null).toLocaleString('en-US')}{' '}
               บาท
             </Typography>
           </Stack>
@@ -410,11 +343,13 @@ export default function ReportIpOfcPage() {
       <Box sx={{ width: '100%', height: '500px', typography: 'body1' }}>
         <TabContext value={valueTab}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList onChange={handleChangeTab} aria-label="Ip Ofc">
+            <TabList
+              onChange={handleChangeTab}
+              aria-label="lab API tabs example"
+            >
               <Tab label="บัญชีลูกหนี้ ระหว่างดำเนินการ" value="1" />
               <Tab label="บัญชีลูกหนี้ ที่ดำเนินการเสร็จสิ้นแล้ว" value="2" />
-              <Tab label="สรุปการตัดหนี้รายวัน" value="3" />
-              <Tab label="Chart " value="4" />
+              <Tab label="Item Three" value="3" />
             </TabList>
           </Box>
           <TabPanel value="1">
@@ -432,9 +367,9 @@ export default function ReportIpOfcPage() {
               </Typography>
               <Typography>
                 ทั้งหมด :{' '}
-                {dataNull.debit_null === null
+                {Number(dataNull.debit_null) === null
                   ? 0
-                  : dataNull.debit_null.toLocaleString('en-US')}{' '}
+                  : Number(dataNull.debit_null).toLocaleString('en-US')}{' '}
                 บาท
               </Typography>
             </Stack>{' '}
@@ -442,7 +377,7 @@ export default function ReportIpOfcPage() {
               <DataGrid
                 rows={dataCaseNull}
                 columns={columns}
-                getRowId={(row) => row.an}
+                getRowId={(row) => row.hn}
                 slots={{
                   toolbar: CustomToolbar,
                 }}
@@ -461,9 +396,9 @@ export default function ReportIpOfcPage() {
               </Typography>
               <Typography>
                 ทั้งหมด :{' '}
-                {dataNotNull.debit_notnull === null
+                {Number(dataNotNull.debit_notnull) === null
                   ? 0
-                  : dataNotNull.debit_notnull.toLocaleString('en-US')}{' '}
+                  : Number(dataNotNull.debit_notnull).toLocaleString('en-US')}{' '}
                 บาท
               </Typography>
               <Typography>
@@ -472,9 +407,9 @@ export default function ReportIpOfcPage() {
               </Typography>
               <Typography>
                 ส่วนต่าง :{' '}
-                {dataNotNull.sum_diff === null
+                {Number(dataNotNull.sum_diff) === null
                   ? 0
-                  : dataNotNull.sum_diff.toLocaleString('en-US')}{' '}
+                  : Number(dataNotNull.sum_diff).toLocaleString('en-US')}{' '}
                 บาท
               </Typography>
             </Stack>{' '}
@@ -482,7 +417,7 @@ export default function ReportIpOfcPage() {
               <DataGrid
                 rows={dataCaseNotNull}
                 columns={columns}
-                getRowId={(row) => row.an}
+                getRowId={(row) => row.hn}
                 slots={{
                   toolbar: CustomToolbar,
                 }}
@@ -490,18 +425,6 @@ export default function ReportIpOfcPage() {
             </Box>
           </TabPanel>
           <TabPanel value="3">
-            <Box style={{ height: 500, width: '100%' }}>
-              <DataGrid
-                rows={dataByDate}
-                columns={columns2}
-                getRowId={(row) => row.dchdate}
-                slots={{
-                  toolbar: CustomToolbar,
-                }}
-              />
-            </Box>
-          </TabPanel>
-          <TabPanel value="4">
             <Box
               width={'100%'}
               height={500}
