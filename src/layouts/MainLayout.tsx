@@ -18,6 +18,7 @@ import ReportIpOfcPage from "../pages/ReportIpOfc";
 import ReportIpAllPage from "../pages/ReportIpAll";
 import ReportOpOfcPage from "../pages/ReportOpOfc";
 import FsErQualityPage from "../pages/FsErQuality";
+import FsTelemedPage from "../pages/FsTelemed";
 
 
 
@@ -83,6 +84,7 @@ export default function MainLayout() {
             <Route path="/ipuc/report" element={< ReportIpUcPage />} />
             <Route path="/debit/edit" element={<DebitEditPage />} />
             <Route path="/fs/erquality" element={<FsErQualityPage />} />
+            <Route path="/fs/telemed" element={<FsTelemedPage />} />
             <Route path="/stock" element={<StockPage />} />
             <Route path="/barchart" element={<BarChartPage/>} />
             <Route path="/piechart" element={<PieChartPage/>} />

@@ -47,8 +47,16 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   }
 
   const menus = [
-    { icon: <InboxIcon />, title: 'บัญชีลูกหนี้ ผู้ป่วยใน', nav: '/debitip/ipreport' },
-    { icon: <InboxIcon />, title: 'บัญชีลูกหนี้ ผู้ป่วยนอก', nav: '/debitop/opreport' },
+    {
+      icon: <InboxIcon />,
+      title: 'บัญชีลูกหนี้ ผู้ป่วยใน',
+      nav: '/debitip/ipreport',
+    },
+    {
+      icon: <InboxIcon />,
+      title: 'บัญชีลูกหนี้ ผู้ป่วยนอก',
+      nav: '/debitop/opreport',
+    },
     { icon: <InboxIcon />, title: 'Debit Edit', nav: '/debit/edit' },
     { icon: <MailIcon />, title: 'Stock Edit', nav: '/stockedit' },
     { icon: <MailIcon />, title: 'Pie Chart', nav: '/piechart' },
@@ -74,20 +82,28 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   ]
 
   const feeScheduleMenus = [
-    { icon: <InboxIcon />, title: 'Telemedicine', nav: '' },
+    { icon: <InboxIcon />, title: 'Telemedicine', nav: '/fs/telemed' },
     { icon: <MailIcon />, title: 'ER คุณภาพ', nav: '/fs/erquality' },
     { icon: <MailIcon />, title: 'Palliative', nav: '' },
     { icon: <MailIcon />, title: 'ANC', nav: '' },
     { icon: <MailIcon />, title: 'AE', nav: '' },
-    
-   
+  ]
+
+  const checkReportMenus = [
+    { icon: <InboxIcon />, title: 'รายงานการใช้ยารายคน', nav: '/fs/telemed' },
+    { icon: <MailIcon />, title: 'ER คุณภาพ', nav: '/fs/erquality' },
+    { icon: <MailIcon />, title: 'Palliative', nav: '' },
+    { icon: <MailIcon />, title: 'ANC', nav: '' },
+    { icon: <MailIcon />, title: 'AE', nav: '' },
   ]
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null)
+  const [anchorEl3, setAnchorEl3] = React.useState<null | HTMLElement>(null)
 
   const openMenu = Boolean(anchorEl)
   const openMenu2 = Boolean(anchorEl2)
+  const openMenu3 = Boolean(anchorEl3)
 
   // Debit-statment
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -104,6 +120,15 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   const handleClose2 = () => {
     setAnchorEl2(null)
   }
+
+   // check report Menu
+   const handleClick3 = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl3(event.currentTarget)
+  }
+  const handleClose3 = () => {
+    setAnchorEl3(null)
+  }
+
 
   const navigate = useNavigate()
 
@@ -147,6 +172,8 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
           <ListItemText primary={'Fee Schedule'} />
         </ListItemButton>
       </List>
+
+
       {/* // debit statement */}
       <Menu
         anchorEl={anchorEl}
@@ -204,10 +231,10 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
         ))}
       </Menu>
 
-      {/* fee schedule */}
+      {/*fee Schedule */}
       <Menu
         anchorEl={anchorEl2}
-        id="fee-schedule-menu"
+        id="fee scehdule-menu"
         open={openMenu2}
         onClose={handleClose2}
         onClick={handleClose2}
@@ -248,13 +275,71 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
             </ListItemButton>
           </ListItem>
         ))}
+      </Menu>
+
      
 
-          
+      <Divider />
+      <List>
+        <ListItem disablePadding>
+          <ListItemButton onClick={handleClick3}>
+            <ListItemIcon>
+              <SummarizeIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Check Reports'} />
+          </ListItemButton>
+        </ListItem>
+      
+      </List>
+
+       {/*checek report */}
+       <Menu
+        anchorEl={anchorEl3}
+        id="fee scehdule-menu"
+        open={openMenu3}
+        onClose={handleClose3}
+        onClick={handleClose3}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        {checkReportMenus.map((menu, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton onClick={() => navigate(menu.nav)}>
+              <ListItemIcon>{menu.icon}</ListItemIcon>
+              <ListItemText primary={menu.title} />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </Menu>
 
 
-      <Divider />
+      <Divider/>
       <Box>
         <List>
           {menus.map((menu, index) => (

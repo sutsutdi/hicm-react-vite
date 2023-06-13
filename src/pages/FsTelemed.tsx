@@ -19,7 +19,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import 'dayjs/locale/th'
 import dayjs, { Dayjs } from 'dayjs'
-import CardHeader1 from '../assets/amy.jpg'
+import CardHeader1 from '../assets/telemed.webp'
 import {
   DataGrid,
   GridRowsProp,
@@ -35,59 +35,69 @@ import { Pie } from 'react-chartjs-2'
 
 const apiHiUrl = import.meta.env.VITE_API_HI_URL
 
-export default function ReportIpOfcPage() {
-
+export default function FsTelemedPage() {
   const [dataCase, setDataCase] = useState<GridRowsProp>([])
+  const [dataGroup, setDataGroup] = useState<GridRowsProp>([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
 
   const columns: GridColDef[] = [
+    { field: 'vn', headerName: 'VN', width: 100 },
     { field: 'hn', headerName: 'HN', width: 100 },
-    { field: 'vn', headerName: 'VN', width: 120 },
-    { field: 'cid', headerName: 'CID', width: 150 },
-    { field: 'fname', headerName: 'ชื่อ นามสสกุล', width: 150 },
-    { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
-    { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
-    { field: 'l_stay', headerName: 'วันนอน', width: 110 },
-    { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
-    { field: 'paid', headerName: 'ชำระ', width: 110 },
-    { field: 'outstanding', headerName: 'คงเหลือ', width: 110 },
-    { field: 'acctype', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
-    { field: 'repno', headerName: 'RepNo', width: 110 },
-    { field: 'adjrw', headerName: 'AdjRw', width: 110 },
-    { field: 'total_summary', headerName: 'ได้รับจัดสรร', width: 110 },
-    { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
+    { field: 'fname', headerName: 'ชื่อ', width: 150 },
+    { field: 'lname', headerName: 'นามสกุล', width: 150 },
+    { field: 'date_serv', headerName: 'วันที่', width: 110 },
+    { field: 'time_serv', headerName: 'เวลา', width: 110 },
+    { field: 'pttype', headerName: 'pttype', width: 80 },
+    { field: 'namepttype', headerName: 'สิทธิ์', width: 200 },
+    { field: 'inscl', headerName: 'inscl', width: 80 },
+    { field: 'cln', headerName: 'cln', width: 110 },
+    { field: 'namecln', headerName: 'clinic', width: 200 },
+    { field: 'icd10', headerName: 'icd10', width: 80 },
+    { field: 'service', headerName: 'service', width: 80 },
+    { field: 'provider', headerName: 'dct', width: 110 },
   ]
 
   const onSubmit = async () => {
     console.log({ startDt, endDt })
 
-    let startDate = startDt?.format('YYYY-MM-DD')
-    let endDate = endDt?.format('YYYY-MM-DD')
+    let startDate = startDt?.format('YYYYMMDD')
+    let endDate = endDt?.format('YYYYMMDD')
 
     console.log(startDt)
     console.log(endDt)
 
-    // Telemed
     try {
-      const responseCase = await axios.post(`${apiHiUrl}/fs/telemed`, {
+      const response = await axios.post(`${apiHiUrl}/fs/telemed`, {
         startDate,
         endDate,
       })
       // setData(jsonData)
 
-      console.log(`${startDate}`)
-      console.log(`${endDate}`)
-
-      console.log(responseCase.data)
-
-      setDataCase(responseCase.data)
+      setDataCase(response.data)
 
       console.log(dataCase)
     } catch (error) {
       console.log('ERROR', error)
     }
+
+    try {
+      const response = await axios.post(`${apiHiUrl}/fs/telemedsum`, {
+        startDate,
+        endDate,
+      })
+      // setData(jsonData)
+
+      setDataGroup(response.data)
+
+      console.log(dataGroup)
+    } catch (error) {
+      console.log('ERROR', error)
+    }
   }
+
+  const totalCases = dataCase.length
+  const totalClaim = dataCase.length * 50
 
   const CustomToolbar = () => {
     return (
@@ -102,15 +112,18 @@ export default function ReportIpOfcPage() {
   const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValueTab(newValue)
   }
+  
+  const names = dataGroup.map(item => item.namecln);
+  const counts = dataGroup.map(item => item["count(vn)"]);
+
 
   const dataChart = {
-    labels: ['รอดำเนินการ', 'สำเร็จ'],
+    labels: names,
     datasets: [
       {
-        // label: ['รอดำเนินการ', 'สำเร็จ'],
-        data: [1, 2],
-        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
-        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+        data: counts,
+        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)','rgba(23, 206, 60, 0.2)','rgba(245, 58, 205, 0.2)','rgba(195, 58, 245,0.2)','rgba(43, 29, 236,0.2)'],
+        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)','rgba(23, 206, 60)','rgba(245, 58, 205)','rgba(195, 58, 245, 1)','rgba(43, 29, 236, 1)'],
         borderWidth: 1,
       },
     ],
@@ -130,7 +143,7 @@ export default function ReportIpOfcPage() {
               component={'img'}
               sx={{ height: 140, width: '100%' }}
               image={CardHeader1}
-              title="green iguana"
+              title="telemedicine"
             />
 
             <CardContent>
@@ -151,9 +164,9 @@ export default function ReportIpOfcPage() {
                     onChange={(newValue) => setEndDt(newValue)}
                   />
                   <TextField
-                    label="Outlined secondary"
+                    label="Fee Schedule"
                     color="secondary"
-                    value={'ผู้ป่วย Telemedicine'}
+                    value={'Fee Schedule Telemedicine'}
                     focused
                   />
                 </Stack>
@@ -171,23 +184,18 @@ export default function ReportIpOfcPage() {
         <Divider />
         <Card sx={{ width: 645, marginLeft: '50px' }}>
           <Stack direction={'row'} gap={2} padding={'10px'}>
-            <Typography>
-              จำนวน :{' '}
-             
-            </Typography>
-    
-          </Stack>
-
-          <Stack direction={'column'} gap={2} padding={'10px'}>
-           
-           
-            <Divider />
             <Typography variant="h6">
-              ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
-              
-              ราย จำนวน : {/* {dataNull.debit_null.toLocaleString('en-US')} */}
-              {' '}
-              บาท
+              Case Telemedicine
+            </Typography>
+          </Stack>
+          <Divider />
+          <Stack direction={'row'} gap={2} padding={'10px'}>
+            <Typography variant="h6">จำนวนทั้งหมด : </Typography>
+            <Typography variant="h6">
+              {totalCases.toLocaleString('en-US')} ราย
+            </Typography>
+            <Typography variant="h6">
+              Estimate Claim : {totalClaim.toLocaleString('en-US')} บาท
             </Typography>
           </Stack>
         </Card>
@@ -203,23 +211,30 @@ export default function ReportIpOfcPage() {
               aria-label="lab API tabs example"
             >
               <Tab label="Case Telemedicine" value="1" />
-              <Tab label="Item Three" value="2" />
+              <Tab label="Chart" value="2" />
             </TabList>
           </Box>
           <TabPanel value="1">
-            
+            <Stack direction={'row'} gap={2}>
+              <Typography sx={{ marginBottom: '15px' }}>
+                Total Cases :{''} {totalCases.toLocaleString('en-US')} ราย
+              </Typography>
+              <Typography sx={{ marginBottom: '15px' }}>
+                Total Estimat :{''} {totalClaim.toLocaleString('en-US')} บาท
+              </Typography>
+            </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={dataCase}
                 columns={columns}
-                getRowId={(row) => row.an}
+                getRowId={(row) => row.vn}
                 slots={{
                   toolbar: CustomToolbar,
                 }}
               />
             </Box>
           </TabPanel>
-      
+
           <TabPanel value="2">
             <Box
               width={'100%'}
