@@ -24,7 +24,7 @@ const theme = createTheme(
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <ThemeProvider theme={theme}>
-    <BrowserRouter>
+    <BrowserRouter basename={'/test'}>
       <CssBaseline />
       
         <App />

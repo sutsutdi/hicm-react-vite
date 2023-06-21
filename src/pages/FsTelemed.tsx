@@ -31,7 +31,16 @@ import {
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
-import { Pie } from 'react-chartjs-2'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Pie, Bar } from 'react-chartjs-2'
 
 const apiHiUrl = import.meta.env.VITE_API_HI_URL
 
@@ -82,10 +91,7 @@ export default function FsTelemedPage() {
     }
 
     try {
-      const response = await axios.post(`${apiHiUrl}/fs/telemedsum`, {
-        startDate,
-        endDate,
-      })
+      const response = await axios.get(`${apiHiUrl}/fs/telemedsum`, )
       // setData(jsonData)
 
       setDataGroup(response.data)
@@ -94,6 +100,8 @@ export default function FsTelemedPage() {
     } catch (error) {
       console.log('ERROR', error)
     }
+
+    console.log(dataGroup)
   }
 
   const totalCases = dataCase.length
@@ -112,22 +120,45 @@ export default function FsTelemedPage() {
   const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValueTab(newValue)
   }
-  
-  const names = dataGroup.map(item => item.namecln);
-  const counts = dataGroup.map(item => item["count(vn)"]);
 
 
-  const dataChart = {
-    labels: names,
-    datasets: [
-      {
-        data: counts,
-        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)','rgba(23, 206, 60, 0.2)','rgba(245, 58, 205, 0.2)','rgba(195, 58, 245,0.2)','rgba(43, 29, 236,0.2)'],
-        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)','rgba(23, 206, 60)','rgba(245, 58, 205)','rgba(195, 58, 245, 1)','rgba(43, 29, 236, 1)'],
-        borderWidth: 1,
+    const months = dataGroup.map((item) => item.month)
+    const counts = dataGroup.map((item) => item.case_count)
+     
+    
+    ChartJS.register(
+      CategoryScale,
+      LinearScale,
+      BarElement,
+      Title,
+      Tooltip,
+      Legend
+    )
+
+    const options = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top' as const,
+        },
+        title: {
+          display: true,
+          text: 'Chart.js Bar Chart',
+        },
       },
-    ],
-  }
+    }
+
+    const dataChart = {
+      datasets: [
+        {
+          labels: months,
+          data: counts,
+          backgroundColor: ['rgba(255, 99, 132, 0.2)'],
+          borderColor: ['rgba(255, 99, 132, 1)'],
+          borderWidth: 1,
+        },
+      ],
+    }
 
   return (
     <>
@@ -184,9 +215,7 @@ export default function FsTelemedPage() {
         <Divider />
         <Card sx={{ width: 645, marginLeft: '50px' }}>
           <Stack direction={'row'} gap={2} padding={'10px'}>
-            <Typography variant="h6">
-              Case Telemedicine
-            </Typography>
+            <Typography variant="h6">Case Telemedicine</Typography>
           </Stack>
           <Divider />
           <Stack direction={'row'} gap={2} padding={'10px'}>
@@ -243,7 +272,7 @@ export default function FsTelemedPage() {
               alignItems={'center'}
               justifyContent={'center'}
             >
-              <Pie data={dataChart} />
+              <Bar options={options} data={dataChart} />
             </Box>
           </TabPanel>
         </TabContext>
