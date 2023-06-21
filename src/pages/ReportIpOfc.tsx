@@ -68,6 +68,8 @@ const dataNotNull0 = {
   debit_notnull: 0,
   recieve: '',
   sum_diff: 0,
+  diffloss: 0,
+  diffgain: 0,
 }
 
 const dataBydate0 = {
@@ -92,20 +94,7 @@ type DataDabitNotNull = {
   diff: number
 }
 
-type DataDabitNull = {
-  hn: string
-  an: string
-  cid: string
-  fname: string
-  admitdate: string
-  dchdate: string
-  charge: string
-  paid: string
-  outstanding: string
-  repno: string
-  total_summary: string
-  diff: 0
-}
+
 
 const apiUrl = import.meta.env.VITE_API_URL
 
@@ -381,14 +370,29 @@ export default function ReportIpOfcPage() {
               {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
             </Typography>
 
-            <Typography>
-              ส่วนต่าง :{' '}
-              {dataNotNull.sum_diff === null
-                ? 0
-                : dataNotNull.sum_diff.toLocaleString('en-US')}{' '}
-              บาท
-            </Typography>
-
+            <Stack direction={'row'} gap={2}>
+              <Typography>
+                ส่วนต่าง :{' '}
+                {dataNotNull.sum_diff === null
+                  ? 0
+                  : dataNotNull.sum_diff.toLocaleString('en-US')}{' '}
+                บาท
+              </Typography>
+              <Typography>
+                ส่วนต่างค่าใช้จ่ายเกิน :{' '}
+                {dataNotNull.diffloss === null
+                  ? 0
+                  : dataNotNull.diffloss.toLocaleString('en-US')}{' '}
+                บาท
+              </Typography>
+              <Typography>
+                ส่วนต่างเบิกได้เกิน :{' '}
+                {dataNotNull.diffgain === null
+                  ? 0
+                  : dataNotNull.diffgain.toLocaleString('en-US')}{' '}
+                บาท
+              </Typography>
+            </Stack>
             <Divider />
             <Typography variant="h6">
               ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
@@ -470,13 +474,30 @@ export default function ReportIpOfcPage() {
                 ได้รับจัดสรร :{' '}
                 {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
               </Typography>
-              <Typography>
-                ส่วนต่าง :{' '}
-                {dataNotNull.sum_diff === null
-                  ? 0
-                  : dataNotNull.sum_diff.toLocaleString('en-US')}{' '}
-                บาท
-              </Typography>
+
+              <Stack direction={'row'} gap={2}>
+                <Typography>
+                  ส่วนต่าง :{' '}
+                  {dataNotNull.sum_diff === null
+                    ? 0
+                    : dataNotNull.sum_diff.toLocaleString('en-US')}{' '}
+                  บาท
+                </Typography>
+                <Typography>
+                  ส่วนต่างค่าใช้จ่ายเกิน :{' '}
+                  {dataNotNull.diffloss === null
+                    ? 0
+                    : dataNotNull.diffloss.toLocaleString('en-US')}{' '}
+                  บาท
+                </Typography>
+                <Typography>
+                  ส่วนต่างเบิกได้เกิน :{' '}
+                  {dataNotNull.diffgain === null
+                    ? 0
+                    : dataNotNull.diffgain.toLocaleString('en-US')}{' '}
+                  บาท
+                </Typography>
+              </Stack>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
