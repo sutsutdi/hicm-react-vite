@@ -32,6 +32,7 @@ import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
 import { Pie } from 'react-chartjs-2'
+import { red } from '@mui/material/colors'
 
 type DataType = {
   startDt: Date
@@ -109,17 +110,17 @@ export default function ReportIpOfcPage() {
     { field: 'hn', headerName: 'HN', width: 100 },
     { field: 'an', headerName: 'AN', width: 120 },
     { field: 'cid', headerName: 'CID', width: 150 },
-    { field: 'fname', headerName: 'ชื่อ นามสสกุล', width: 150 },
+    { field: 'fullname', headerName: 'ชื่อ นามสสกุล', width: 150 },
     { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
     { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
     { field: 'l_stay', headerName: 'วันนอน', width: 110 },
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
-    { field: 'outstanding', headerName: 'คงเหลือ', width: 110 },
-    { field: 'acctype', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
+    { field: 'debt', headerName: 'คงเหลือ', width: 110 },
+    { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 260 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
     { field: 'adjrw', headerName: 'AdjRw', width: 110 },
-    { field: 'total_summary', headerName: 'ได้รับจัดสรร', width: 110 },
+    { field: 'total_summary', headerName: 'ได้รับชดเชย', width: 110 },
     { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
   ]
 
@@ -340,22 +341,22 @@ export default function ReportIpOfcPage() {
             <Typography>
               จำนวน :{' '}
               {(
-                dataNull.all_nullcase + dataNotNull.all_notnullcase
+                Number(dataNull.all_nullcase + dataNotNull.all_notnullcase)
               ).toLocaleString('en-US')}{' '}
             </Typography>
             <Typography>
-              รอดำเนินการ : {dataNull.all_nullcase}
+              รอดำเนินการ : {Number(dataNull.all_nullcase)}
               {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
             </Typography>
             <Typography>
-              สำเร็จ : {dataNotNull.all_notnullcase.toLocaleString('en-US')}
+              สำเร็จ : {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}
             </Typography>
           </Stack>
 
           <Stack direction={'column'} gap={2} padding={'10px'}>
             <Typography>
               ลูกหนี้ทั้งหมด :{' '}
-              {(dataNull.debit_null + dataNotNull.debit_notnull).toLocaleString(
+              {(Number(dataNull.debit_null) + Number(dataNotNull.debit_notnull)).toLocaleString(
                 'en-US'
               )}{' '}
               บาท
@@ -364,11 +365,11 @@ export default function ReportIpOfcPage() {
               ลูกหนี้ดำเนินการสำเร็จ :{' '}
               {dataNotNull.debit_notnull === null
                 ? 0
-                : dataNotNull.debit_notnull.toLocaleString('en-US')}{' '}
+                : Number(dataNotNull.debit_notnull).toLocaleString('en-US')}{' '}
               บาท
             </Typography>
             <Typography>
-              ได้รับจัดสรร :{' '}
+              ได้รับชดเชย :{' '}
               {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
             </Typography>
 
@@ -387,7 +388,7 @@ export default function ReportIpOfcPage() {
                   : dataNotNull.diffloss.toLocaleString('en-US')}{' '}
                 บาท
               </Typography>
-              <Typography>
+              <Typography color={'red'}>
                 ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
                 {dataNotNull.diffgain === null
                   ? 0
@@ -400,11 +401,11 @@ export default function ReportIpOfcPage() {
               ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
               {dataNull.all_nullcase === null
                 ? 0
-                : dataNull.all_nullcase.toLocaleString('en-US')}{' '}
+                : Number(dataNull.all_nullcase).toLocaleString('en-US')}{' '}
               ราย จำนวน : {/* {dataNull.debit_null.toLocaleString('en-US')} */}
               {dataNull.debit_null === null
                 ? 0
-                : dataNull.debit_null.toLocaleString('en-US')}{' '}
+                : Number(dataNull.debit_null).toLocaleString('en-US')}{' '}
               บาท
             </Typography>
           </Stack>
@@ -473,7 +474,7 @@ export default function ReportIpOfcPage() {
                 บาท
               </Typography>
               <Typography>
-                ได้รับจัดสรร :{' '}
+                ได้รับชดเชย :{' '}
                 {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
               </Typography>
 
