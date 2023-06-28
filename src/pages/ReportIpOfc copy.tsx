@@ -148,12 +148,11 @@ export default function ReportIpOfcPage() {
 
 
     // Ofc Acc null
-   
-
     try {
-      let url1 = `SELECT d.hn,d.an,d.cid,d.fname,d.acc_code FROM debit_ip as d WHERE  acc_code =  'ลูกหนี้ค่ารักษา เบิกจ่ายตรงกรมบัญชีกลาง' limit 20 `
-
-      const responseNull = await axios.get(url1)
+      const responseNull = await axios.post(`${apiUrl}/ipofc/ipofcaccnull`, {
+        startDate,
+        endDate,
+      })
       // setData(jsonData)
 
       console.log(responseNull.data[0])
