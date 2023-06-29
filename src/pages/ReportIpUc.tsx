@@ -9,9 +9,10 @@ import {
   Divider,
   Stack,
   Tab,
-  Tabs,
   TextField,
+  CircularProgress,
 } from '@mui/material'
+
 import axios from 'axios'
 import { useState } from 'react'
 import { Typography } from '@mui/material'
@@ -32,6 +33,7 @@ import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
 import { Pie } from 'react-chartjs-2'
+import { green } from '@mui/material/colors'
 
 const dataNull0 = {
   all_nullcase: 0,
@@ -89,9 +91,24 @@ export default function ReportIpUcPage() {
     { field: 'diff', headerName: 'ผลรวมส่วนต่าง', width: 110 },
   ]
 
+  const resetValue = () => {
+    setDataNull(dataNull0)
+    setDataNotNull(dataNotNull0)
+    setDataByDate([])
+    setDataCaseNotNull([])
+    setDataCaseNull([])
+  }
+
+  const [isLoading, setIsLoading] = useState(false)
+  
+
   const onSubmit = async () => {
+    resetValue()
+
     let startDate = startDt?.format('YYYY-MM-DD')
     let endDate = endDt?.format('YYYY-MM-DD')
+
+    setIsLoading(true)
     // Uc Acc Null
     try {
       const responseNull = await axios.post(`${apiUrl}/ipuc/ipucaccnull`, {
@@ -170,6 +187,9 @@ export default function ReportIpUcPage() {
     } catch (error) {
       console.log('ERROR', error)
     }
+
+    setIsLoading(false)
+  
   }
 
   const CustomToolbar = () => {
@@ -252,108 +272,145 @@ export default function ReportIpUcPage() {
         </Card>
 
         <Divider />
-        <Card sx={{ width: 645, marginLeft: '50px' }}>
-          {/* <Box padding={4}>
-              <Typography>ลูกหนี้ ผู้ป่วยใน จ่ายตรง</Typography>
-            </Box> */}
-          <Stack direction={'row'} gap={2} padding={'10px'}>
-            <Typography>
-              จำนวน :{' '}
-              {(
-                Number(dataNull.all_nullcase) +
-                Number(dataNotNull.all_notnullcase)
-              ).toLocaleString('en-US')}{' '}
-              ราย
-            </Typography>
-            <Typography>
-              รอดำเนินการ :{' '}
-              {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [{''}
-              {(
-                (Number(dataNull.all_nullcase) * 100) /
-                (Number(dataNull.all_nullcase) +
-                  Number(dataNotNull.all_notnullcase))
-              ).toLocaleString('en-US', {
-                minimumIntegerDigits: 1,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-              {''}%]
-              {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
-            </Typography>
-            <Typography>
-              สำเร็จ :{' '}
-              {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')} ราย{' '}
-              [{''}
-              {(
-                (Number(dataNotNull.all_notnullcase) * 100) /
-                (Number(dataNull.all_nullcase) +
-                  Number(dataNotNull.all_notnullcase))
-              ).toLocaleString('en-US', {
-                minimumIntegerDigits: 1,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-              {''}%]
-            </Typography>
-          </Stack>
 
-          <Stack direction={'column'} gap={2} padding={'10px'}>
-            <Typography>
-              ลูกหนี้ทั้งหมด :{' '}
-              {(
-                Number(dataNull.debit_null) + Number(dataNotNull.debit_notnull)
-              ).toLocaleString('en-US')}{' '}
-              บาท
-            </Typography>
-            <Typography>
-              ลูกหนี้ดำเนินการสำเร็จ :{' '}
-              {dataNotNull.debit_notnull === null
-                ? 0
-                : Number(dataNotNull.debit_notnull).toLocaleString(
-                    'en-US'
-                  )}{' '}
-              บาท
-            </Typography>
-            <Typography>
-              ได้รับชดเชย :{' '}
-              {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
-            </Typography>
-            <Stack direction={'column'} gap={2}>
-              <Typography>
-                ส่วนต่าง ค่ารักษา :{' '}
-                {dataNotNull.sum_diff === null
-                  ? 0
-                  : Number(dataNotNull.sum_diff).toLocaleString('en-US')}{' '}
-                บาท
-              </Typography>
-              <Typography>
-                ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
-                {dataNotNull.diffloss === null
-                  ? 0
-                  : Number(dataNotNull.diffloss).toLocaleString('en-US')}{' '}
-                บาท
-              </Typography>
-              <Typography color={'red'}>
-                ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
-                {dataNotNull.diffgain === null
-                  ? 0
-                  : Number(dataNotNull.diffgain).toLocaleString('en-US')}{' '}
-                บาท
-              </Typography>
-            </Stack>
-            <Divider />
-            <Typography variant="h6">
-              ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
-              {dataNull.all_nullcase === null
-                ? 0
-                : Number(dataNull.all_nullcase).toLocaleString('en-US')}{' '}
-              ราย จำนวน : {/* {dataNull.debit_null.toLocaleString('en-US')} */}
-              {dataNull.debit_null === null
-                ? 0
-                : Number(dataNull.debit_null).toLocaleString('en-US')}{' '}
-              บาท
-            </Typography>
-          </Stack>
+        <Card sx={{ width: 645, marginLeft: '50px' }}>
+          {isLoading ? (
+            <Box sx={{ m: 1, position: 'relative' }} height={90}>
+              <Button
+                variant="contained"
+                sx={{
+                  bgcolor: green[500],
+                }}
+                
+              >
+                Please Wait !!
+              </Button>
+              {isLoading && (
+                <CircularProgress
+                  size={54}
+                  sx={{
+                    color: green[500],
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-12px',
+                    marginLeft: '-12px',
+                  }}
+                />
+              )}
+            </Box>
+          ) : (
+            <Box>
+              <Stack direction={'row'} gap={2} padding={'10px'}>
+                <Typography>
+                  จำนวน :{' '}
+                  {(
+                    Number(dataNull.all_nullcase) +
+                    Number(dataNotNull.all_notnullcase)
+                  ).toLocaleString('en-US')}{' '}
+                  ราย
+                </Typography>
+                <Typography>
+                  รอดำเนินการ :{' '}
+                  {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [
+                  {''}
+                  {(
+                    (Number(dataNull.all_nullcase) * 100) /
+                    (Number(dataNull.all_nullcase) +
+                      Number(dataNotNull.all_notnullcase))
+                  ).toLocaleString('en-US', {
+                    minimumIntegerDigits: 1,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  {''}%]
+                  {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
+                </Typography>
+                <Typography>
+                  สำเร็จ :{' '}
+                  {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
+                  ราย [{''}
+                  {(
+                    (Number(dataNotNull.all_notnullcase) * 100) /
+                    (Number(dataNull.all_nullcase) +
+                      Number(dataNotNull.all_notnullcase))
+                  ).toLocaleString('en-US', {
+                    minimumIntegerDigits: 1,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  {''}%]
+                </Typography>
+              </Stack>
+              <Stack direction={'column'} gap={2} padding={'10px'}>
+                <Typography>
+                  ลูกหนี้ทั้งหมด :{' '}
+                  {(
+                    Number(dataNull.debit_null) +
+                    Number(dataNotNull.debit_notnull)
+                  ).toLocaleString('en-US')}{' '}
+                  บาท
+                </Typography>
+                <Typography>
+                  ลูกหนี้ดำเนินการสำเร็จ :{' '}
+                  {dataNotNull.debit_notnull === null
+                    ? 0
+                    : Number(dataNotNull.debit_notnull).toLocaleString(
+                        'en-US'
+                      )}{' '}
+                  บาท
+                </Typography>
+                <Typography>
+                  ได้รับชดเชย :{' '}
+                  {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
+                </Typography>
+                <Stack direction={'column'} gap={2}>
+                  <Typography>
+                    ส่วนต่าง ค่ารักษา :{' '}
+                    {dataNotNull.sum_diff === null
+                      ? 0
+                      : Number(dataNotNull.sum_diff).toLocaleString(
+                          'en-US'
+                        )}{' '}
+                    บาท
+                  </Typography>
+                  <Typography>
+                    ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
+                    {dataNotNull.diffloss === null
+                      ? 0
+                      : Number(dataNotNull.diffloss).toLocaleString(
+                          'en-US'
+                        )}{' '}
+                    บาท
+                  </Typography>
+                  <Typography color={'red'}>
+                    ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
+                    {dataNotNull.diffgain === null
+                      ? 0
+                      : Number(dataNotNull.diffgain).toLocaleString(
+                          'en-US'
+                        )}{' '}
+                    บาท
+                  </Typography>
+                </Stack>
+                <Divider />
+                <Typography variant="h6">
+                  ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
+                  {dataNull.all_nullcase === null
+                    ? 0
+                    : Number(dataNull.all_nullcase).toLocaleString(
+                        'en-US'
+                      )}{' '}
+                  ราย จำนวน :{' '}
+                  {/* {dataNull.debit_null.toLocaleString('en-US')} */}
+                  {dataNull.debit_null === null
+                    ? 0
+                    : Number(dataNull.debit_null).toLocaleString('en-US')}{' '}
+                  บาท
+                </Typography>
+              </Stack>
+            </Box>
+          )}
         </Card>
       </Box>
 
@@ -466,17 +523,16 @@ export default function ReportIpUcPage() {
               alignItems={'center'}
               justifyContent={'center'}
             >
-             
               <Stack direction={'column'} gap={2} padding={'10px'}>
-                <Typography variant='body2'>
+                <Typography variant="body2">
                   จำนวน :{' '}
                   {(
                     Number(dataNull.all_nullcase) +
                     Number(dataNotNull.all_notnullcase)
                   ).toLocaleString('en-US')}{' '}
                   ราย
-                </Typography >
-                <Typography variant='body2'>
+                </Typography>
+                <Typography variant="body2">
                   รอดำเนินการ :{' '}
                   {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [
                   {''}
@@ -492,7 +548,7 @@ export default function ReportIpUcPage() {
                   {''}%]
                   {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
                 </Typography>
-                <Typography variant='body2'>
+                <Typography variant="body2">
                   สำเร็จ :{' '}
                   {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
                   ราย [{''}
@@ -508,11 +564,10 @@ export default function ReportIpUcPage() {
                   {''}%]
                 </Typography>
               </Stack>
-              <Box> <Pie data={dataChart}/></Box>
-             
-             
-             
-              
+              <Box>
+                {' '}
+                <Pie data={dataChart} />
+              </Box>
             </Box>
           </TabPanel>
         </TabContext>
