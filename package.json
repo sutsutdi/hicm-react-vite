@@ -19,6 +19,7 @@
     "@mui/material": "^5.13.3",
     "@mui/x-data-grid": "^6.6.0",
     "@mui/x-date-pickers": "^6.6.0",
+    "@reduxjs/toolkit": "^1.9.5",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.4.0",
     "chart.js": "^4.3.0",
@@ -28,6 +29,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.44.3",
+    "react-redux": "^8.1.1",
     "react-router-dom": "^6.11.2",
     "screenfull": "^6.0.2"
   },

@@ -9,9 +9,10 @@ import {
   Divider,
   Stack,
   Tab,
-  Tabs,
   TextField,
+  CircularProgress,
 } from '@mui/material'
+
 import axios from 'axios'
 import { useState } from 'react'
 import { Typography } from '@mui/material'
@@ -32,30 +33,7 @@ import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
 import { Pie } from 'react-chartjs-2'
-
-type DataType = {
-  startDt: Date
-  endDate: Date
-  firstName: string
-  category: string
-  aboutYou: string
-}
-
-type FormValues = {
-  startDt: Date
-  endDate: Date
-}
-
-const dataDbopofcacc = {
-  all_case: 0,
-  debit_all: 0,
-  notnull_case: 0,
-  null_case: 0,
-  debit_null: 0,
-  debit_notnull: 0,
-  recieve: '',
-  sum_diff: 0,
-}
+import { green } from '@mui/material/colors'
 
 const dataNull0 = {
   all_nullcase: 0,
@@ -63,89 +41,77 @@ const dataNull0 = {
 }
 
 const dataNotNull0 = {
+  dchdate: '2023-01-01',
   all_notnullcase: 0,
   debit_notnull: 0,
   recieve: '',
   sum_diff: 0,
-}
-
-type DataDabitNotNull = {
-  hn: string
-  an: string
-  cid: string
-  fname: string
-  admitdate: string
-  dchdate: string
-  charge: string
-  paid: string
-  outstanding: string
-  repno: string
-  total_summary: string
-  diff: number
-}
-
-type DataDabitNull = {
-  hn: string
-  an: string
-  cid: string
-  fname: string
-  admitdate: string
-  dchdate: string
-  charge: string
-  paid: string
-  outstanding: string
-  repno: string
-  total_summary: string
-  diff: 0
+  diffloss: 0,
+  diffgain: 0,
 }
 
 const apiUrl = import.meta.env.VITE_API_URL
 
 export default function ReportOpOfcPage() {
-
   const [dataNull, setDataNull] = useState(dataNull0)
   const [dataNotNull, setDataNotNull] = useState(dataNotNull0)
   const [dataCaseNotNull, setDataCaseNotNull] = useState<GridRowsProp>([])
   const [dataCaseNull, setDataCaseNull] = useState<GridRowsProp>([])
+  const [dataByDate, setDataByDate] = useState<GridRowsProp>([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
- 
-
-
 
   const columns: GridColDef[] = [
     { field: 'hn', headerName: 'HN', width: 100 },
     { field: 'cid', headerName: 'CID', width: 150 },
     { field: 'fullname', headerName: 'ชื่อ นามสสกุล', width: 150 },
-    { field: 'visit_date', headerName: 'วันที่', width: 110 },
-    { field: 'cln', headerName: 'clinic', width: 180 },
+    { field: 'visit_date', headerName: 'วันที่บริการ', width: 110 },
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
-    { field: 'outstanding', headerName: 'คงเหลือ', width: 110 },
-    { field: 'debtor', headerName: 'ลูกหนี้สิทธิ์', width: 110 },
+    { field: 'debt', headerName: 'คงเหลือ', width: 110 },
+    { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 260 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
-    { field: 'total_summary', headerName: 'ได้รับจัดสรร', width: 110 },
+    { field: 'total_summary', headerName: 'ได้รับชดเชย', width: 110 },
     { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
   ]
 
-  const onSubmit = async () => {
+  const columns2: GridColDef[] = [
+    { field: 'visit_date', headerName: 'วันที่บริการ', width: 110 },
+    { field: 'allcase', headerName: 'จำนวนผู้ป่วย', width: 110 },
+    { field: 'debit', headerName: 'ค่าใช้จ่าย', width: 110 },
+    { field: 'nullcase', headerName: 'รอดำเนินการ', width: 110 },
+    { field: 'nulldebit', headerName: 'หนี้คงค้าง', width: 110 },
+    { field: 'notnullcase', headerName: 'ดำเนินการสำเร็จ', width: 110 },
+    { field: 'notnulldebit', headerName: 'ตัดหนี้รับชำระ', width: 110 },
+    { field: 'recieve', headerName: 'ยอดรวมชดเชย', width: 110 },
+    { field: 'diff', headerName: 'ผลรวมส่วนต่าง', width: 110 },
+  ]
 
-    console.log({ startDt, endDt })
-    
+  const resetValue = () => {
+    setDataNull(dataNull0)
+    setDataNotNull(dataNotNull0)
+    setDataByDate([])
+    setDataCaseNotNull([])
+    setDataCaseNull([])
+  }
+
+  const [isLoading, setIsLoading] = useState(false)
+  
+
+  const onSubmit = async () => {
+    resetValue()
+
     let startDate = startDt?.format('YYYY-MM-DD')
     let endDate = endDt?.format('YYYY-MM-DD')
-    
-    console.log(startDt)
-    console.log(endDt)
 
-    // Ofc Acc null
+    setIsLoading(true)
+    // Uc Acc Null
     try {
       const responseNull = await axios.post(`${apiUrl}/opofc/opofcaccnull`, {
         startDate,
         endDate,
       })
       // setData(jsonData)
-
       console.log(responseNull.data[0])
 
       setDataNull(responseNull.data[0])
@@ -155,14 +121,13 @@ export default function ReportOpOfcPage() {
       console.log('ERROR', error)
     }
 
-    // Ofc Acc Not Null
+    // Uc Acc Not Null
     try {
       const responseNotNull = await axios.post(
         `${apiUrl}/opofc/opofcaccnotnull`,
         { startDate, endDate }
       )
 
-      
       console.log(responseNotNull.data[0])
 
       setDataNotNull(responseNotNull.data[0])
@@ -195,12 +160,32 @@ export default function ReportOpOfcPage() {
         `${apiUrl}/opofc/opofcnotnull`,
         { startDate, endDate }
       )
-      
-         console.log(responseCaseNotNull.data)
+
+      console.log(responseCaseNotNull.data)
       setDataCaseNotNull(responseCaseNotNull.data)
     } catch (error) {
       console.log('ERROR', error)
     }
+
+    // Account  by date
+    try {
+      const responseByDate = await axios.post(`${apiUrl}/opofc/opofcaccbydate`, {
+        startDate,
+        endDate,
+      })
+      // setData(jsonData)
+      console.log('acc by date')
+      console.log(responseByDate.data)
+
+      setDataByDate(responseByDate.data)
+
+      console.log(dataByDate)
+    } catch (error) {
+      console.log('ERROR', error)
+    }
+
+    setIsLoading(false)
+  
   }
 
   const CustomToolbar = () => {
@@ -232,14 +217,19 @@ export default function ReportOpOfcPage() {
 
   return (
     <>
-      <Box display={'flex'} justifyContent={'center'} alignItems={'center'} marginTop={5}>
+      <Box
+        display={'flex'}
+        justifyContent={'center'}
+        alignItems={'center'}
+        marginTop={5}
+      >
         <Card sx={{ maxWidth: 345 }}>
           <CardActionArea>
             <CardMedia
               component={'img'}
               sx={{ height: 140, width: '100%' }}
               image={CardHeader1}
-              
+              // src ="https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
               title="green iguana"
             />
 
@@ -247,10 +237,9 @@ export default function ReportOpOfcPage() {
               <LocalizationProvider
                 dateAdapter={AdapterDayjs}
                 adapterLocale="th"
-                // adapterLocale="th"
               >
                 <Stack direction={'column'} gap={2}>
-                <DatePicker
+                  <DatePicker
                     label="Start Date"
                     value={startDt}
                     onChange={(newValue) => setStartDt(newValue)}
@@ -263,7 +252,7 @@ export default function ReportOpOfcPage() {
                   <TextField
                     label="Outlined secondary"
                     color="secondary"
-                    value={'ผู้ป่วยนอก จ่ายตรงกรมบัญชีกลาง'}
+                    value={'ผู้ป่วยนอก จ่ายตรงกรมบัญชีกลาง OFC'}
                     focused
                   />
                 </Stack>
@@ -279,62 +268,145 @@ export default function ReportOpOfcPage() {
         </Card>
 
         <Divider />
-        <Card sx={{ width: 645, marginLeft: '50px' }}>
-          <Stack direction={'row'} gap={2} padding={'10px'}>
-            <Typography>
-              จำนวน :
-              {(
-                dataNull.all_nullcase + dataNotNull.all_notnullcase
-              ).toLocaleString('en-US')}{' '}
-            </Typography>
-            <Typography>
-              รอดำเนินการ : {dataNull.all_nullcase}
-             
-            </Typography>
-            <Typography>
-              สำเร็จ : {dataNotNull.all_notnullcase.toLocaleString('en-US')}
-            </Typography>
-          </Stack>
 
-          <Stack direction={'column'} gap={2} padding={'10px'}>
-            <Typography>
-              ลูกหนี้ทั้งหมด :{' '}
-              {(Number(dataNull.debit_null) + Number(dataNotNull.debit_notnull)).toLocaleString(
-                'en-US'
-              )}{' '}
-              บาท
-            </Typography>
-            <Typography>
-              ลูกหนี้ดำเนินการสำเร็จ :{' '}
-              {Number(dataNotNull.debit_notnull) === null
-                ? 0
-                : Number(dataNotNull.debit_notnull).toLocaleString('en-US')}{' '}
-              บาท
-            </Typography>
-            <Typography>
-              ได้รับจัดสรร :{' '}
-              {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
-            </Typography>
-            <Typography>
-              ส่วนต่าง :{' '}
-              {Number(dataNotNull.sum_diff) === null
-                ? 0
-                : Number(dataNotNull.sum_diff).toLocaleString('en-US')}{' '}
-              บาท
-            </Typography>
-            <Divider />
-            <Typography variant="h6">
-              ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
-              {dataNull.all_nullcase === null
-                ? 0
-                : dataNull.all_nullcase.toLocaleString('en-US')}{' '}
-              ราย จำนวน : {/* {dataNull.debit_null.toLocaleString('en-US')} */}
-              {Number(dataNull.debit_null) === null
-                ? 0
-                : Number(dataNull.debit_null).toLocaleString('en-US')}{' '}
-              บาท
-            </Typography>
-          </Stack>
+        <Card sx={{ width: 645, marginLeft: '50px' }}>
+          {isLoading ? (
+            <Box sx={{ m: 1, position: 'relative' }} height={90}>
+              <Button
+                variant="contained"
+                sx={{
+                  bgcolor: green[500],
+                }}
+                
+              >
+                Please Wait !!
+              </Button>
+              {isLoading && (
+                <CircularProgress
+                  size={54}
+                  sx={{
+                    color: green[500],
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-12px',
+                    marginLeft: '-12px',
+                  }}
+                />
+              )}
+            </Box>
+          ) : (
+            <Box>
+              <Stack direction={'row'} gap={2} padding={'10px'}>
+                <Typography>
+                  จำนวน :{' '}
+                  {(
+                    Number(dataNull.all_nullcase) +
+                    Number(dataNotNull.all_notnullcase)
+                  ).toLocaleString('en-US')}{' '}
+                  ราย
+                </Typography>
+                <Typography>
+                  รอดำเนินการ :{' '}
+                  {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [
+                  {''}
+                  {(
+                    (Number(dataNull.all_nullcase) * 100) /
+                    (Number(dataNull.all_nullcase) +
+                      Number(dataNotNull.all_notnullcase))
+                  ).toLocaleString('en-US', {
+                    minimumIntegerDigits: 1,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  {''}%]
+                  {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
+                </Typography>
+                <Typography>
+                  สำเร็จ :{' '}
+                  {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
+                  ราย [{''}
+                  {(
+                    (Number(dataNotNull.all_notnullcase) * 100) /
+                    (Number(dataNull.all_nullcase) +
+                      Number(dataNotNull.all_notnullcase))
+                  ).toLocaleString('en-US', {
+                    minimumIntegerDigits: 1,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  {''}%]
+                </Typography>
+              </Stack>
+              <Stack direction={'column'} gap={2} padding={'10px'}>
+                <Typography>
+                  ลูกหนี้ทั้งหมด :{' '}
+                  {(
+                    Number(dataNull.debit_null) +
+                    Number(dataNotNull.debit_notnull)
+                  ).toLocaleString('en-US')}{' '}
+                  บาท
+                </Typography>
+                <Typography>
+                  ลูกหนี้ดำเนินการสำเร็จ :{' '}
+                  {dataNotNull.debit_notnull === null
+                    ? 0
+                    : Number(dataNotNull.debit_notnull).toLocaleString(
+                        'en-US'
+                      )}{' '}
+                  บาท
+                </Typography>
+                <Typography>
+                  ได้รับชดเชย :{' '}
+                  {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
+                </Typography>
+                <Stack direction={'column'} gap={2}>
+                  <Typography>
+                    ส่วนต่าง ค่ารักษา :{' '}
+                    {dataNotNull.sum_diff === null
+                      ? 0
+                      : Number(dataNotNull.sum_diff).toLocaleString(
+                          'en-US'
+                        )}{' '}
+                    บาท
+                  </Typography>
+                  <Typography>
+                    ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
+                    {dataNotNull.diffloss === null
+                      ? 0
+                      : Number(dataNotNull.diffloss).toLocaleString(
+                          'en-US'
+                        )}{' '}
+                    บาท
+                  </Typography>
+                  <Typography color={'red'}>
+                    ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
+                    {dataNotNull.diffgain === null
+                      ? 0
+                      : Number(dataNotNull.diffgain).toLocaleString(
+                          'en-US'
+                        )}{' '}
+                    บาท
+                  </Typography>
+                </Stack>
+                <Divider />
+                <Typography variant="h6">
+                  ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
+                  {dataNull.all_nullcase === null
+                    ? 0
+                    : Number(dataNull.all_nullcase).toLocaleString(
+                        'en-US'
+                      )}{' '}
+                  ราย จำนวน :{' '}
+                  {/* {dataNull.debit_null.toLocaleString('en-US')} */}
+                  {dataNull.debit_null === null
+                    ? 0
+                    : Number(dataNull.debit_null).toLocaleString('en-US')}{' '}
+                  บาท
+                </Typography>
+              </Stack>
+            </Box>
+          )}
         </Card>
       </Box>
 
@@ -343,13 +415,11 @@ export default function ReportOpOfcPage() {
       <Box sx={{ width: '100%', height: '500px', typography: 'body1' }}>
         <TabContext value={valueTab}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList
-              onChange={handleChangeTab}
-              aria-label="lab API tabs example"
-            >
+            <TabList onChange={handleChangeTab} aria-label="Ip Ofc">
               <Tab label="บัญชีลูกหนี้ ระหว่างดำเนินการ" value="1" />
               <Tab label="บัญชีลูกหนี้ ที่ดำเนินการเสร็จสิ้นแล้ว" value="2" />
-              <Tab label="Item Three" value="3" />
+              <Tab label="สรุปการตัดหนี้รายวัน" value="3" />
+              <Tab label="Chart " value="4" />
             </TabList>
           </Box>
           <TabPanel value="1">
@@ -362,15 +432,17 @@ export default function ReportOpOfcPage() {
                 จำนวน :{' '}
                 {dataNull.all_nullcase === null
                   ? 0
-                  : dataNull.all_nullcase.toLocaleString('en-US')}{' '}
+                  : Number(dataNull.all_nullcase).toLocaleString('en-US')}{' '}
                 ราย
+                {/* จำนวน : {dataNull.all_nullcase.toLocaleString('en-US')} ราย */}
               </Typography>
               <Typography>
                 ทั้งหมด :{' '}
-                {Number(dataNull.debit_null) === null
+                {dataNull.debit_null === null
                   ? 0
                   : Number(dataNull.debit_null).toLocaleString('en-US')}{' '}
                 บาท
+                {/* ทั้งหมด : {dataNull.debit_null.toLocaleString('en-US')} บาท */}
               </Typography>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
@@ -391,23 +463,26 @@ export default function ReportOpOfcPage() {
                 บัญชีลูกหนี้ ที่ดำเนินการเสร็จสิ้นแล้ว{' '}
               </Typography>
               <Typography>
-                จำนวน : {dataNotNull.all_notnullcase.toLocaleString('en-US')}{' '}
+                จำนวน :{' '}
+                {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
                 ราย
               </Typography>
               <Typography>
                 ทั้งหมด :{' '}
-                {Number(dataNotNull.debit_notnull) === null
+                {dataNotNull.debit_notnull === null
                   ? 0
-                  : Number(dataNotNull.debit_notnull).toLocaleString('en-US')}{' '}
+                  : Number(dataNotNull.debit_notnull).toLocaleString(
+                      'en-US'
+                    )}{' '}
                 บาท
               </Typography>
               <Typography>
-                ได้รับจัดสรร :{' '}
+                ได้รับชดเชย :{' '}
                 {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
               </Typography>
               <Typography>
                 ส่วนต่าง :{' '}
-                {Number(dataNotNull.sum_diff) === null
+                {dataNotNull.sum_diff === null
                   ? 0
                   : Number(dataNotNull.sum_diff).toLocaleString('en-US')}{' '}
                 บาท
@@ -417,7 +492,7 @@ export default function ReportOpOfcPage() {
               <DataGrid
                 rows={dataCaseNotNull}
                 columns={columns}
-                getRowId={(row) => row.hn}
+                getRowId={(row) =>  row.hn}
                 slots={{
                   toolbar: CustomToolbar,
                 }}
@@ -425,6 +500,18 @@ export default function ReportOpOfcPage() {
             </Box>
           </TabPanel>
           <TabPanel value="3">
+            <Box style={{ height: 500, width: '100%' }}>
+              <DataGrid
+                rows={dataByDate}
+                columns={columns2}
+                getRowId={(row) => row.visit_date}
+                slots={{
+                  toolbar: CustomToolbar,
+                }}
+              />
+            </Box>
+          </TabPanel>
+          <TabPanel value="4">
             <Box
               width={'100%'}
               height={500}
@@ -432,7 +519,51 @@ export default function ReportOpOfcPage() {
               alignItems={'center'}
               justifyContent={'center'}
             >
-              <Pie data={dataChart} />
+              <Stack direction={'column'} gap={2} padding={'10px'}>
+                <Typography variant="body2">
+                  จำนวน :{' '}
+                  {(
+                    Number(dataNull.all_nullcase) +
+                    Number(dataNotNull.all_notnullcase)
+                  ).toLocaleString('en-US')}{' '}
+                  ราย
+                </Typography>
+                <Typography variant="body2">
+                  รอดำเนินการ :{' '}
+                  {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [
+                  {''}
+                  {(
+                    (Number(dataNull.all_nullcase) * 100) /
+                    (Number(dataNull.all_nullcase) +
+                      Number(dataNotNull.all_notnullcase))
+                  ).toLocaleString('en-US', {
+                    minimumIntegerDigits: 1,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  {''}%]
+                  {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
+                </Typography>
+                <Typography variant="body2">
+                  สำเร็จ :{' '}
+                  {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
+                  ราย [{''}
+                  {(
+                    (Number(dataNotNull.all_notnullcase) * 100) /
+                    (Number(dataNull.all_nullcase) +
+                      Number(dataNotNull.all_notnullcase))
+                  ).toLocaleString('en-US', {
+                    minimumIntegerDigits: 1,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  {''}%]
+                </Typography>
+              </Stack>
+              <Box>
+                {' '}
+                <Pie data={dataChart} />
+              </Box>
             </Box>
           </TabPanel>
         </TabContext>

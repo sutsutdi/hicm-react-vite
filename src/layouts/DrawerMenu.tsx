@@ -14,8 +14,8 @@ import InboxIcon from '@mui/icons-material/MoveToInbox'
 import MailIcon from '@mui/icons-material/Mail'
 import SummarizeIcon from '@mui/icons-material/Summarize'
 import { useNavigate } from 'react-router-dom'
-import { Avatar, Box, Menu, MenuItem } from '@mui/material'
-import { Logout, PersonAdd, Settings, Grading } from '@mui/icons-material'
+import { Box, Menu } from '@mui/material'
+import { Grading, Settings } from '@mui/icons-material'
 
 const drawerWidth = 260
 
@@ -47,6 +47,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   }
 
   const menus = [
+    { icon: <Settings />, title: 'Check Data Report', nav: '' },
     {
       icon: <InboxIcon />,
       title: 'บัญชีลูกหนี้ ผู้ป่วยใน',
@@ -66,35 +67,44 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   const ipMenus = [
     { icon: <InboxIcon />, title: 'IP OFC', nav: '/ipofc/report' },
     { icon: <MailIcon />, title: 'IP UCS', nav: '/ipuc/report' },
-    { icon: <MailIcon />, title: 'IP SSS', nav: '' },
     { icon: <MailIcon />, title: 'IP LGO', nav: '' },
-    { icon: <MailIcon />, title: 'IP ต่างด้าว', nav: '' },
     { icon: <MailIcon />, title: 'IP STP ', nav: '' },
   ]
 
   const opMenus = [
     { icon: <InboxIcon />, title: 'OP OFC', nav: '/opofc/report' },
-    { icon: <MailIcon />, title: 'OP UCS', nav: '' },
-    { icon: <MailIcon />, title: 'OP SSS', nav: '' },
     { icon: <MailIcon />, title: 'OP LGO', nav: '' },
-    { icon: <MailIcon />, title: 'OP ต่างด้าว', nav: '' },
     { icon: <MailIcon />, title: 'OP STP', nav: '' },
   ]
 
   const feeScheduleMenus = [
-    { icon: <InboxIcon />, title: 'Telemedicine', nav: '/fs/telemed' },
-    { icon: <MailIcon />, title: 'ER คุณภาพ', nav: '/fs/erquality' },
-    { icon: <MailIcon />, title: 'Palliative', nav: '' },
     { icon: <MailIcon />, title: 'ANC', nav: '' },
-    { icon: <MailIcon />, title: 'AE', nav: '' },
+    { icon: <MailIcon />, title: 'ANC ทันตกรรม', nav: '' },
+    { icon: <MailIcon />, title: 'เคลือบ Fluoride', nav: '' },
+    { icon: <InboxIcon />, title: 'Telemedicine', nav: '/fs/telemed' },
+    { icon: <MailIcon />, title: 'Palliative', nav: '' },
+    { icon: <MailIcon />, title: 'CA Anywhere', nav: '' },
+    { icon: <MailIcon />, title: 'CA Chemo', nav: '' },
+    { icon: <MailIcon />, title: 'CANCER', nav: '' },
+    { icon: <MailIcon />, title: 'วางแผนครอบครัว ยาฝัง', nav: '' },
+    { icon: <MailIcon />, title: 'ยาสมุนไพร', nav: '' },
+  ]
+
+  const opEclaimMenus = [
+    { icon: <MailIcon />, title: 'UC เปลี่ยนสิทธิทันที', nav: '' },
+    { icon: <MailIcon />, title: 'UCS พิการ', nav: '' },
+    { icon: <MailIcon />, title: 'Walk in', nav: '' },
+    { icon: <MailIcon />, title: 'AE สิทธิ์ว่าง', nav: '' },
+    { icon: <MailIcon />, title: 'AE นอกเขต', nav: '' },
+    { icon: <MailIcon />, title: 'DMISHD', nav: '' },
+    { icon: <MailIcon />, title: 'DMISCR', nav: '' },
+    { icon: <MailIcon />, title: 'ER คุณภาพ', nav: '/fs/erquality' },
+    { icon: <MailIcon />, title: 'INST ฟันปลอม', nav: '' },
+    { icon: <MailIcon />, title: 'INST', nav: '' },
   ]
 
   const checkReportMenus = [
-    { icon: <InboxIcon />, title: 'รายงานการใช้ยารายคน', nav: '/fs/telemed' },
-    { icon: <MailIcon />, title: 'ER คุณภาพ', nav: '/fs/erquality' },
-    { icon: <MailIcon />, title: 'Palliative', nav: '' },
-    { icon: <MailIcon />, title: 'ANC', nav: '' },
-    { icon: <MailIcon />, title: 'AE', nav: '' },
+    { icon: <MailIcon />, title: 'UC เปลี่ยนสิทธิทันที', nav: '' },
   ]
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
@@ -121,14 +131,13 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
     setAnchorEl2(null)
   }
 
-   // check report Menu
-   const handleClick3 = (event: React.MouseEvent<HTMLElement>) => {
+  // op eclaim Menu
+  const handleClick3 = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl3(event.currentTarget)
   }
   const handleClose3 = () => {
     setAnchorEl3(null)
   }
-
 
   const navigate = useNavigate()
 
@@ -156,25 +165,57 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
         </IconButton>
       </DrawerHeader>
       <Divider />
+
       <List>
-        <ListItem disablePadding>
-          <ListItemButton onClick={handleClick}>
-            <ListItemIcon>
-              <SummarizeIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Debit-Statment'} />
-          </ListItemButton>
-        </ListItem>
+        {/* Debit - statement */}
+        <ListItemButton onClick={handleClick}>
+          <ListItemIcon>
+            <SummarizeIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Debit-Statment'} />
+        </ListItemButton>
+        {/* statement */}
+        <ListItemButton onClick={handleClick}>
+          <ListItemIcon>
+            <SummarizeIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Statement Report'} />
+        </ListItemButton>
+
+        <Divider />
+        {/* // Fee schedule menus  */}
         <ListItemButton onClick={handleClick2}>
           <ListItemIcon>
             <Grading />
           </ListItemIcon>
           <ListItemText primary={'Fee Schedule'} />
         </ListItemButton>
+        {/* // Opd Eclaim Menu */}
+        <ListItemButton onClick={handleClick3}>
+          <ListItemIcon>
+            <SummarizeIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Opd Eclaim'} />
+        </ListItemButton>
       </List>
 
+      <Divider />
+      <Box>
+        <List>
+          {menus.map((menu, index) => (
+            <ListItem key={index} disablePadding>
+              <ListItemButton onClick={() => navigate(menu.nav)}>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                </ListItemIcon>
+                <ListItemText primary={menu.title} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
 
-      {/* // debit statement */}
+      {/* // debit statement submenu*/}
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -218,9 +259,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
             </ListItemButton>
           </ListItem>
         ))}
-
         <Divider />
-
         {opMenus.map((menu, index) => (
           <ListItem key={index} disablePadding>
             <ListItemButton onClick={() => navigate(menu.nav)}>
@@ -230,11 +269,10 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
           </ListItem>
         ))}
       </Menu>
-
-      {/*fee Schedule */}
+      {/*fee Schedule submenus*/}
       <Menu
         anchorEl={anchorEl2}
-        id="fee scehdule-menu"
+        id="Fee-Schedule-Menu"
         open={openMenu2}
         onClose={handleClose2}
         onClick={handleClose2}
@@ -276,26 +314,10 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
           </ListItem>
         ))}
       </Menu>
-
-     
-
-      <Divider />
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton onClick={handleClick3}>
-            <ListItemIcon>
-              <SummarizeIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Check Reports'} />
-          </ListItemButton>
-        </ListItem>
-      
-      </List>
-
-       {/*checek report */}
-       <Menu
+      {/*opd eclaim submenus*/}
+      <Menu
         anchorEl={anchorEl3}
-        id="fee scehdule-menu"
+        id="op-eclaim-menu"
         open={openMenu3}
         onClose={handleClose3}
         onClick={handleClose3}
@@ -328,7 +350,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        {checkReportMenus.map((menu, index) => (
+        {opEclaimMenus.map((menu, index) => (
           <ListItem key={index} disablePadding>
             <ListItemButton onClick={() => navigate(menu.nav)}>
               <ListItemIcon>{menu.icon}</ListItemIcon>
@@ -337,23 +359,6 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
           </ListItem>
         ))}
       </Menu>
-
-
-      <Divider/>
-      <Box>
-        <List>
-          {menus.map((menu, index) => (
-            <ListItem key={index} disablePadding>
-              <ListItemButton onClick={() => navigate(menu.nav)}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={menu.title} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
     </Drawer>
   )
 }

@@ -1,24 +1,26 @@
-import * as React from 'react'
-import Avatar from '@mui/material/Avatar'
-import Button from '@mui/material/Button'
-import CssBaseline from '@mui/material/CssBaseline'
-import TextField from '@mui/material/TextField'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
-import Link from '@mui/material/Link'
-import Paper from '@mui/material/Paper'
-import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import Typography from '@mui/material/Typography'
+import * as React from "react";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Alert, Card, CardActions, CardContent, Stack } from "@mui/material";
+import { useState } from "react";
 
-const handleFullScreen = () => {
-  const element = document.documentElement
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "../store/store";
+import { loginSelector, loginStatus } from "../store/slices/loginSlice";
 
-  element.requestFullscreen()
-}
-
-const Copyright = (props: any) => {
+function Copyright(props: any) {
   return (
     <Typography
       variant="body2"
@@ -26,50 +28,92 @@ const Copyright = (props: any) => {
       align="center"
       {...props}
     >
-      {'Copyright © '}
+      {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
         Your Website
-      </Link>{' '}
+      </Link>{" "}
       {new Date().getFullYear()}
-      {'.'}
+      {"."}
     </Typography>
-  )
+  );
 }
 
-const LoginPage = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const data = new FormData(event.currentTarget)
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    })
-  }
+// TODO remove, this demo shouldn't need to reset the theme.
+
+export default function LoginPage() {
+  const dispatch = useAppDispatch();
+  const loginReducer = useSelector(loginSelector);
+
+  const [success, setSuccess] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<String>(
+    "Please Login First !"
+  );
+  const [user, setUser] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    console.log("Success:", success);
+    console.log("message:", errorMessage);
+    console.log("user", user);
+    setErrorMessage(errorMessage);
+    if (success) {
+      dispatch(loginStatus({ success, user }));
+      navigate('/stock')
+      console.log(loginReducer.success);
+    }
+  }, [success, errorMessage, user]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const data = new FormData(event.currentTarget);
+    const loginInput = {
+      username: data.get("email") as string | null,
+      password: data.get("password") as string | null,
+    };
+
+    try {
+      const result = await axios.post(
+        "http://localhost:8086/api/v2/authen/login",
+        loginInput
+      );
+      console.log(result.data)
+      
+      setSuccess((logged) => (result.data.result === "ok" ? true : false));
+      setUser(loginInput.username);
+      setErrorMessage(result.data.message);
+    
+    } catch (error) {
+      setSuccess(false);
+      setErrorMessage("An error occurred. Please try again.");
+      console.error(error);
+    }
+  };
+
+  const navigate = useNavigate();
 
   return (
-    <Box display={'flex'} justifyContent={'center'} alignItems={'center'}  paddingLeft={8} paddingRight={8}>
-
-        <Grid item xs={8} sm={6} md={4} component={Paper} elevation={6} square>
+    <Stack direction={'row'} maxWidth={'100%'} justifyContent={'center'} alignItems={'center'} >
+      
+      <Card sx={{ maxWidth: 500, height: 600, padding: "30px" }}>
+        <CardContent>
           <Box
             sx={{
-              my: 8,
-              mx: 4,
-              width: '400px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
+              marginTop: 8,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Sign in
+              Login
             </Typography>
             <Box
               component="form"
-              noValidate
               onSubmit={handleSubmit}
+              noValidate
               sx={{ mt: 1 }}
             >
               <TextField
@@ -96,14 +140,14 @@ const LoginPage = () => {
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
+              {!success && <Alert severity="error">{errorMessage}</Alert>}
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                onClick={handleFullScreen}
               >
-                Sign In
+                Login
               </Button>
               <Grid container>
                 <Grid item xs>
@@ -112,18 +156,22 @@ const LoginPage = () => {
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="#" variant="body2">
+                  <Button
+                    variant="text"
+                    onClick={() => navigate("/register")}
+                    sx={{ fontSize: "0.70rem" }}
+                  >
                     {"Don't have an account? Sign Up"}
-                  </Link>
+                  </Button>
                 </Grid>
               </Grid>
-              <Copyright sx={{ mt: 5 }} />
             </Box>
           </Box>
-        </Grid>
-   
-    </Box>
-  )
+        </CardContent>
+        <CardActions>
+          <Copyright sx={{ mt: 8, mb: 4 }} />
+        </CardActions>
+      </Card>
+    </Stack>
+  );
 }
-
-export default LoginPage

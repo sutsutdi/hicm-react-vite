@@ -6,7 +6,8 @@ import '@fontsource/prompt'
 import './index.css'
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 import { deDE } from '@mui/x-date-pickers/locales'
-
+import { Provider } from 'react-redux'
+import { store } from './store/store'
 
 const theme = createTheme(
   {
@@ -24,11 +25,11 @@ const theme = createTheme(
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <ThemeProvider theme={theme}>
-    <BrowserRouter basename={'/test'}>
-      <CssBaseline />
-      
+    <Provider store={store}>
+      <BrowserRouter basename={'/hicm'}>
+        <CssBaseline />
         <App />
-     
-    </BrowserRouter>
+      </BrowserRouter>
+    </Provider>
   </ThemeProvider>
 )

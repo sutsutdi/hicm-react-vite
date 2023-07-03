@@ -1,122 +1,125 @@
-import { styled, useTheme } from '@mui/material/styles'
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import MenuIcon from '@mui/icons-material/Menu'
-import FullscreenIcon from '@mui/icons-material/Fullscreen'
-import { Avatar, Box, CardMedia, Paper, Tooltip } from '@mui/material'
-import { Logout, Settings } from '@mui/icons-material'
-import LogoImg from '../assets/logo.png'
-import { useEffect } from 'react'
-const drawerWidth = 240
+import { styled } from "@mui/material/styles";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import MailIcon from "@mui/icons-material/Mail";
+
+import { Badge, Box, Button } from "@mui/material";
+import { AccountCircle, Notifications } from "@mui/icons-material";
+
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { store, useAppDispatch } from "../store/store";
+import { loginSelector, loginStatus } from "../store/slices/loginSlice";
+
+const drawerWidth = 240;
 
 interface AppBarProps extends MuiAppBarProps {
-  open?: boolean
+  open?: boolean;
 }
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
+  shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(['margin', 'width'], {
+  transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(['margin', 'width'], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
-}))
+}));
 
-type AppHeader = {
-  open: boolean
-  onDrawerOpen: () => void
+interface HeaderProps {
+  open: boolean;
+  onDrawerOpen: () => void;
+  logout: () => void;
 }
 
-export default function AppHeader({ open, onDrawerOpen }: AppHeader) {
-  
-  useEffect(() => {
-    const element = document.documentElement
-   
-    return () => {
-      element.requestFullscreen()
-  
-    }
-  }, [])
-  
-  const handleDrawerOpen = () => {
-    onDrawerOpen()
-    const element = document.documentElement
-    element.requestFullscreen()
-  }
+export default function AppHeader({ open, onDrawerOpen , logout }: HeaderProps) {
+  const dispatch = useAppDispatch();
+  const loginReducer = useSelector(loginSelector);
 
-  const handleFullscreen = () => {
-    const element = document.documentElement
-    element.requestFullscreen()
-  }
+  const success = loginReducer.success
+  const successLogout = false
+  const userLogout = ""
 
+
+  const auth = store.getState().loginReducer.success
+  
+  const navigate = useNavigate();
+
+  const logoutNotify = () => {
+    // toast("Logout !!!");
+    dispatch(loginStatus({ successLogout, userLogout }));
+    logout()
+    navigate("/login");
+  };
   return (
     <AppBar position="fixed" open={open}>
       <Toolbar>
-        <IconButton
+        {success&& <IconButton
           color="inherit"
           aria-label="open drawer"
-          onClick={handleDrawerOpen}
+          onClick={onDrawerOpen}
           edge="start"
-          sx={{ mr: 2, ...(open && { display: 'none' }) }}
+          sx={{ mr: 2, ...(open && { display: "none" }) }}
         >
           <MenuIcon />
-        </IconButton>
-        <CardMedia
-          component={'img'}
-          sx={{ height: 50, width: 50 ,borderRadius: '50%', }}
-          image={LogoImg}
-          // src ="https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
-          title="logo"
-        />
-
-        <Typography variant="h6" noWrap component="div" marginLeft={3}>
-          HICM Warincamrab
+        </IconButton>}
+       
+        <Typography variant="h6" noWrap component="div">
+          CM Stock Project
         </Typography>
-        <Box flexGrow={1}></Box>
-        <Tooltip title="Full Screen">
-          <IconButton
-            color="inherit"
-            aria-label="full screen"
-            onClick={handleFullscreen}
-            edge="start"
-            sx={{ ml: 2, ...(open && { display: 'none' }) }}
-          >
-            <FullscreenIcon />
+        <Box flexGrow={1} />
+        <Box display={{ xs: "none", md: "flex" }}>
+          <IconButton size="large" color="inherit" aria-label="email icon">
+            <Badge badgeContent={4} color="error">
+              <MailIcon />
+            </Badge>
           </IconButton>
-        </Tooltip>
-
-        <Tooltip title="Settings">
-          <IconButton
-            color="inherit"
-            aria-label="Settings"
-            edge="start"
-            sx={{ ml: 2, ...(open && { display: 'none' }) }}
-          >
-            <Settings />
+          <IconButton size="large" color="inherit" aria-label="email icon">
+            <Badge badgeContent={17} color="error">
+              <Notifications />
+            </Badge>
           </IconButton>
-        </Tooltip>
-
-        <Tooltip title="Logout">
+          <Box p={2} alignItems={'center'}>
+          {loginReducer.user}
+          </Box>
+          
           <IconButton
+            size="large"
+            edge="end"
             color="inherit"
-            aria-label="logout"
-            edge="start"
-            sx={{ ml: 2, ...(open && { display: 'none' }) }}
+            aria-haspopup={true}
+            aria-label="account"
+            onClick={logoutNotify}
+            sx={{ marginRight: "10px" }}
           >
-            <Logout />
+            <AccountCircle />
           </IconButton>
-        </Tooltip>
+          {/* <Toaster
+            position="top-right"
+            gutter={8}
+            toastOptions={{
+              // Define default options
+              className: "",
+              duration: 2000,
+              style: {
+                background: "#ce5748",
+                color: "#fff",
+              },
+            }}
+          /> */}
+        </Box>
       </Toolbar>
     </AppBar>
-  )
+  );
 }

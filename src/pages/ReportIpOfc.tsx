@@ -7,10 +7,12 @@ import {
   CardContent,
   CardMedia,
   Divider,
+  Fab,
   Stack,
   Tab,
   Tabs,
   TextField,
+  Tooltip,
 } from '@mui/material'
 import axios from 'axios'
 import { useState } from 'react'
@@ -26,6 +28,7 @@ import {
   GridColDef,
   GridToolbarContainer,
   GridToolbarExport,
+  GridToolbarQuickFilter,
 } from '@mui/x-data-grid'
 
 import TabContext from '@mui/lab/TabContext'
@@ -33,6 +36,8 @@ import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
 import { Pie } from 'react-chartjs-2'
 import { red } from '@mui/material/colors'
+import { LibraryAdd } from '@mui/icons-material'
+import { Link } from 'react-router-dom'
 
 type DataType = {
   startDt: Date
@@ -256,10 +261,77 @@ export default function ReportIpOfcPage() {
     }
   }
 
+  function QuickSearchToolbar() {
+    return (
+      <Stack direction={"row"} gap={2}>
+        <Box
+          sx={{
+            p: 1,
+            pb: 0,
+            height: "50px",
+            marginTop: '20px'
+          }}
+        >
+          <GridToolbarQuickFilter
+            quickFilterParser={(searchInput: string) =>
+              searchInput
+                .split(",")
+                .map((value) => value.trim())
+                .filter((value) => value !== "")
+            }
+          />
+        </Box>
+        <Box flexGrow={1}/>
+        <Tooltip title="Add Product">
+          <Fab
+            color="primary"
+            aria-label="add"
+            component={Link}
+            to={'/stock/create'}
+            sx={{ marginTop: "15px" , marginRight: '25px'}}
+          >
+            <LibraryAdd />
+          </Fab>
+        </Tooltip>
+      </Stack>
+    );
+  }
+
   const CustomToolbar = () => {
     return (
       <GridToolbarContainer>
         <GridToolbarExport />
+        <Stack direction={"row"} gap={2}>
+        <Box
+          sx={{
+            p: 1,
+            pb: 0,
+            height: "50px",
+            marginTop: '20px'
+          }}
+        >
+          <GridToolbarQuickFilter
+            quickFilterParser={(searchInput: string) =>
+              searchInput
+                .split(",")
+                .map((value) => value.trim())
+                .filter((value) => value !== "")
+            }
+          />
+        </Box>
+        <Box flexGrow={1}/>
+        <Tooltip title="Add Product">
+          <Fab
+            color="primary"
+            aria-label="add"
+            component={Link}
+            to={'/stock/create'}
+            sx={{ marginTop: "15px" , marginRight: '25px'}}
+          >
+            <LibraryAdd />
+          </Fab>
+        </Tooltip>
+      </Stack>
       </GridToolbarContainer>
     )
   }
