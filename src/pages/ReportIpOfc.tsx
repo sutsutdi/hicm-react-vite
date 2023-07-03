@@ -6,6 +6,7 @@ import {
   CardActions,
   CardContent,
   CardMedia,
+  CircularProgress,
   Divider,
   Fab,
   Stack,
@@ -35,7 +36,7 @@ import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
 import { Pie } from 'react-chartjs-2'
-import { red } from '@mui/material/colors'
+import { green, red } from '@mui/material/colors'
 import { LibraryAdd } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 
@@ -141,7 +142,19 @@ export default function ReportIpOfcPage() {
     { field: 'diff', headerName: 'ผลรวมส่วนต่าง', width: 110 },
   ]
 
+  const resetValue = () => {
+    setDataNull(dataNull0)
+    setDataNotNull(dataNotNull0)
+    setDataByDate([])
+    setDataCaseNotNull([])
+    setDataCaseNull([])
+  }
+
+  const [isLoading, setIsLoading] = useState(false)
+
   const onSubmit = async () => {
+    resetValue()
+
     console.log({ startDt, endDt })
 
     let startDate = startDt?.format('YYYY-MM-DD')
@@ -149,12 +162,9 @@ export default function ReportIpOfcPage() {
 
     console.log(startDt)
     console.log(endDt)
-    
-    
 
-
+    setIsLoading(true)
     // Ofc Acc null
-   
 
     try {
       let url1 = `SELECT d.hn,d.an,d.cid,d.fname,d.acc_code FROM debit_ip as d WHERE  acc_code =  'ลูกหนี้ค่ารักษา เบิกจ่ายตรงกรมบัญชีกลาง' limit 20 `
@@ -259,79 +269,26 @@ export default function ReportIpOfcPage() {
     } catch (error) {
       console.log('ERROR', error)
     }
-  }
 
-  function QuickSearchToolbar() {
-    return (
-      <Stack direction={"row"} gap={2}>
-        <Box
-          sx={{
-            p: 1,
-            pb: 0,
-            height: "50px",
-            marginTop: '20px'
-          }}
-        >
-          <GridToolbarQuickFilter
-            quickFilterParser={(searchInput: string) =>
-              searchInput
-                .split(",")
-                .map((value) => value.trim())
-                .filter((value) => value !== "")
-            }
-          />
-        </Box>
-        <Box flexGrow={1}/>
-        <Tooltip title="Add Product">
-          <Fab
-            color="primary"
-            aria-label="add"
-            component={Link}
-            to={'/stock/create'}
-            sx={{ marginTop: "15px" , marginRight: '25px'}}
-          >
-            <LibraryAdd />
-          </Fab>
-        </Tooltip>
-      </Stack>
-    );
+    setIsLoading(false)
   }
 
   const CustomToolbar = () => {
     return (
       <GridToolbarContainer>
-        <GridToolbarExport />
-        <Stack direction={"row"} gap={2}>
-        <Box
-          sx={{
-            p: 1,
-            pb: 0,
-            height: "50px",
-            marginTop: '20px'
-          }}
-        >
-          <GridToolbarQuickFilter
-            quickFilterParser={(searchInput: string) =>
-              searchInput
-                .split(",")
-                .map((value) => value.trim())
-                .filter((value) => value !== "")
-            }
-          />
-        </Box>
-        <Box flexGrow={1}/>
-        <Tooltip title="Add Product">
-          <Fab
-            color="primary"
-            aria-label="add"
-            component={Link}
-            to={'/stock/create'}
-            sx={{ marginTop: "15px" , marginRight: '25px'}}
-          >
-            <LibraryAdd />
-          </Fab>
-        </Tooltip>
-      </Stack>
+        <Stack direction={'row'} gap={3} mt={2} mb={1} ml={2}>
+          <GridToolbarExport />
+          <Box>
+            <GridToolbarQuickFilter
+              quickFilterParser={(searchInput: string) =>
+                searchInput
+                  .split(',')
+                  .map((value) => value.trim())
+                  .filter((value) => value !== '')
+              }
+            />
+          </Box>
+        </Stack>
       </GridToolbarContainer>
     )
   }
@@ -357,12 +314,7 @@ export default function ReportIpOfcPage() {
 
   return (
     <>
-      <Box
-        display={'flex'}
-        justifyContent={'center'}
-        alignItems={'center'}
-        marginTop={5}
-      >
+      <Stack direction={'row'} gap={3} marginTop={5} paddingLeft={25}>
         <Card sx={{ maxWidth: 345 }}>
           <CardActionArea>
             <CardMedia
@@ -407,82 +359,169 @@ export default function ReportIpOfcPage() {
           </CardActionArea>
         </Card>
 
-        <Divider />
         <Card sx={{ width: 645, marginLeft: '50px' }}>
-          <Stack direction={'row'} gap={2} padding={'10px'}>
-            <Typography>
-              จำนวน :{' '}
-              {(
-                Number(dataNull.all_nullcase + dataNotNull.all_notnullcase)
-              ).toLocaleString('en-US')}{' '}
-            </Typography>
-            <Typography>
-              รอดำเนินการ : {Number(dataNull.all_nullcase)}
-              {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
-            </Typography>
-            <Typography>
-              สำเร็จ : {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}
-            </Typography>
-          </Stack>
-
-          <Stack direction={'column'} gap={2} padding={'10px'}>
-            <Typography>
-              ลูกหนี้ทั้งหมด :{' '}
-              {(Number(dataNull.debit_null) + Number(dataNotNull.debit_notnull)).toLocaleString(
-                'en-US'
-              )}{' '}
-              บาท
-            </Typography>
-            <Typography>
-              ลูกหนี้ดำเนินการสำเร็จ :{' '}
-              {dataNotNull.debit_notnull === null
-                ? 0
-                : Number(dataNotNull.debit_notnull).toLocaleString('en-US')}{' '}
-              บาท
-            </Typography>
-            <Typography>
-              ได้รับชดเชย :{' '}
-              {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
-            </Typography>
-
-            <Stack direction={'column'} gap={2}>
+          {isLoading ? (
+            <Box sx={{ m: 1, position: 'relative' }} height={90}>
+              <Button
+                variant="contained"
+                sx={{
+                  bgcolor: green[500],
+                }}
+              >
+                Please Wait !!
+              </Button>
+              {isLoading && (
+                <CircularProgress
+                  size={54}
+                  sx={{
+                    color: green[500],
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-12px',
+                    marginLeft: '-12px',
+                  }}
+                />
+              )}
+            </Box>
+          ) : (
+            <Box>
+            <Stack direction={'row'} gap={2} padding={'10px'}>
+              <Typography>จำนวน : </Typography>
               <Typography>
-                ส่วนต่าง ค่ารักษา :{' '}
-                {dataNotNull.sum_diff === null
-                  ? 0
-                  : dataNotNull.sum_diff.toLocaleString('en-US')}{' '}
-                บาท
+                {(
+                  Number(dataNull.all_nullcase) +
+                  Number(dataNotNull.all_notnullcase)
+                ).toLocaleString('en-US')}{' '}
+                ราย
+              </Typography>
+
+              <Typography>
+                รอดำเนินการ :{' '}
+                {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [
+                {''}
+                {(
+                  (Number(dataNull.all_nullcase) * 100) /
+                  (Number(dataNull.all_nullcase) +
+                    Number(dataNotNull.all_notnullcase))
+                ).toLocaleString('en-US', {
+                  minimumIntegerDigits: 1,
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+                {''}%]
+                {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
               </Typography>
               <Typography>
-                ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
-                {dataNotNull.diffloss === null
-                  ? 0
-                  : dataNotNull.diffloss.toLocaleString('en-US')}{' '}
-                บาท
+                สำเร็จ :{' '}
+                {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
+                ราย [{''}
+                {(
+                  (Number(dataNotNull.all_notnullcase) * 100) /
+                  (Number(dataNull.all_nullcase) +
+                    Number(dataNotNull.all_notnullcase))
+                ).toLocaleString('en-US', {
+                  minimumIntegerDigits: 1,
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+                {''}%]
               </Typography>
-              <Typography color={'red'}>
-                ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
-                {dataNotNull.diffgain === null
+            </Stack>
+            <Stack direction={'column'} gap={2} padding={'10px'}>
+              <Stack direction={'row'}>
+                {' '}
+                <Typography flexGrow={1}>ลูกหนี้ทั้งหมด : </Typography>
+                <Typography mr={5}>
+                  {(
+                    Number(dataNull.debit_null) +
+                    Number(dataNotNull.debit_notnull)
+                  ).toLocaleString('en-US')}{' '}
+                  บาท
+                </Typography>
+              </Stack>
+
+              <Stack direction={'row'}>
+                <Typography flexGrow={1}>
+                  ลูกหนี้ดำเนินการสำเร็จ :{' '}
+                </Typography>
+                <Typography mr={5}>
+                  {dataNotNull.debit_notnull === null
+                    ? 0
+                    : Number(dataNotNull.debit_notnull).toLocaleString(
+                        'en-US'
+                      )}{' '}
+                  บาท
+                </Typography>
+              </Stack>
+
+              <Stack direction={'row'}>
+                <Typography flexGrow={1}>ได้รับชดเชย : </Typography>
+                <Typography mr={5}>
+                  {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
+                </Typography>
+              </Stack>
+
+              <Stack direction={'column'} gap={2}>
+                <Stack direction={'row'}>
+                  <Typography flexGrow={1}>ส่วนต่าง ค่ารักษา : </Typography>
+                  <Typography mr={5}>
+                    {dataNotNull.sum_diff === null
+                      ? 0
+                      : Number(dataNotNull.sum_diff).toLocaleString(
+                          'en-US'
+                        )}{' '}
+                    บาท
+                  </Typography>
+                </Stack>
+                <Stack direction={'row'}>
+                  <Typography  flexGrow={1}>ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย : </Typography>
+                  <Typography mr={5}>
+                    {dataNotNull.diffloss === null
+                      ? 0
+                      : Number(dataNotNull.diffloss).toLocaleString(
+                          'en-US'
+                        )}{' '}
+                    บาท
+                  </Typography>
+                </Stack>
+
+                <Stack direction={'row'}>
+                  <Typography color={'red'}  flexGrow={1}>
+                    ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
+                  </Typography>
+                  <Typography color={'red'} mr={5}>
+                    {dataNotNull.diffgain === null
+                      ? 0
+                      : Number(dataNotNull.diffgain).toLocaleString(
+                          'en-US'
+                        )}{' '}
+                    บาท
+                  </Typography>
+                </Stack>
+              </Stack>
+              <Divider />
+              <Typography variant="h6">
+                ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
+                {dataNull.all_nullcase === null
                   ? 0
-                  : dataNotNull.diffgain.toLocaleString('en-US')}{' '}
+                  : Number(dataNull.all_nullcase).toLocaleString(
+                      'en-US'
+                    )}{' '}
+                ราย จำนวน :{' '}
+                {/* {dataNull.debit_null.toLocaleString('en-US')} */}
+                {dataNull.debit_null === null
+                  ? 0
+                  : Number(dataNull.debit_null).toLocaleString('en-US')}{' '}
                 บาท
               </Typography>
             </Stack>
-            <Divider />
-            <Typography variant="h6">
-              ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
-              {dataNull.all_nullcase === null
-                ? 0
-                : Number(dataNull.all_nullcase).toLocaleString('en-US')}{' '}
-              ราย จำนวน : {/* {dataNull.debit_null.toLocaleString('en-US')} */}
-              {dataNull.debit_null === null
-                ? 0
-                : Number(dataNull.debit_null).toLocaleString('en-US')}{' '}
-              บาท
-            </Typography>
-          </Stack>
+          </Box>
+          )}
         </Card>
-      </Box>
+
+        
+      </Stack>
 
       <Divider sx={{ marginY: '30px' }} />
 
@@ -513,7 +552,10 @@ export default function ReportIpOfcPage() {
                 ทั้งหมด :{' '}
                 {dataNull.debit_null === null
                   ? 0
-                  : dataNull.debit_null.toLocaleString('en-US')}{' '}
+                  : Number(dataNull.debit_null).toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}{' '}
                 บาท
               </Typography>
             </Stack>{' '}
@@ -542,12 +584,19 @@ export default function ReportIpOfcPage() {
                 ทั้งหมด :{' '}
                 {dataNotNull.debit_notnull === null
                   ? 0
-                  : dataNotNull.debit_notnull.toLocaleString('en-US')}{' '}
+                  : Number(dataNotNull.debit_notnull).toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}{' '}
                 บาท
               </Typography>
               <Typography>
                 ได้รับชดเชย :{' '}
-                {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
+                {Number(dataNotNull.recieve).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}{' '}
+                บาท
               </Typography>
 
               <Stack direction={'row'} gap={2}>
@@ -555,21 +604,30 @@ export default function ReportIpOfcPage() {
                   ส่วนต่าง :{' '}
                   {dataNotNull.sum_diff === null
                     ? 0
-                    : dataNotNull.sum_diff.toLocaleString('en-US')}{' '}
+                    : dataNotNull.sum_diff.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{' '}
                   บาท
                 </Typography>
                 <Typography>
                   ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
                   {dataNotNull.diffloss === null
                     ? 0
-                    : dataNotNull.diffloss.toLocaleString('en-US')}{' '}
+                    : dataNotNull.diffloss.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{' '}
                   บาท
                 </Typography>
                 <Typography>
                   ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
                   {dataNotNull.diffgain === null
                     ? 0
-                    : dataNotNull.diffgain.toLocaleString('en-US')}{' '}
+                    : dataNotNull.diffgain.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{' '}
                   บาท
                 </Typography>
               </Stack>
@@ -605,7 +663,51 @@ export default function ReportIpOfcPage() {
               alignItems={'center'}
               justifyContent={'center'}
             >
-              <Pie data={dataChart} />
+              <Stack direction={'column'} gap={2} padding={'10px'}>
+                <Typography variant="body2">
+                  จำนวน :{' '}
+                  {(
+                    Number(dataNull.all_nullcase) +
+                    Number(dataNotNull.all_notnullcase)
+                  ).toLocaleString('en-US')}{' '}
+                  ราย
+                </Typography>
+                <Typography variant="body2">
+                  รอดำเนินการ :{' '}
+                  {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [
+                  {''}
+                  {(
+                    (Number(dataNull.all_nullcase) * 100) /
+                    (Number(dataNull.all_nullcase) +
+                      Number(dataNotNull.all_notnullcase))
+                  ).toLocaleString('en-US', {
+                    minimumIntegerDigits: 1,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  {''}%]
+                  {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
+                </Typography>
+                <Typography variant="body2">
+                  สำเร็จ :{' '}
+                  {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
+                  ราย [{''}
+                  {(
+                    (Number(dataNotNull.all_notnullcase) * 100) /
+                    (Number(dataNull.all_nullcase) +
+                      Number(dataNotNull.all_notnullcase))
+                  ).toLocaleString('en-US', {
+                    minimumIntegerDigits: 1,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  {''}%]
+                </Typography>
+              </Stack>
+              <Box>
+                {' '}
+                <Pie data={dataChart} />
+              </Box>
             </Box>
           </TabPanel>
         </TabContext>

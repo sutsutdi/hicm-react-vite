@@ -27,6 +27,7 @@ import {
   GridColDef,
   GridToolbarContainer,
   GridToolbarExport,
+  GridToolbarQuickFilter,
 } from '@mui/x-data-grid'
 
 import TabContext from '@mui/lab/TabContext'
@@ -100,7 +101,6 @@ export default function ReportIpUcPage() {
   }
 
   const [isLoading, setIsLoading] = useState(false)
-  
 
   const onSubmit = async () => {
     resetValue()
@@ -189,13 +189,24 @@ export default function ReportIpUcPage() {
     }
 
     setIsLoading(false)
-  
   }
 
   const CustomToolbar = () => {
     return (
       <GridToolbarContainer>
-        <GridToolbarExport />
+        <Stack direction={'row'} gap={3} mt={2} mb={1} ml={2}>
+          <GridToolbarExport />
+          <Box>
+            <GridToolbarQuickFilter
+              quickFilterParser={(searchInput: string) =>
+                searchInput
+                  .split(',')
+                  .map((value) => value.trim())
+                  .filter((value) => value !== '')
+              }
+            />
+          </Box>
+        </Stack>
       </GridToolbarContainer>
     )
   }
@@ -221,19 +232,13 @@ export default function ReportIpUcPage() {
 
   return (
     <>
-      <Box
-        display={'flex'}
-        justifyContent={'center'}
-        alignItems={'center'}
-        marginTop={5}
-      >
+      <Stack direction={'row'} gap={3} marginTop={5} paddingLeft={25}>
         <Card sx={{ maxWidth: 345 }}>
           <CardActionArea>
             <CardMedia
               component={'img'}
               sx={{ height: 140, width: '100%' }}
               image={CardHeader1}
-              // src ="https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
               title="green iguana"
             />
 
@@ -271,8 +276,6 @@ export default function ReportIpUcPage() {
           </CardActionArea>
         </Card>
 
-        <Divider />
-
         <Card sx={{ width: 645, marginLeft: '50px' }}>
           {isLoading ? (
             <Box sx={{ m: 1, position: 'relative' }} height={90}>
@@ -281,7 +284,6 @@ export default function ReportIpUcPage() {
                 sx={{
                   bgcolor: green[500],
                 }}
-                
               >
                 Please Wait !!
               </Button>
@@ -302,14 +304,15 @@ export default function ReportIpUcPage() {
           ) : (
             <Box>
               <Stack direction={'row'} gap={2} padding={'10px'}>
+                <Typography>จำนวน : </Typography>
                 <Typography>
-                  จำนวน :{' '}
                   {(
                     Number(dataNull.all_nullcase) +
                     Number(dataNotNull.all_notnullcase)
                   ).toLocaleString('en-US')}{' '}
                   ราย
                 </Typography>
+
                 <Typography>
                   รอดำเนินการ :{' '}
                   {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [
@@ -343,55 +346,76 @@ export default function ReportIpUcPage() {
                 </Typography>
               </Stack>
               <Stack direction={'column'} gap={2} padding={'10px'}>
-                <Typography>
-                  ลูกหนี้ทั้งหมด :{' '}
-                  {(
-                    Number(dataNull.debit_null) +
-                    Number(dataNotNull.debit_notnull)
-                  ).toLocaleString('en-US')}{' '}
-                  บาท
-                </Typography>
-                <Typography>
-                  ลูกหนี้ดำเนินการสำเร็จ :{' '}
-                  {dataNotNull.debit_notnull === null
-                    ? 0
-                    : Number(dataNotNull.debit_notnull).toLocaleString(
-                        'en-US'
-                      )}{' '}
-                  บาท
-                </Typography>
-                <Typography>
-                  ได้รับชดเชย :{' '}
-                  {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
-                </Typography>
+                <Stack direction={'row'}>
+                  {' '}
+                  <Typography flexGrow={1}>ลูกหนี้ทั้งหมด : </Typography>
+                  <Typography mr={5}>
+                    {(
+                      Number(dataNull.debit_null) +
+                      Number(dataNotNull.debit_notnull)
+                    ).toLocaleString('en-US')}{' '}
+                    บาท
+                  </Typography>
+                </Stack>
+
+                <Stack direction={'row'}>
+                  <Typography flexGrow={1}>
+                    ลูกหนี้ดำเนินการสำเร็จ :{' '}
+                  </Typography>
+                  <Typography mr={5}>
+                    {dataNotNull.debit_notnull === null
+                      ? 0
+                      : Number(dataNotNull.debit_notnull).toLocaleString(
+                          'en-US'
+                        )}{' '}
+                    บาท
+                  </Typography>
+                </Stack>
+
+                <Stack direction={'row'}>
+                  <Typography flexGrow={1}>ได้รับชดเชย : </Typography>
+                  <Typography mr={5}>
+                    {Number(dataNotNull.recieve).toLocaleString('en-US')} บาท
+                  </Typography>
+                </Stack>
+
                 <Stack direction={'column'} gap={2}>
-                  <Typography>
-                    ส่วนต่าง ค่ารักษา :{' '}
-                    {dataNotNull.sum_diff === null
-                      ? 0
-                      : Number(dataNotNull.sum_diff).toLocaleString(
-                          'en-US'
-                        )}{' '}
-                    บาท
-                  </Typography>
-                  <Typography>
-                    ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
-                    {dataNotNull.diffloss === null
-                      ? 0
-                      : Number(dataNotNull.diffloss).toLocaleString(
-                          'en-US'
-                        )}{' '}
-                    บาท
-                  </Typography>
-                  <Typography color={'red'}>
-                    ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
-                    {dataNotNull.diffgain === null
-                      ? 0
-                      : Number(dataNotNull.diffgain).toLocaleString(
-                          'en-US'
-                        )}{' '}
-                    บาท
-                  </Typography>
+                  <Stack direction={'row'}>
+                    <Typography flexGrow={1}>ส่วนต่าง ค่ารักษา : </Typography>
+                    <Typography mr={5}>
+                      {dataNotNull.sum_diff === null
+                        ? 0
+                        : Number(dataNotNull.sum_diff).toLocaleString(
+                            'en-US'
+                          )}{' '}
+                      บาท
+                    </Typography>
+                  </Stack>
+                  <Stack direction={'row'}>
+                    <Typography  flexGrow={1}>ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย : </Typography>
+                    <Typography mr={5}>
+                      {dataNotNull.diffloss === null
+                        ? 0
+                        : Number(dataNotNull.diffloss).toLocaleString(
+                            'en-US'
+                          )}{' '}
+                      บาท
+                    </Typography>
+                  </Stack>
+
+                  <Stack direction={'row'}>
+                    <Typography color={'red'}  flexGrow={1}>
+                      ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
+                    </Typography>
+                    <Typography color={'red'} mr={5}>
+                      {dataNotNull.diffgain === null
+                        ? 0
+                        : Number(dataNotNull.diffgain).toLocaleString(
+                            'en-US'
+                          )}{' '}
+                      บาท
+                    </Typography>
+                  </Stack>
                 </Stack>
                 <Divider />
                 <Typography variant="h6">
@@ -412,7 +436,7 @@ export default function ReportIpUcPage() {
             </Box>
           )}
         </Card>
-      </Box>
+      </Stack>
 
       <Divider sx={{ marginY: '30px' }} />
 
