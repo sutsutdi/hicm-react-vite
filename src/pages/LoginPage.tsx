@@ -64,6 +64,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const apiBackendUrl = import.meta.env.VITE_API_BACKEND_URL
 
     const data = new FormData(event.currentTarget);
     const loginInput = {
@@ -73,7 +74,7 @@ export default function LoginPage() {
 
     try {
       const result = await axios.post(
-        "http://localhost:8086/api/v2/authen/login",
+        `${apiBackendUrl}/api/v2/authen/login`,
         loginInput
       );
       console.log(result.data)
