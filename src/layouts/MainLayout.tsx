@@ -1,16 +1,14 @@
-import React, { useEffect, useRef } from 'react'
+import React, {  } from 'react'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import AppHeader from './AppHeader'
 import DrawerMenu from './DrawerMenu'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import LoginPage from '../pages/LoginPage'
-import RegisterPage from '../pages/RegisterPage'
 import NotFoundPage from '../pages/NotFoundPage'
-import StockEditPage from '../pages/StockEditPage'
+
 import DebitEditPage from '../pages/DebitEdit'
-import StockPage from '../pages/StockPage'
+
 import { BarChartPage } from '../pages/BarChart'
 import { PieChartPage } from '../pages/PieChart'
 import ReportIpUcPage from '../pages/ReportIpUc'
@@ -19,8 +17,7 @@ import ReportIpAllPage from '../pages/ReportIpAll'
 import ReportOpOfcPage from '../pages/ReportOpOfc'
 import FsErQualityPage from '../pages/FsErQuality'
 import FsTelemedPage from '../pages/FsTelemed'
-import PublicRoutes from '../router/public.routes'
-import ProtectedRoutes from '../router/protected.routes'
+import MainPage from '../pages/MainPage'
 
 const drawerWidth = 240
 
@@ -57,6 +54,8 @@ export default function MainLayout() {
 
   const handleDrawerOpen = () => {
     setOpen(true)
+    const element = document.documentElement
+    element.requestFullscreen()
   }
 
   const handleDrawerClose = () => {
@@ -67,29 +66,28 @@ export default function MainLayout() {
     <>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppHeader open={open} onDrawerOpen={handleDrawerOpen}  logout={handleDrawerClose}/>
+        <AppHeader
+          open={open}
+          onDrawerOpen={handleDrawerOpen}
+          logout={handleDrawerClose}
+        />
         <DrawerMenu open={open} onDrawerClose={handleDrawerClose} />
         <Main open={open}>
           <DrawerHeader />
           <Routes>
-            <Route path="/" element={<PublicRoutes />}>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-            </Route>
-            <Route path="/" element={<ProtectedRoutes />}>
-              <Route path="/debitip/ipreport" element={<ReportIpAllPage />} />
-              <Route path="/ipofc/report" element={<ReportIpOfcPage />} />
-              <Route path="/opofc/report" element={<ReportOpOfcPage />} />
-              <Route path="/ipuc/report" element={<ReportIpUcPage />} />
-              <Route path="/debit/edit" element={<DebitEditPage />} />
-              <Route path="/fs/erquality" element={<FsErQualityPage />} />
-              <Route path="/fs/telemed" element={<FsTelemedPage />} />
-              <Route path="/stock" element={<StockPage />} />
-              <Route path="/barchart" element={<BarChartPage />} />
-              <Route path="/piechart" element={<PieChartPage />} />
-              <Route path="/" element={<Navigate to={'/login'} />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
+            <Route path="/main" element={<MainPage />} />
+            <Route path="/debitip/ipreport" element={<ReportIpAllPage />} />
+            <Route path="/ipofc/report" element={<ReportIpOfcPage />} />
+            <Route path="/opofc/report" element={<ReportOpOfcPage />} />
+            <Route path="/ipuc/report" element={<ReportIpUcPage />} />
+            <Route path="/debit/edit" element={<DebitEditPage />} />
+            <Route path="/fs/erquality" element={<FsErQualityPage />} />
+            <Route path="/fs/telemed" element={<FsTelemedPage />} />
+
+            <Route path="/barchart" element={<BarChartPage />} />
+            <Route path="/piechart" element={<PieChartPage />} />
+            <Route path="/" element={<Navigate to={'/login'} />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Main>
       </Box>

@@ -15,7 +15,7 @@ import MailIcon from '@mui/icons-material/Mail'
 import SummarizeIcon from '@mui/icons-material/Summarize'
 import { useNavigate } from 'react-router-dom'
 import { Box, Menu } from '@mui/material'
-import { Grading, Settings } from '@mui/icons-material'
+import { Grading, Settings ,AutoGraph } from '@mui/icons-material'
 
 const drawerWidth = 260
 
@@ -47,6 +47,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   }
 
   const menus = [
+    { icon: <AutoGraph />, title: 'Dashboard', nav: '' },
     { icon: <Settings />, title: 'Check Data Report', nav: '' },
     {
       icon: <InboxIcon />,
