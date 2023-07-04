@@ -14,8 +14,9 @@ import InboxIcon from '@mui/icons-material/MoveToInbox'
 import MailIcon from '@mui/icons-material/Mail'
 import SummarizeIcon from '@mui/icons-material/Summarize'
 import { useNavigate } from 'react-router-dom'
-import { Box, Menu } from '@mui/material'
-import { Grading, Settings ,AutoGraph } from '@mui/icons-material'
+import { Box, Menu, Stack, Typography } from '@mui/material'
+import { Grading, Settings, AutoGraph } from '@mui/icons-material'
+import logo from '../assets/logo.png'
 
 const drawerWidth = 260
 
@@ -25,7 +26,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
+  justifyContent: 'flex-end'
 }))
 
 type DrawerMenu = {
@@ -78,6 +79,13 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
     { icon: <MailIcon />, title: 'OP STP', nav: '' },
   ]
 
+  const stmMenus = [
+    { icon: <InboxIcon />, title: 'IP OFC', nav: '/stmipofc/report' },
+    { icon: <MailIcon />, title: 'IP UCS', nav: '/stmipuc/report' },
+    { icon: <MailIcon />, title: 'IP LGO', nav: '' },
+    { icon: <MailIcon />, title: 'IP STP ', nav: '' },
+  ]
+
   const feeScheduleMenus = [
     { icon: <MailIcon />, title: 'ANC', nav: '' },
     { icon: <MailIcon />, title: 'ANC ทันตกรรม', nav: '' },
@@ -111,10 +119,12 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null)
   const [anchorEl3, setAnchorEl3] = React.useState<null | HTMLElement>(null)
+  const [anchorEl4, setAnchorEl4] = React.useState<null | HTMLElement>(null)
 
   const openMenu = Boolean(anchorEl)
   const openMenu2 = Boolean(anchorEl2)
   const openMenu3 = Boolean(anchorEl3)
+  const openMenu4 = Boolean(anchorEl4)
 
   // Debit-statment
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -122,6 +132,14 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   }
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  // statment
+  const handleClick4 = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl4(event.currentTarget)
+  }
+  const handleClose4 = () => {
+    setAnchorEl4(null)
   }
 
   // Fee Schedule Menu
@@ -157,13 +175,24 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
       open={open}
     >
       <DrawerHeader>
-        <IconButton onClick={handleDrawerClose}>
-          {theme.direction === 'ltr' ? (
-            <ChevronLeftIcon />
-          ) : (
-            <ChevronRightIcon />
-          )}
-        </IconButton>
+        <Stack direction={'row'} width={'100%'}>
+        <img
+          src={logo}
+          style={{ height: '80px' , paddingLeft: '5px'}}
+          alt={'logo'}
+          loading="lazy"
+          
+        />
+         
+          <Box flexGrow={1}/>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'ltr' ? (
+              <ChevronLeftIcon />
+            ) : (
+              <ChevronRightIcon />
+            )}
+          </IconButton>
+        </Stack>
       </DrawerHeader>
       <Divider />
 
@@ -176,7 +205,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
           <ListItemText primary={'Debit-Statment'} />
         </ListItemButton>
         {/* statement */}
-        <ListItemButton onClick={handleClick}>
+        <ListItemButton onClick={handleClick4}>
           <ListItemIcon>
             <SummarizeIcon />
           </ListItemIcon>
@@ -262,6 +291,51 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
         ))}
         <Divider />
         {opMenus.map((menu, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton onClick={() => navigate(menu.nav)}>
+              <ListItemIcon>{menu.icon}</ListItemIcon>
+              <ListItemText primary={menu.title} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </Menu>
+      {/*statement submenus*/}
+      <Menu
+        anchorEl={anchorEl4}
+        id="statement-Menu"
+        open={openMenu4}
+        onClose={handleClose4}
+        onClick={handleClose4}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        {stmMenus.map((menu, index) => (
           <ListItem key={index} disablePadding>
             <ListItemButton onClick={() => navigate(menu.nav)}>
               <ListItemIcon>{menu.icon}</ListItemIcon>

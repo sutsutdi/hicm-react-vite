@@ -34,6 +34,7 @@
     "screenfull": "^6.0.2"
   },
   "devDependencies": {
+    "@types/chart.js": "^2.9.37",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "@vitejs/plugin-react-swc": "^3.0.0",

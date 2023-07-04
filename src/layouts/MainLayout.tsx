@@ -11,13 +11,15 @@ import DebitEditPage from '../pages/DebitEdit'
 
 import { BarChartPage } from '../pages/BarChart'
 import { PieChartPage } from '../pages/PieChart'
-import ReportIpUcPage from '../pages/ReportIpUc'
-import ReportIpOfcPage from '../pages/ReportIpOfc'
-import ReportIpAllPage from '../pages/ReportIpAll'
-import ReportOpOfcPage from '../pages/ReportOpOfc'
-import FsErQualityPage from '../pages/FsErQuality'
-import FsTelemedPage from '../pages/FsTelemed'
+
 import MainPage from '../pages/MainPage'
+import StmIpOfcPage from '../pages/statements/StmIpOfc'
+import ReportIpAllPage from '../pages/reports/ReportIpAll'
+import ReportIpOfcPage from '../pages/reports/ReportIpOfc'
+import ReportOpOfcPage from '../pages/reports/ReportOpOfc'
+import ReportIpUcPage from '../pages/reports/ReportIpUc'
+import FsErQualityPage from '../pages/feeschedules/FsErQuality'
+import FsTelemedPage from '../pages/feeschedules/FsChangeRight'
 
 const drawerWidth = 240
 
@@ -54,13 +56,16 @@ export default function MainLayout() {
 
   const handleDrawerOpen = () => {
     setOpen(true)
-    const element = document.documentElement
-    element.requestFullscreen()
+    // const element = document.documentElement
+    // element.requestFullscreen()
   }
 
   const handleDrawerClose = () => {
     setOpen(false)
   }
+
+
+  
 
   return (
     <>
@@ -78,6 +83,7 @@ export default function MainLayout() {
             <Route path="/main" element={<MainPage />} />
             <Route path="/debitip/ipreport" element={<ReportIpAllPage />} />
             <Route path="/ipofc/report" element={<ReportIpOfcPage />} />
+            <Route path="/stmipofc/report" element={<StmIpOfcPage />} />
             <Route path="/opofc/report" element={<ReportOpOfcPage />} />
             <Route path="/ipuc/report" element={<ReportIpUcPage />} />
             <Route path="/debit/edit" element={<DebitEditPage />} />

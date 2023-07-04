@@ -19,7 +19,7 @@ import {
   import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
   import 'dayjs/locale/th'
   import dayjs, { Dayjs } from 'dayjs'
-  import CardHeader1 from '../assets/telemed.webp'
+  import CardHeader1 from '../../assets/telemed.webp'
   import {
     DataGrid,
     GridRowsProp,

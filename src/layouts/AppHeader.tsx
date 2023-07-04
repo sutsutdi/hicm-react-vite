@@ -6,10 +6,11 @@ import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import MailIcon from '@mui/icons-material/Mail'
 
-import { Badge, Box, Button } from '@mui/material'
+import { Badge, Box, Button, Tooltip } from '@mui/material'
 import { AccountCircle, Notifications } from '@mui/icons-material'
 
 import { useNavigate } from 'react-router-dom'
+import logo from '../assets/logo.png'
 import { useSelector } from 'react-redux'
 import { store, useAppDispatch } from '../store/store'
 import { loginSelector, loginStatus } from '../store/slices/loginSlice'
@@ -56,13 +57,13 @@ export default function AppHeader({ open, onDrawerOpen, logout }: HeaderProps) {
 
   const navigate = useNavigate()
 
-  useEffect(() => {
-  
-      const element = document.documentElement
+  // useEffect(() => {
 
-      element.requestFullscreen()
-    
-  }, [])
+  //     const element = document.documentElement
+
+  //     element.requestFullscreen()
+
+  // }, [])
 
   const logoutNotify = () => {
     // toast("Logout !!!");
@@ -72,7 +73,7 @@ export default function AppHeader({ open, onDrawerOpen, logout }: HeaderProps) {
   return (
     <AppBar position="fixed" open={open}>
       <Toolbar>
-        { (
+        {
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -82,10 +83,10 @@ export default function AppHeader({ open, onDrawerOpen, logout }: HeaderProps) {
           >
             <MenuIcon />
           </IconButton>
-        )}
-
+        }
+        
         <Typography variant="h6" noWrap component="div">
-          CM Stock Project
+          Warinchamrab Hospital
         </Typography>
         <Box flexGrow={1} />
         <Box display={{ xs: 'none', md: 'flex' }}>
@@ -102,18 +103,20 @@ export default function AppHeader({ open, onDrawerOpen, logout }: HeaderProps) {
           <Box p={2} alignItems={'center'}>
             "User ..."
           </Box>
+          <Tooltip title={'Logout '}>
+            <IconButton
+              size="large"
+              edge="end"
+              color="inherit"
+              aria-haspopup={true}
+              aria-label="account"
+              onClick={logoutNotify}
+              sx={{ marginRight: '10px' }}
+            >
+              <AccountCircle />
+            </IconButton>
+          </Tooltip>
 
-          <IconButton
-            size="large"
-            edge="end"
-            color="inherit"
-            aria-haspopup={true}
-            aria-label="account"
-            onClick={logoutNotify}
-            sx={{ marginRight: '10px' }}
-          >
-            <AccountCircle />
-          </IconButton>
           {/* <Toaster
             position="top-right"
             gutter={8}

@@ -19,7 +19,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import 'dayjs/locale/th'
 import dayjs, { Dayjs } from 'dayjs'
-import CardHeader1 from '../assets/amy.jpg'
+import CardHeader1 from '../../assets/amy.jpg'
 import {
   DataGrid,
   GridRowsProp,
