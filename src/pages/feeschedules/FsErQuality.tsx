@@ -9,7 +9,6 @@ import {
   Divider,
   Stack,
   Tab,
-  Tabs,
   TextField,
 } from '@mui/material'
 import axios from 'axios'
@@ -26,19 +25,27 @@ import {
   GridColDef,
   GridToolbarContainer,
   GridToolbarExport,
+  GridToolbarQuickFilter,
 } from '@mui/x-data-grid'
 
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
-import { Pie } from 'react-chartjs-2'
+
+import { Pie, Bar } from 'react-chartjs-2'
+import Loading from '../../components/Loading'
+import DataGridTable from '../../components/DataGridTable'
+import { Chart as ChartJS, BarElement, CategoryScale, Legend, LinearScale, Title, Tooltip } from 'chart.js'
 
 const apiHiUrl = import.meta.env.VITE_API_HI_URL
 
 export default function FsErQualityPage() {
   const [dataCase, setDataCase] = useState<GridRowsProp>([])
+  const [dataGroup, setDataGroup] = useState<GridRowsProp>([])
+  const [dataTable, setDataTable] = useState([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
+  const [isLoading, setIsLoading] = useState(false)
 
   const columns: GridColDef[] = [
     { field: 'vn', headerName: 'VN', width: 100 },
@@ -56,45 +63,47 @@ export default function FsErQualityPage() {
   ]
 
   const onSubmit = async () => {
-    console.log({ startDt, endDt })
+   
 
     let startDate = startDt?.format('YYYYMMDD')
     let endDate = endDt?.format('YYYYMMDD')
 
-    console.log(startDt)
-    console.log(endDt)
+    setIsLoading(true)
 
     try {
       const response = await axios.post(`${apiHiUrl}/fs/erquality`, {
         startDate,
         endDate,
       })
-      // setData(jsonData)
-
-      console.log(`${startDate}`)
-      console.log(`${endDate}`)
-
-      console.log(response.data)
-
+     
       setDataCase(response.data)
-
-      console.log(dataCase)
+      setDataTable(response.data)
+      
     } catch (error) {
       console.log('ERROR', error)
     }
+
+    try {
+      const responseErqSum = await axios.get(`${apiHiUrl}/fs/erqualitysum`, )
+      // setData(jsonData)
+
+      setDataGroup(responseErqSum.data)
+     
+      console.log(dataGroup)
+    } catch (error) {
+      console.log('ERROR', error)
+    }
+
+    
+    console.log(dataCase)
+    
+    setIsLoading(false)
   }
-   
+
   const totalCases = dataCase.length
-  const totalClaim = dataCase.length*50
+  const totalClaim = dataCase.length * 150
 
 
-  const CustomToolbar = () => {
-    return (
-      <GridToolbarContainer>
-        <GridToolbarExport />
-      </GridToolbarContainer>
-    )
-  }
 
   const [valueTab, setValueTab] = useState('1')
 
@@ -102,14 +111,39 @@ export default function FsErQualityPage() {
     setValueTab(newValue)
   }
 
-  const dataChart = {
-    labels: ['รอดำเนินการ', 'สำเร็จ'],
+  const labels = dataGroup.map((item) => item.month)
+  const data1 = dataGroup.map((item) => item.case_count)
+    
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  )
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: 'ER Qaulity',
+      },
+    },
+  }
+
+  const data = {
+    labels,
     datasets: [
       {
-        // label: ['รอดำเนินการ', 'สำเร็จ'],
-        data: [1, 2],
-        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
-        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+        label: 'Cases',
+        data: data1,
+        backgroundColor: ['rgba(122, 58, 241, 0.2)'],
+        borderColor: ['rgba(54, 152, 205, 1)'],
         borderWidth: 1,
       },
     ],
@@ -124,61 +158,70 @@ export default function FsErQualityPage() {
         marginTop={5}
       >
         <Card sx={{ maxWidth: 345 }}>
-          <CardActionArea>
-            <CardMedia
-              component={'img'}
-              sx={{ height: 140, width: '100%' }}
-              image={CardHeader1}
-              title="green iguana"
-            />
+          <CardMedia
+            component={'img'}
+            sx={{ height: 140, width: '100%' }}
+            image={CardHeader1}
+            title="green iguana"
+          />
 
-            <CardContent>
-              <LocalizationProvider
-                dateAdapter={AdapterDayjs}
-                adapterLocale="th"
-                // adapterLocale="th"
-              >
-                <Stack direction={'column'} gap={2}>
-                  <DatePicker
-                    label="Start Date"
-                    value={startDt}
-                    onChange={(newValue) => setStartDt(newValue)}
-                  />
-                  <DatePicker
-                    label="End Date"
-                    value={endDt}
-                    onChange={(newValue) => setEndDt(newValue)}
-                  />
-                  <TextField
-                    label="Fee Schedule"
-                    color="secondary"
-                    value={'Fee Schedule ER Quality'}
-                    focused
-                  />
-                </Stack>
-              </LocalizationProvider>
+          <CardContent>
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale="th"
+              // adapterLocale="th"
+            >
+              <Stack direction={'column'} gap={2}>
+                <DatePicker
+                  label="Start Date"
+                  value={startDt}
+                  onChange={(newValue) => setStartDt(newValue)}
+                />
+                <DatePicker
+                  label="End Date"
+                  value={endDt}
+                  onChange={(newValue) => setEndDt(newValue)}
+                />
+                <TextField
+                  label="Fee Schedule"
+                  color="secondary"
+                  value={'Fee Schedule ER Quality'}
+                  focused
+                />
+              </Stack>
+            </LocalizationProvider>
 
-              <CardActions>
-                <Button onClick={onSubmit} size="small" color="primary">
-                  Submit
-                </Button>
-              </CardActions>
-            </CardContent>
-          </CardActionArea>
+            <CardActions>
+              <Button onClick={onSubmit} size="small" color="primary">
+                Submit
+              </Button>
+            </CardActions>
+          </CardContent>
         </Card>
 
         <Divider />
-        <Card sx={{ width: 645, marginLeft: '50px' }}>
-          <Stack direction={'row'} gap={2} padding={'10px'}>
-            <Typography variant='h6'>Case ER Triage ระดับ 2-5  นอกเวลาราชการ</Typography>
-          </Stack>
-          <Divider/>
-          <Stack direction={'row'} gap={2} padding={'10px'}>
-            <Typography variant='h6'>จำนวนทั้งหมด :{' '} </Typography>           
-            <Typography variant='h6'>{ totalCases.toLocaleString('en-US')} {' '}ราย</Typography>
-            <Typography variant='h6'>Estimate Claim : {' '}{ totalClaim.toLocaleString('en-US')} {' '}บาท</Typography>
-          </Stack>
-        </Card>
+
+        {isLoading ? (
+          <Loading isLoading={isLoading} />
+        ) : (
+          <Card sx={{ width: 645, marginLeft: '50px' }}>
+            <Stack direction={'row'} gap={2} padding={'10px'}>
+              <Typography variant="h6">
+                Case ER Triage ระดับ 2-5 นอกเวลาราชการ
+              </Typography>
+            </Stack>
+            <Divider />
+            <Stack direction={'row'} gap={2} padding={'10px'}>
+              <Typography variant="h6">จำนวนทั้งหมด : </Typography>
+              <Typography variant="h6">
+                {totalCases.toLocaleString('en-US')} ราย
+              </Typography>
+              <Typography variant="h6">
+                Estimate Claim : {totalClaim.toLocaleString('en-US')} บาท
+              </Typography>
+            </Stack>
+          </Card>
+        )}
       </Box>
 
       <Divider sx={{ marginY: '30px' }} />
@@ -197,15 +240,13 @@ export default function FsErQualityPage() {
           <TabPanel value="1">
             <Stack direction={'row'} gap={2}>
               <Typography sx={{ marginBottom: '15px' }}>
-                 Total Cases :{''} { totalCases.toLocaleString('en-US')} {' '}ราย
+                Total Cases :{''} {totalCases.toLocaleString('en-US')} ราย
               </Typography>
               <Typography sx={{ marginBottom: '15px' }}>
-                 Total Estimat :{''} { totalClaim.toLocaleString('en-US')} {' '}บาท
+                Total Estimat :{''} {totalClaim.toLocaleString('en-US')} บาท
               </Typography>
-              
-             
             </Stack>{' '}
-            <Box style={{ height: 500, width: '100%' }}>
+            {/* <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={dataCase}
                 columns={columns}
@@ -214,18 +255,19 @@ export default function FsErQualityPage() {
                   toolbar: CustomToolbar,
                 }}
               />
-            </Box>
+            </Box> */}
+            <DataGridTable rows={dataTable} columns={columns} />
           </TabPanel>
-       
+
           <TabPanel value="2">
-            <Box
+          <Box
               width={'100%'}
               height={500}
               display={'flex'}
               alignItems={'center'}
               justifyContent={'center'}
             >
-              <Pie data={dataChart} />
+              <Bar options={options} data={data} />
             </Box>
           </TabPanel>
         </TabContext>

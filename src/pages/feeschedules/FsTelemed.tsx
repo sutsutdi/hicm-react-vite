@@ -26,6 +26,7 @@ import {
   GridColDef,
   GridToolbarContainer,
   GridToolbarExport,
+  GridToolbarQuickFilter,
 } from '@mui/x-data-grid'
 
 import TabContext from '@mui/lab/TabContext'
@@ -41,14 +42,19 @@ import {
   Legend,
 } from 'chart.js'
 import { Pie, Bar } from 'react-chartjs-2'
+import Loading from '../../components/Loading'
 
 const apiHiUrl = import.meta.env.VITE_API_HI_URL
+import { data } from './../PieChart';
+import DataGridTable from '../../components/DataGridTable'
 
 export default function FsTelemedPage() {
   const [dataCase, setDataCase] = useState<GridRowsProp>([])
   const [dataGroup, setDataGroup] = useState<GridRowsProp>([])
+  const [dataTable, setDataTable] = useState([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
+  const [isLoading, setIsLoading] = useState(false)
 
   const columns: GridColDef[] = [
     { field: 'vn', headerName: 'VN', width: 100 },
@@ -68,40 +74,43 @@ export default function FsTelemedPage() {
   ]
 
   const onSubmit = async () => {
-    console.log({ startDt, endDt })
+   
 
     let startDate = startDt?.format('YYYYMMDD')
     let endDate = endDt?.format('YYYYMMDD')
 
-    console.log(startDt)
-    console.log(endDt)
+ 
 
+    setIsLoading(true)
     try {
-      const response = await axios.post(`${apiHiUrl}/fs/telemed`, {
+      const responseTele = await axios.post(`${apiHiUrl}/fs/telemed`, {
         startDate,
         endDate,
       })
       // setData(jsonData)
 
-      setDataCase(response.data)
-
+      setDataCase(responseTele.data)
+      setDataTable(responseTele.data)
       console.log(dataCase)
     } catch (error) {
       console.log('ERROR', error)
     }
 
     try {
-      const response = await axios.get(`${apiHiUrl}/fs/telemedsum`, )
+      const responseTeleSum = await axios.get(`${apiHiUrl}/fs/telemedsum`, )
       // setData(jsonData)
 
-      setDataGroup(response.data)
-
+      setDataGroup(responseTeleSum.data)
+     
       console.log(dataGroup)
     } catch (error) {
       console.log('ERROR', error)
     }
 
+     
     console.log(dataGroup)
+
+    setIsLoading(false)
   }
 
   const totalCases = dataCase.length
@@ -110,7 +119,19 @@ export default function FsTelemedPage() {
   const CustomToolbar = () => {
     return (
       <GridToolbarContainer>
-        <GridToolbarExport />
+        <Stack direction={'row'} gap={3} mt={2} mb={1} ml={2}>
+          <GridToolbarExport />
+          <Box>
+            <GridToolbarQuickFilter
+              quickFilterParser={(searchInput: string) =>
+                searchInput
+                  .split(',')
+                  .map((value) => value.trim())
+                  .filter((value) => value !== '')
+              }
+            />
+          </Box>
+        </Stack>
       </GridToolbarContainer>
     )
   }
@@ -122,9 +143,10 @@ export default function FsTelemedPage() {
   }
 
 
-    const months = dataGroup.map((item) => item.month)
-    const counts = dataGroup.map((item) => item.case_count)
+    const labels = dataGroup.map((item) => item.month)
+    const data1 = dataGroup.map((item) => item.case_count)
      
+  
     
     ChartJS.register(
       CategoryScale,
@@ -143,18 +165,19 @@ export default function FsTelemedPage() {
         },
         title: {
           display: true,
-          text: 'Chart.js Bar Chart',
+          text: 'Telemedicine',
         },
       },
     }
 
-    const dataChart = {
+    const data = {
+      labels,
       datasets: [
         {
-          labels: months,
-          data: counts,
-          backgroundColor: ['rgba(255, 99, 132, 0.2)'],
-          borderColor: ['rgba(255, 99, 132, 1)'],
+          label: 'Cases',
+          data: data1,
+          backgroundColor: ['rgba(122, 58, 241, 0.2)'],
+          borderColor: ['rgba(54, 152, 205, 1)'],
           borderWidth: 1,
         },
       ],
@@ -213,6 +236,11 @@ export default function FsTelemedPage() {
         </Card>
 
         <Divider />
+
+
+        {isLoading ? (
+          <Loading isLoading={isLoading} />
+        ) : (
         <Card sx={{ width: 645, marginLeft: '50px' }}>
           <Stack direction={'row'} gap={2} padding={'10px'}>
             <Typography variant="h6">Case Telemedicine</Typography>
@@ -228,6 +256,7 @@ export default function FsTelemedPage() {
             </Typography>
           </Stack>
         </Card>
+        )}
       </Box>
 
       <Divider sx={{ marginY: '30px' }} />
@@ -252,7 +281,7 @@ export default function FsTelemedPage() {
                 Total Estimat :{''} {totalClaim.toLocaleString('en-US')} บาท
               </Typography>
             </Stack>{' '}
-            <Box style={{ height: 500, width: '100%' }}>
+            {/* <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={dataCase}
                 columns={columns}
@@ -261,7 +290,9 @@ export default function FsTelemedPage() {
                   toolbar: CustomToolbar,
                 }}
               />
-            </Box>
+            </Box> */}
+
+            <DataGridTable rows={dataTable} columns={columns} />
           </TabPanel>
 
           <TabPanel value="2">
@@ -272,8 +303,9 @@ export default function FsTelemedPage() {
               alignItems={'center'}
               justifyContent={'center'}
             >
-              <Bar options={options} data={dataChart} />
+              <Bar options={options} data={data} />
             </Box>
+            
           </TabPanel>
         </TabContext>
       </Box>

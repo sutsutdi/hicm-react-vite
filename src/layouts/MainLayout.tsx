@@ -19,7 +19,8 @@ import ReportIpOfcPage from '../pages/reports/ReportIpOfc'
 import ReportOpOfcPage from '../pages/reports/ReportOpOfc'
 import ReportIpUcPage from '../pages/reports/ReportIpUc'
 import FsErQualityPage from '../pages/feeschedules/FsErQuality'
-import FsTelemedPage from '../pages/feeschedules/FsChangeRight'
+import FsTelemedPage from '../pages/feeschedules/FsTelemed'
+
 
 const drawerWidth = 240
 
@@ -69,8 +70,8 @@ export default function MainLayout() {
 
   return (
     <>
-      <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
+      <Box sx={{ display: 'flex', padding: '25px' }}>
+        {/* <CssBaseline /> */}
         <AppHeader
           open={open}
           onDrawerOpen={handleDrawerOpen}

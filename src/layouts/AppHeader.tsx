@@ -72,20 +72,20 @@ export default function AppHeader({ open, onDrawerOpen, logout }: HeaderProps) {
   }
   return (
     <AppBar position="fixed" open={open}>
-      <Toolbar>
+      <Toolbar sx={{padding: '10px'}}>
         {
           <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={onDrawerOpen}
             edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
+            sx={{ ml:3 , mr: 2, ...(open && { display: 'none' }) }}
           >
             <MenuIcon />
           </IconButton>
         }
         
-        <Typography variant="h6" noWrap component="div">
+        <Typography variant="h4" noWrap component="div">
           Warinchamrab Hospital
         </Typography>
         <Box flexGrow={1} />
