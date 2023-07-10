@@ -5,7 +5,7 @@ import {
   CardActions,
   CardContent,
   CardMedia,
-  CircularProgress,
+
   Divider,
   Stack,
   Tab,
@@ -32,11 +32,11 @@ import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
 import { Pie } from 'react-chartjs-2'
-import { green } from '@mui/material/colors'
 import TotalCaseCard from './TotalCaseCard'
 import ClaimCaseCard from './ClaimCaseCard'
 import UnClaimCaseCard from './UnClaimCaseCard'
 import Loading from '../../../components/Loading'
+
 
 type DataType = {
   startDt: Date
@@ -310,7 +310,7 @@ export default function ReportIpPage(props: ReportIp) {
 
   return (
     <>
-      <Stack direction={'row'} gap={3} marginTop={5} paddingLeft={25}>
+      <Stack direction={'row'} gap={1} marginTop={2} paddingLeft={10} >
         <Card sx={{ width: '20%' }}>
          
             <CardMedia
@@ -338,9 +338,10 @@ export default function ReportIpPage(props: ReportIp) {
                     onChange={(newValue) => setEndDt(newValue)}
                   />
                   <TextField
-                    label="Outlined secondary"
+                    label="ประเภทลูกหนี้"
                     color="secondary"
                     value={props.title}
+                    sx={{fontWeight: 'bold'}}
                     focused
                   />
                 </Stack>
@@ -357,33 +358,10 @@ export default function ReportIpPage(props: ReportIp) {
 
         <Card sx={{ width: '60%', marginLeft: '50px', padding: '10px' }}>
           {isLoading ? (
-            // <Box sx={{ m: 1, position: 'relative' }} height={90}>
-            //   <Button
-            //     variant="contained"
-            //     sx={{
-            //       bgcolor: green[500],
-            //     }}
-            //   >
-            //     Please Wait !!
-            //   </Button>
-            //   {isLoading && (
-            //     <CircularProgress
-            //       size={54}
-            //       sx={{
-            //         color: green[500],
-            //         position: 'absolute',
-            //         top: '50%',
-            //         left: '50%',
-            //         marginTop: '-12px',
-            //         marginLeft: '-12px',
-            //       }}
-            //     />
-            //   )}
-            // </Box>
+           
             <Loading isLoading />
           ) : (
             <Box>
-            
               <Stack direction={'row'} gap={2}>
                 <TotalCaseCard
                   cases={(
@@ -402,12 +380,18 @@ export default function ReportIpPage(props: ReportIp) {
                     'en-US'
                   )}
                   recieve =  {Number(dataNotNull.recieve).toLocaleString('en-US')}
+                  percent = {(Number(dataNotNull.all_notnullcase) * 100) /
+                  (Number(dataNull.all_nullcase) +
+                    Number(dataNotNull.all_notnullcase))}
                 />
                 <UnClaimCaseCard
                   cases={Number(dataNull.all_nullcase).toLocaleString('en-US')}
                   values = {Number(dataNull.debit_null).toLocaleString(
                     'en-US'
                   )}
+                  percent = {(Number(dataNull.all_nullcase) * 100) /
+                  (Number(dataNull.all_nullcase) +
+                    Number(dataNotNull.all_notnullcase))}
                 />
               </Stack>
               <Stack direction={'column'} gap={2} marginTop={2}>
@@ -453,23 +437,23 @@ export default function ReportIpPage(props: ReportIp) {
                   </Stack>
                
               </Stack>
-              <Divider />
-              <Typography variant="h4" marginTop={3} color='#07c75e'>
-                ลูกหนี้คงเหลือ : รอดำเนินการ :{' '}
-                {dataNull.all_nullcase === null
+              {/* <Divider /> */}
+              {/* <Typography variant="h4" marginTop={3} color= 'primary'> */}
+                {/* ลูกหนี้คงเหลือ : รอดำเนินการ :{' '} */}
+                {/* {dataNull.all_nullcase === null
                   ? 0
                   : Number(dataNull.all_nullcase).toLocaleString('en-US')}{' '}
-                ราย จำนวน :{' '}
+                ราย จำนวน :{' '} */}
                 {/* {dataNull.debit_null.toLocaleString('en-US')} */}
-                {dataNull.debit_null === null
+                {/* {dataNull.debit_null === null
                   ? 0
                   : Number(dataNull.debit_null).toLocaleString('en-US')}{' '}
-                บาท
-              </Typography>
+                บาท */}
+              {/* </Typography> */}
             </Box>
           )}
         </Card>
-
+        
       </Stack>
 
       <Divider sx={{ marginY: '30px' }} />
