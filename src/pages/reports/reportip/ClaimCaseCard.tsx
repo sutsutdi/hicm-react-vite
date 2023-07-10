@@ -12,36 +12,31 @@ import {
   } from '@mui/material';
   
   import { useTranslation } from 'react-i18next';
-  import BusinessTwoToneIcon from '@mui/icons-material/BusinessTwoTone';
+  import AssessmentTwoToneIcon from '@mui/icons-material/AssessmentTwoTone';
   
-  const AvatarError = styled(Avatar)(
+  const AvatarSuccess = styled(Avatar)(
     ({ theme }) => `
-        background-color: ${theme.colors.error.main};
-        color: ${theme.palette.getContrastText(theme.colors.error.main)};
+        background-color: ${theme.colors.success.main};
+        color: ${theme.palette.primary.contrastText};
         width: ${theme.spacing(8)};
         height: ${theme.spacing(8)};
-        box-shadow: ${theme.colors.shadows.error};
+        box-shadow: ${theme.colors.shadows.success};
   `
   );
   
-  const CardContentWrapper = styled(CardContent)(
-    ({ theme }) => `
-       padding: ${theme.spacing(2.5, 3, 3)};
-    
-       &:last-child {
-       padding-bottom: 0;
-       }
-  `
-  );
+  type Claim = {
+    cases: string,
+    values: string,
+    recieve: string
+  }
   
-  function PendingInvitations() {
+  function ClaimCaseCard(props: Claim) {
     const { t }: { t: any } = useTranslation();
   
     return (
-      <Card>
-        <CardContentWrapper>
+      <Card sx={{ padding: '10px' }}>
           <Typography variant="overline" color="text.primary">
-            {t('Pending Invitations')}
+            {t('ดำเนินการเสร็จ')}
           </Typography>
   
           <ListItem
@@ -52,13 +47,13 @@ import {
             component="div"
           >
             <ListItemAvatar>
-              <AvatarError variant="rounded">
-                <BusinessTwoToneIcon fontSize="large" />
-              </AvatarError>
+              <AvatarSuccess variant="rounded">
+                <AssessmentTwoToneIcon fontSize="large" />
+              </AvatarSuccess>
             </ListItemAvatar>
   
             <ListItemText
-              primary="19"
+              primary={props.cases}
               primaryTypographyProps={{
                 variant: 'h1',
                 sx: {
@@ -77,28 +72,32 @@ import {
             component="div"
           >
             <ListItemText
-              primary={
+               primary={
                 <>
-                  <Link fontWeight="bold" href="#">
-                    {t('See all invitations')}
-                  </Link>
+                  <Box fontWeight="bold">
+                    {t(`ทั้งหมด ${props.values} บาท` )}
+                    
+                  </Box>
+                 
                   <Box
-                    component="span"
+                    component="div"
                     sx={{
-                      pl: 0.5
+                      pl: 0.5,
+                      fontWeight:"bold",
+                      color: 'primary'
                     }}
                   >
-                    {t('not opened yet.')}
+                    {t(`ชดเชย ${props.recieve}  บาท` )}
                   </Box>
                 </>
               }
               primaryTypographyProps={{ variant: 'body2', noWrap: true }}
             />
           </ListItem>
-        </CardContentWrapper>
+       
       </Card>
     );
   }
   
-  export default PendingInvitations;
+  export default ClaimCaseCard;
   
