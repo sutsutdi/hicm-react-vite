@@ -126,7 +126,7 @@ export default function ReportIpPage(props: ReportIp) {
     { field: 'fullname', headerName: 'ชื่อ นามสสกุล', width: 150 },
     { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
     { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
-    { field: 'l_stay', headerName: 'วันนอน', width: 110 },
+    { field: 'l_stay', headerName: 'วันนอน', width: 70 },
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
     { field: 'debt', headerName: 'คงเหลือ', width: 110 },
@@ -135,6 +135,26 @@ export default function ReportIpPage(props: ReportIp) {
     { field: 'adjrw', headerName: 'AdjRw', width: 110 },
     { field: 'total_summary', headerName: 'ได้รับชดเชย', width: 110 },
     { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
+    { field: '', headerName: 'เลขใบเสร็จ', width: 110 },
+  ]
+
+  const columns_0: GridColDef[] = [
+    { field: 'hn', headerName: 'HN', width: 100 },
+    { field: 'an', headerName: 'AN', width: 120 },
+    { field: 'cid', headerName: 'CID', width: 150 },
+    { field: 'fullname', headerName: 'ชื่อ นามสสกุล', width: 150 },
+    { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
+    { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
+    { field: 'l_stay', headerName: 'วันนอน', width: 70 },
+    { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
+    { field: 'paid', headerName: 'ชำระ', width: 110 },
+    { field: 'debt', headerName: 'คงเหลือ', width: 110 },
+    { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 260 },
+    { field: 'repno', headerName: 'RepNo', width: 110 },
+    { field: 'errorcode', headerName: 'error_code', width: 50 },
+    { field: 'code_name', headerName: 'error', width: 200 },
+    { field: 'remarkdata', headerName: 'remark', width: 200 },
+    
   ]
 
   const columns2: GridColDef[] = [
@@ -310,7 +330,7 @@ export default function ReportIpPage(props: ReportIp) {
 
   return (
     <>
-      <Stack direction={'row'} gap={1} marginTop={2} paddingLeft={10} >
+      <Stack direction={'row'} gap={1} marginTop={2} paddingLeft={10}>
         <Card sx={{ width: '20%' }}>
          
             <CardMedia
@@ -356,7 +376,7 @@ export default function ReportIpPage(props: ReportIp) {
         
         </Card>
 
-        <Card sx={{ width: '60%', marginLeft: '50px', padding: '10px' }}>
+        <Card sx={{ width: '1000px', marginLeft: '50px', padding: '10px' }}>
           {isLoading ? (
            
             <Loading isLoading />
@@ -495,7 +515,7 @@ export default function ReportIpPage(props: ReportIp) {
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={dataCaseNull}
-                columns={columns}
+                columns={columns_0}
                 getRowId={(row) => row.an}
                 slots={{
                   toolbar: CustomToolbar,
