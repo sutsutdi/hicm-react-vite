@@ -48,7 +48,8 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   }
 
   const menus = [
-    { icon: <AutoGraph />, title: 'Dashboard', nav: '' },
+    { icon: <AutoGraph />, title: 'Dashboard', nav: '/dashboard' },
+    { icon: <AutoGraph />, title: 'Eclaim', nav: '/eclaim' },
     { icon: <Settings />, title: 'Check Data Report', nav: '' },
     {
       icon: <InboxIcon />,

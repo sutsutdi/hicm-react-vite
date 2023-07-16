@@ -15,13 +15,14 @@ import { PieChartPage } from '../pages/PieChart'
 import MainPage from '../pages/MainPage'
 import StmIpOfcPage from '../pages/statements/StmIpOfc'
 import ReportIpAllPage from '../pages/reports/ReportIpAll'
-import ReportIpOfcPage from '../pages/reports/reportip/ReportIpOfc'
+// import ReportIpOfcPage from '../pages/reports/reportip/ReportIpOfc'
 import ReportOpOfcPage from '../pages/reports/ReportOpOfc'
-import ReportIpUcPage from '../pages/reports/ReportIpUc'
+// import ReportIpUcPage from '../pages/reports/ReportIpUc'
 import FsErQualityPage from '../pages/feeschedules/FsErQuality'
 import FsTelemedPage from '../pages/feeschedules/FsTelemed'
 import ReportIpPage from '../pages/reports/reportip/ReportIp'
-
+import IpDashboardPage from '../pages/dashboard/IpDashboard'
+import EclaimItemPage from '../pages/eclaim/EclaimItems'
 
 const drawerWidth = 240
 
@@ -93,7 +94,9 @@ export default function MainLayout() {
             <Route path="/debit/edit" element={<DebitEditPage />} />
             <Route path="/fs/erquality" element={<FsErQualityPage />} />
             <Route path="/fs/telemed" element={<FsTelemedPage />} />
-
+            <Route path="/dashboard" element={<IpDashboardPage />} />
+            <Route path="/eclaim" element={<EclaimItemPage />} />
+ 
             <Route path="/barchart" element={<BarChartPage />} />
             <Route path="/piechart" element={<PieChartPage />} />
             <Route path="/" element={<Navigate to={'/login'} />} />
