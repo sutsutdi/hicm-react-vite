@@ -56,6 +56,8 @@ function isKeyboardEvent(event: any): event is React.KeyboardEvent {
 
 export default function EclaimItemsPage() {
   const [eclaimItems, setEclaimItems] = useState<EclaimItems[]>([])
+  const [selectedItem , setSelectedItem] = React.useState<EclaimItems>()
+  const [openDialog,setOpenDialog] = React.useState<boolean>(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,6 +81,8 @@ export default function EclaimItemsPage() {
     const [inputRef, setInputRef] = React.useState<HTMLInputElement | null>(
       null
     )
+    
+
     const apiRef = useGridApiContext()
 
     React.useLayoutEffect(() => {
@@ -186,7 +190,10 @@ export default function EclaimItemsPage() {
             aria-label="delete"
             size="large"
             color="error"
-            onClick={() => alert(JSON.stringify(row))}
+            onClick={() => {
+              setSelectedItem(row)
+
+            }}
           >
             <Delete />
           </IconButton>
@@ -243,6 +250,7 @@ export default function EclaimItemsPage() {
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList onChange={handleChangeTab} aria-label="Ip Ofc">
               <Tab label="Eclaim Items" value="1" />
+              <Tab label="Eclaim total Chart" value="2" />
             </TabList>
           </Box>
           <TabPanel value="1">
