@@ -34,6 +34,9 @@ type UnClaim = {
   cases: string
   values: string
   percent: number
+  caserep: string
+  caseerror: string
+  caseuncalim: string
 }
 
 function UnClaimCaseCard(props: UnClaim) {
@@ -83,7 +86,10 @@ function UnClaimCaseCard(props: UnClaim) {
             <ListItemText
               primary={
                 <>
-                  <Box fontWeight="bold" fontSize={16} color={'#e87d47'}>{t(`จำนวน ${props.values} บาท`)}</Box>
+                  <Box fontWeight="bold" fontSize={16} mb={1} color={'#9847e8'}>{t(`จำนวน ${props.values} บาท`)}</Box>
+                  <Box fontWeight="bold" fontSize={16} color={'#224bef'}>{t(`ส่งแล้วมี rep ${props.caserep} ราย`)}</Box>
+                  <Box fontWeight="bold" fontSize={16} color={'#e87d47'}>{t(`ติด C ${props.caseerror} ราย`)}</Box>
+                  <Box fontWeight="bold" fontSize={16} color={'#ef3b3b'}>{t(`รอดำเนินการ ${props.caseuncalim} ราย`)}</Box>
                   <Box
                     component="span"
                     sx={{

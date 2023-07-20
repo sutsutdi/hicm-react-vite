@@ -4,14 +4,17 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardHeader,
   CardMedia,
   Divider,
+  Menu,
+  MenuItem,
   Stack,
   Tab,
   TextField,
 } from '@mui/material'
 import axios from 'axios'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Typography } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -26,6 +29,8 @@ import {
   GridToolbarExport,
   GridToolbarQuickFilter,
 } from '@mui/x-data-grid'
+
+import { KeyboardArrowDownTwoTone } from '@mui/icons-material'
 
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
@@ -62,14 +67,13 @@ const dataDbipofcacc = {
 
 const dataNull0 = {
   all_nullcase: 0,
-  debit_null: 0,
+  debit_null: '',
 }
 
 const dataNotNull0 = {
-  dchdate: '2023-01-01',
   all_notnullcase: 0,
   debit_notnull: 0,
-  recieve: '',
+  recieve: 0,
   sum_diff: 0,
   diffloss: 0,
   diffgain: 0,
@@ -97,14 +101,10 @@ type DataDabitNotNull = {
   diff: number
 }
 
-const apiUrl = import.meta.env.VITE_API_URL
+// const apiUrl = import.meta.env.VITE_API_URL  // localhost
+const apiUrl = import.meta.env.VITE_API_SERVER_URL // server HICM
 
-type ReportIp = {
-  title: string
-  acctype: string
-}
-
-export default function ReportIpPage(props: ReportIp) {
+export default function ReportIpPage() {
   const [dataNull, setDataNull] = useState(dataNull0)
   const [dataNotNull, setDataNotNull] = useState(dataNotNull0)
   const [dataAll, setDataAll] = useState<string>('')
@@ -113,8 +113,16 @@ export default function ReportIpPage(props: ReportIp) {
   const [dataCaseNull, setDataCaseNull] = useState<GridRowsProp>([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
+  const [title, setTitle] = useState<string>('')
+  const [accCode, setAccCode] = useState<string>('')
+  const [accStName, setAccStName] = useState<string>('')
+  const [stmFile, setStmFile] = useState<string>('')
+  const [repFile, setRepFile] = useState<string>('')
   const [getRep, setGetRep] = useState(0)
   const [getCRep, setGetCRep] = useState(0)
+  const [caseNoRep, setCaseNoRep] = useState<GridRowsProp>([])
+  const [caseRepNotC, setCaseRepNotC] = useState<GridRowsProp>([])
+  const [caseRepC, setCaseRepC] = useState<GridRowsProp>([])
 
   const columns: GridColDef[] = [
     { field: 'hn', headerName: 'HN', width: 100 },
@@ -127,7 +135,7 @@ export default function ReportIpPage(props: ReportIp) {
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
     { field: 'debt', headerName: 'คงเหลือ', width: 110 },
-    // { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 260 },
+    { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 300 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
     { field: 'adjrw', headerName: 'AdjRw', width: 110 },
     { field: 'total_summary', headerName: 'ได้รับชดเชย', width: 110 },
@@ -146,11 +154,17 @@ export default function ReportIpPage(props: ReportIp) {
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
     { field: 'debt', headerName: 'คงเหลือ', width: 110 },
-    { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 260 },
+    {
+      field: 'customField', // Use a custom field name for the constant value
+      headerName: 'สิทธิ์',
+      width: 120,
+      renderCell: (params) => <strong>{accStName}</strong>, // Replace the field with a constant value
+    },
+    { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 300 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
     { field: 'error_code', headerName: 'error_code', width: 100 },
-    { field: 'error_name', headerName: 'error', width: 200 },
-    { field: 'remark_data', headerName: 'remark', width: 200 },
+    { field: 'error_name', headerName: 'error', width: 280 },
+    { field: 'remark_data', headerName: 'remark', width: 280 },
   ]
 
   const columns2: GridColDef[] = [
@@ -185,56 +199,39 @@ export default function ReportIpPage(props: ReportIp) {
 
     let startDate = startDt?.format('YYYY-MM-DD')
     let endDate = endDt?.format('YYYY-MM-DD')
+    let stm_file = stmFile
+    let acc_code = accCode
 
-    console.log(startDt)
-    console.log(endDt)
+    let rep_file = repFile
 
     setIsLoading(true)
-
-    try {
-      const responseNotNull = await axios.post(
-        `${apiUrl}/${props.acctype}/${props.acctype}accnotnull`,
-        { startDate, endDate }
-      )
-
-      console.log(`${apiUrl}/ipofc/ipofcaccnotnull`)
-      console.log(`${startDate}`)
-      console.log(`${endDate}`)
-
-      console.log(responseNotNull.data[0])
-
-      setDataNotNull(responseNotNull.data[0])
-
-      console.log(dataNotNull)
-    } catch (error) {
-      console.log('ERROR', error)
-    }
 
     // Null Cases
 
     try {
-      const responseCaseNull = await axios.post(
-        `${apiUrl}/${props.acctype}/${props.acctype}null`,
-        {
-          startDate,
-          endDate,
-        }
-      )
+      const responseCaseNull = await axios.post(`${apiUrl}/ipofc/ipofcnull`, {
+        stm_file,
+        rep_file,
+        acc_code,
+        startDate,
+        endDate,
+      })
 
-      console.log(responseCaseNull.data)
-      setDataCaseNull(responseCaseNull.data)
-
+      console.log(rep_file)
+      console.log(responseCaseNull.data.data)
+      setDataCaseNull(responseCaseNull.data.data)
+      console.log('dataCaseNull')
       console.log(dataCaseNull)
 
       let count1 = 0
-      for (const item of responseCaseNull.data) {
+      for (const item of responseCaseNull.data.data) {
         if (item.repno !== null) {
           count1++
         }
       }
 
       let count2 = 0
-      for (const item of responseCaseNull.data) {
+      for (const item of responseCaseNull.data.data) {
         if (item.repno !== null && item.error_code !== '-') {
           count2++
         }
@@ -242,6 +239,20 @@ export default function ReportIpPage(props: ReportIp) {
 
       setGetRep(count1)
       setGetCRep(count2)
+
+      const caseRepNotC = responseCaseNull.data.data.filter(
+        (row: any) => row.repno !== null && row.error_code === '-'
+      )
+      const caseRepC = responseCaseNull.data.data.filter(
+        (row: any) => row.repno !== null && row.error_code !== '-'
+      )
+      const caseNoRep = responseCaseNull.data.data.filter(
+        (row: any) => row.repno === null
+      )
+
+      setCaseRepNotC(caseRepNotC)
+      setCaseRepC(caseRepC)
+      setCaseNoRep(caseNoRep)
     } catch (error) {
       console.log('ERROR', error)
     }
@@ -250,33 +261,53 @@ export default function ReportIpPage(props: ReportIp) {
 
     try {
       const responseCaseNotNull = await axios.post(
-        `${apiUrl}/${props.acctype}/${props.acctype}notnull`,
-        { startDate, endDate }
+        `${apiUrl}/ipofc/ipofcnotnull`,
+        { stm_file, rep_file, acc_code, startDate, endDate }
       )
 
       console.log(`${startDate}`)
       console.log(`${endDate}`)
-      console.log(responseCaseNotNull.data)
-      setDataCaseNotNull(responseCaseNotNull.data)
+      console.log(responseCaseNotNull.data.data)
+      setDataCaseNotNull(responseCaseNotNull.data.data)
+      console.log('dataCaseNotNull')
+      console.log(dataCaseNotNull)
+    } catch (error) {
+      console.log('ERROR', error)
+    }
+
+    // Acc Not Null
+
+    try {
+      const responseNotNull = await axios.post(
+        `${apiUrl}/ipofc/ipofcaccnotnull`,
+        { stm_file, rep_file, acc_code, startDate, endDate }
+      )
+
+      console.log('dataNotNull')
+      console.log(responseNotNull.data.data[0])
+
+      setDataNotNull(responseNotNull.data.data[0])
+      console.log('dataNotNull')
+      console.log(dataNotNull)
     } catch (error) {
       console.log('ERROR', error)
     }
 
     // Ofc Acc null
     try {
-      const responseNull = await axios.post(
-        `${apiUrl}/${props.acctype}/${props.acctype}accnull`,
-        {
-          startDate,
-          endDate,
-        }
-      )
+      const responseNull = await axios.post(`${apiUrl}/ipofc/ipofcaccnull`, {
+        stm_file,
+        rep_file,
+        acc_code,
+        startDate,
+        endDate,
+      })
       // setData(jsonData)
 
-      console.log(responseNull.data[0])
+      console.log(responseNull.data.data[0])
 
-      setDataNull(responseNull.data[0])
-
+      setDataNull(responseNull.data.data[0])
+      console.log('dataNull')
       console.log(dataNull)
     } catch (error) {
       console.log('ERROR', error)
@@ -285,18 +316,15 @@ export default function ReportIpPage(props: ReportIp) {
     // Account  by date
     try {
       const responseByDate = await axios.post(
-        `${apiUrl}/${props.acctype}/${props.acctype}accbydate`,
-        {
-          startDate,
-          endDate,
-        }
+        `${apiUrl}/ipofc/ipofcaccbydate`,
+        { stm_file, rep_file, acc_code, startDate, endDate }
       )
       // setData(jsonData)
       console.log('acc by date')
-      console.log(responseByDate.data)
+      console.log(responseByDate.data.data)
 
-      setDataByDate(responseByDate.data)
-
+      setDataByDate(responseByDate.data.data)
+      console.log('dataByDate')
       console.log(dataByDate)
     } catch (error) {
       console.log('ERROR', error)
@@ -309,7 +337,6 @@ export default function ReportIpPage(props: ReportIp) {
     const allCase = all.toLocaleString('en-US')
     setDataAll(allCase)
   }
-
   const CustomToolbar = () => {
     return (
       <GridToolbarContainer>
@@ -341,7 +368,7 @@ export default function ReportIpPage(props: ReportIp) {
     datasets: [
       {
         // label: ['รอดำเนินการ', 'สำเร็จ'],
-        data: [dataNull.all_nullcase, dataNotNull.all_notnullcase],
+        data: [dataNull.all_nullcase, Number(dataNotNull.all_notnullcase)],
         backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
         borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
         borderWidth: 1,
@@ -349,10 +376,52 @@ export default function ReportIpPage(props: ReportIp) {
     ],
   }
 
+  const ipOfcReport = [
+    {
+      id: 1,
+      stmFile: 'stm_ip_ofc',
+      repFile: 'rep_ip_ofc',
+      accCode: '1102050101.402',
+      text: 'ผู้ป่วยใน จ่ายตรงกรมบัญชีกลาง',
+      stName: 'IP-OFC',
+    },
+    {
+      id: 2,
+      stmFile: 'stm_ip_ucs',
+      repFile: 'rep_ip_ucs',
+      accCode: '1102050101.202',
+      text: 'ผู้ป่วยใน บัตรทอง [UCS]',
+      stName: 'IP-UC',
+    },
+    {
+      id: 3,
+      stmFile: 'stm_ip_ucs',
+      repFile: 'rep_ip_ucs',
+      accCode: '1102050101.217',
+      text: 'ผู้ป่วยใน บัตรทอง บริการเฉพาะ [CR]',
+      stName: 'IP-UC CR',
+    },
+    {
+      id: 4,
+      stmFile: 'stm_ip_lgo',
+      repFile: 'rep_ip_lgo',
+      accCode: '1102050102.802',
+      text: 'ผู้ป่วยใน เบิกจ่ายตรง อปท. ',
+      stName: 'IP-LGO',
+    },
+  ]
+
+  const [openPeriod, setOpenMenuPeriod] = useState<boolean>(false)
+  const [period, setPeriod] = useState<string>(ipOfcReport[0].text)
+  const actionRef1 = useRef<any>(null)
+
   return (
     <>
       <Stack direction={'row'} gap={1} marginTop={2} paddingLeft={10}>
         <Card sx={{ width: '20%' }}>
+        <Typography fontSize={'1.2rem'} color={'rgba(26, 138, 212, 1)'} mb={1} mt={1.5} ml={1.5}>
+            {`${title}`}
+          </Typography>
           <CardMedia
             component={'img'}
             sx={{ height: 140, width: '100%' }}
@@ -377,18 +446,71 @@ export default function ReportIpPage(props: ReportIp) {
                   value={endDt}
                   onChange={(newValue) => setEndDt(newValue)}
                 />
-                <TextField
+                {/* <TextField
                   label="ประเภทลูกหนี้"
                   color="secondary"
-                  value={props.title}
+                  value={`${title} ${accCode}`}
                   sx={{ fontWeight: 'bold' }}
                   focused
-                />
+                /> */}
               </Stack>
             </LocalizationProvider>
 
+            <Box sx={{ marginTop: '4px' }}>
+              <Button
+                variant="outlined"
+                ref={actionRef1}
+                onClick={() => setOpenMenuPeriod(true)}
+                fullWidth
+                sx={{
+                  mr: 1,
+                }}
+                endIcon={<KeyboardArrowDownTwoTone fontSize="small" />}
+              >
+                {period}
+              </Button>
+              <Menu
+                disableScrollLock
+                anchorEl={actionRef1.current}
+                onClose={() => setOpenMenuPeriod(false)}
+                open={openPeriod}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+              >
+                {ipOfcReport.map((_period) => (
+                  <MenuItem
+                    key={_period.id}
+                    onClick={() => {
+                      setPeriod(_period.text)
+                      setTitle(_period.text)
+                      setAccCode(_period.accCode)
+                      setStmFile(_period.stmFile)
+                      setRepFile(_period.repFile)
+                      setAccStName(_period.stName)
+                      setOpenMenuPeriod(false)
+                      console.log(_period)
+                    }}
+                  >
+                    {_period.text}
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+
             <CardActions>
-              <Button onClick={onSubmit} size="small" color="primary">
+              <Box flexGrow={1} />
+              <Button
+                variant="outlined"
+                onClick={onSubmit}
+                size="small"
+                color="primary"
+              >
                 Submit
               </Button>
             </CardActions>
@@ -433,6 +555,11 @@ export default function ReportIpPage(props: ReportIp) {
                     (Number(dataNull.all_nullcase) +
                       Number(dataNotNull.all_notnullcase))
                   }
+                  caserep={(getRep - getCRep).toLocaleString('en-US')}
+                  caseerror={getCRep.toLocaleString('en-US')}
+                  caseuncalim={(
+                    Number(dataNull.all_nullcase) - getRep
+                  ).toLocaleString('en-US')}
                 />
               </Stack>
               <Stack direction={'column'} gap={2} marginTop={2}>
@@ -453,6 +580,7 @@ export default function ReportIpPage(props: ReportIp) {
                     บาท
                   </Typography>
                 </Stack>
+
                 <Stack direction={'row'}>
                   <Typography flexGrow={1} fontWeight={'bold'}>
                     ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
@@ -466,6 +594,7 @@ export default function ReportIpPage(props: ReportIp) {
                     บาท
                   </Typography>
                 </Stack>
+
                 <Stack direction={'row'}>
                   <Typography color={'error'} flexGrow={1} fontWeight={'bold'}>
                     ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
@@ -479,39 +608,6 @@ export default function ReportIpPage(props: ReportIp) {
                     บาท
                   </Typography>
                 </Stack>
-                <Divider/>
-                <Stack direction={'row'} gap={2}>
-                  <Typography sx={{ marginBottom: '15px' }} fontWeight={'bold'}>
-                    {' '}
-                    บัญชีลูกหนี้ ระหว่างดำเนินการ{' '}
-                  </Typography>
-                  <Typography fontWeight={'bold'}>
-                    จำนวน :{' '}
-                    {dataNull.all_nullcase === null
-                      ? 0
-                      : dataNull.all_nullcase.toLocaleString('en-US')}{' '}
-                    ราย
-                  </Typography>
-                  <Typography fontWeight={'bold'}>
-                    ทั้งหมด :{' '}
-                    {dataNull.debit_null === null
-                      ? 0
-                      : Number(dataNull.debit_null).toLocaleString('en-US', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}{' '}
-                    บาท
-                  </Typography>
-                  <Typography fontWeight={'bold'}>
-                    มี rep แล้ว : {getRep} ราย
-                  </Typography>
-                  <Typography fontWeight={'bold'}>
-                    ติด C : {getCRep} ราย
-                  </Typography>
-                  <Typography fontWeight={'bold'} color={'error'} fontSize={'1rem'}>
-                    ยังไม่ได้ดำเนินการ : {dataNull.all_nullcase - getRep} ราย
-                  </Typography>
-                </Stack>{' '}
               </Stack>
             </Box>
           )}
@@ -524,44 +620,28 @@ export default function ReportIpPage(props: ReportIp) {
         <TabContext value={valueTab}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList onChange={handleChangeTab} aria-label="Ip Ofc">
-              <Tab label="บัญชีลูกหนี้ ระหว่างดำเนินการ" value="1" />
-              <Tab label="บัญชีลูกหนี้ ที่ดำเนินการเสร็จสิ้นแล้ว" value="2" />
-              <Tab label="สรุปการตัดหนี้รายวัน" value="3" />
-              <Tab label="Chart " value="4" />
+              <Tab label="บัญชีลูกหนี้ รอดำเนินการ" value="1" />
+              <Tab label="บัญชีลูกหนี้ ส่งมี Rep รอ statement" value="2" />
+              <Tab label="บัญชีลูกหนี้ ส่งมี Rep ติด C" value="3" />
+              <Tab label="บัญชีลูกหนี้ ที่ดำเนินการเสร็จสิ้นแล้ว" value="4" />
+              <Tab label="สรุปการตัดหนี้รายวัน" value="5" />
+              <Tab label="Chart " value="6" />
             </TabList>
           </Box>
           <TabPanel value="1">
             <Stack direction={'row'} gap={2}>
-              <Typography sx={{ marginBottom: '15px' }}>
-                {' '}
-                บัญชีลูกหนี้ ระหว่างดำเนินการ{' '}
-              </Typography>
-              <Typography>
-                จำนวน :{' '}
-                {dataNull.all_nullcase === null
-                  ? 0
-                  : dataNull.all_nullcase.toLocaleString('en-US')}{' '}
-                ราย
-              </Typography>
-              <Typography>
-                ทั้งหมด :{' '}
-                {dataNull.debit_null === null
-                  ? 0
-                  : Number(dataNull.debit_null).toLocaleString('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}{' '}
-                บาท
-              </Typography>
-              <Typography>มี rep แล้ว : {getRep} ราย</Typography>
-              <Typography>ติด C : {getCRep} ราย</Typography>
-              <Typography>
+              <Typography
+                fontStyle={'bold'}
+                fontSize={'1.1rem'}
+                color={'error'}
+                mb={1}
+              >
                 ยังไม่ได้ดำเนินการ : {dataNull.all_nullcase - getRep} ราย
               </Typography>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
-                rows={dataCaseNull}
+                rows={caseNoRep}
                 columns={columns_0}
                 getRowId={(row) => row.an}
                 slots={{
@@ -572,66 +652,62 @@ export default function ReportIpPage(props: ReportIp) {
           </TabPanel>
           <TabPanel value="2">
             <Stack direction={'row'} gap={2}>
-              <Typography sx={{ marginBottom: '15px' }}>
+              <Typography
+                fontStyle={'bold'}
+                fontSize={'1.1rem'}
+                color={'#3c48ee'}
+                mb={1}
+              >
+                ส่งแล้ว มี rep รอ statement : {(getRep-getCRep).toLocaleString('en-US')} ราย
+              </Typography>
+            </Stack>{' '}
+            <Box style={{ height: 500, width: '100%' }}>
+              <DataGrid
+                rows={caseRepNotC}
+                columns={columns_0}
+                getRowId={(row) => row.an}
+                slots={{
+                  toolbar: CustomToolbar,
+                }}
+              />
+            </Box>
+          </TabPanel>
+          <TabPanel value="3">
+            <Stack direction={'row'} gap={2}>
+              <Typography
+                fontStyle={'bold'}
+                fontSize={'1.1rem'}
+                color={'#df3f3f'}
+                mb={1}
+              >
+                ติด C ทั้งหมด : {getCRep} ราย
+              </Typography>
+            </Stack>{' '}
+            <Box style={{ height: 500, width: '100%' }}>
+              <DataGrid
+                rows={caseRepC}
+                columns={columns_0}
+                getRowId={(row) => row.an}
+                slots={{
+                  toolbar: CustomToolbar,
+                }}
+              />
+            </Box>
+          </TabPanel>
+
+          <TabPanel value="4">
+            <Stack direction={'row'} gap={2}>
+              <Typography  fontStyle={'bold'} fontSize={'1.1rem'} color={'#2e4ad8'} mb={1}>
                 {' '}
                 บัญชีลูกหนี้ ที่ดำเนินการเสร็จสิ้นแล้ว{' '}
               </Typography>
-              <Typography>
+              <Typography fontStyle={'bold'} fontSize={'1.1rem'} color={'#2e4ad8'} mb={1}>
                 จำนวน : {dataNotNull.all_notnullcase.toLocaleString('en-US')}{' '}
                 ราย
               </Typography>
-              <Typography>
-                ทั้งหมด :{' '}
-                {dataNotNull.debit_notnull === null
-                  ? 0
-                  : Number(dataNotNull.debit_notnull).toLocaleString('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}{' '}
-                บาท
-              </Typography>
-              <Typography>
-                ได้รับชดเชย :{' '}
-                {Number(dataNotNull.recieve).toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}{' '}
-                บาท
-              </Typography>
-
-              <Stack direction={'row'} gap={2}>
-                <Typography>
-                  ส่วนต่าง :{' '}
-                  {dataNotNull.sum_diff === null
-                    ? 0
-                    : dataNotNull.sum_diff.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}{' '}
-                  บาท
-                </Typography>
-                <Typography>
-                  ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
-                  {dataNotNull.diffloss === null
-                    ? 0
-                    : dataNotNull.diffloss.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}{' '}
-                  บาท
-                </Typography>
-                <Typography>
-                  ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
-                  {dataNotNull.diffgain === null
-                    ? 0
-                    : dataNotNull.diffgain.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}{' '}
-                  บาท
-                </Typography>
+              
               </Stack>
-            </Stack>{' '}
+        
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={dataCaseNotNull}
@@ -643,7 +719,7 @@ export default function ReportIpPage(props: ReportIp) {
               />
             </Box>
           </TabPanel>
-          <TabPanel value="3">
+          <TabPanel value="5">
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={dataByDate}
@@ -655,7 +731,7 @@ export default function ReportIpPage(props: ReportIp) {
               />
             </Box>
           </TabPanel>
-          <TabPanel value="4">
+          <TabPanel value="6">
             <Box
               width={'100%'}
               height={500}
@@ -666,17 +742,17 @@ export default function ReportIpPage(props: ReportIp) {
               <Stack direction={'column'} gap={2} padding={'10px'}>
                 <Typography variant="body2">
                   จำนวน :{' '}
-                  {(
+                  {/* {(
                     Number(dataNull.all_nullcase) +
                     Number(dataNotNull.all_notnullcase)
-                  ).toLocaleString('en-US')}{' '}
+                  ).toLocaleString('en-US')}{' '} */}
                   ราย
                 </Typography>
                 <Typography variant="body2">
                   รอดำเนินการ :{' '}
-                  {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [
+                  {/* {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [ */}
                   {''}
-                  {(
+                  {/* {(
                     (Number(dataNull.all_nullcase) * 100) /
                     (Number(dataNull.all_nullcase) +
                       Number(dataNotNull.all_notnullcase))
@@ -684,13 +760,13 @@ export default function ReportIpPage(props: ReportIp) {
                     minimumIntegerDigits: 1,
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })}
-                  {''}%]
+                  })} */}
+                  {/* {''}%] */}
                   {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
                 </Typography>
                 <Typography variant="body2">
                   สำเร็จ :{' '}
-                  {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
+                  {/* {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
                   ราย [{''}
                   {(
                     (Number(dataNotNull.all_notnullcase) * 100) /
@@ -701,12 +777,12 @@ export default function ReportIpPage(props: ReportIp) {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
-                  {''}%]
+                  {''}%] */}
                 </Typography>
               </Stack>
               <Box>
-                {' '}
-                <Pie data={dataChart} />
+                {/* {' '}
+                <Pie data={dataChart} /> */}
               </Box>
             </Box>
           </TabPanel>

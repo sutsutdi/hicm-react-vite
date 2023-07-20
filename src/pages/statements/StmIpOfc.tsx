@@ -187,7 +187,7 @@ export default function StmIpOfcPage() {
     <>
       <Stack direction={'row'} gap={3} marginTop={5} paddingLeft={25}>
         <Card sx={{ maxWidth: 345 }}>
-          <Typography variant="h5" color={'rgba(26, 138, 212, 1)'} mb={1}>
+          <Typography variant="h4" color={'rgba(26, 138, 212, 1)'} mb={1} mt={1}>
             Statement จ่ายตรง ผู้ป่วยใน{' '}
           </Typography>
 

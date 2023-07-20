@@ -14,12 +14,12 @@ import { loginSelector } from './store/slices/loginSlice'
 import PublicRoutes from './router/public.routes'
 import ProtectedRoutes from './router/protected.routes'
 import ReportIpAllPage from './pages/reports/ReportIpAll'
-import ReportIpOfcPage from './pages/ReportIpOfc'
-import ReportOpOfcPage from './pages/ReportOpOfc'
-import ReportIpUcPage from './pages/ReportIpUc'
-import DebitEditPage from './pages/DebitEdit'
-import FsErQualityPage from './pages/FsErQuality'
-import FsTelemedPage from './pages/FsTelemed'
+// import ReportIpOfcPage from './pages/ReportIpOfc'
+// import ReportOpOfcPage from './pages/ReportOpOfc'
+// import ReportIpUcPage from './pages/ReportIpUc'
+// import DebitEditPage from './pages/DebitEdit'
+// import FsErQualityPage from './pages/FsErQuality'
+// import FsTelemedPage from './pages/FsTelemed'
 import { BarChartPage } from './pages/BarChart'
 import { PieChartPage } from './pages/PieChart'
 import NotFoundPage from './pages/NotFoundPage'
@@ -93,12 +93,12 @@ export default function App() {
           {/* <Route path="/" element={<ProtectedRoutes />}> */}
             <Route path="/main" element={<MainPage/>}/>
             <Route path="/debitip/ipreport" element={<ReportIpAllPage />} />
-            <Route path="/ipofc/report" element={<ReportIpOfcPage />} />
+            {/* <Route path="/ipofc/report" element={<ReportIpOfcPage />} />
             <Route path="/opofc/report" element={<ReportOpOfcPage />} />
             <Route path="/ipuc/report" element={<ReportIpUcPage />} />
             <Route path="/debit/edit" element={<DebitEditPage />} />
             <Route path="/fs/erquality" element={<FsErQualityPage />} />
-            <Route path="/fs/telemed" element={<FsTelemedPage />} />
+            <Route path="/fs/telemed" element={<FsTelemedPage />} /> */}
             <Route path="/stock" element={<StockPage />} />
             <Route path="/barchart" element={<BarChartPage />} />
             <Route path="/piechart" element={<PieChartPage />} />

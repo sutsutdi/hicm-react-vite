@@ -6,14 +6,12 @@ import {
   CardContent,
   CardMedia,
   Divider,
-  Menu,
-  MenuItem,
   Stack,
   Tab,
   TextField,
 } from '@mui/material'
 import axios from 'axios'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { Typography } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -28,8 +26,6 @@ import {
   GridToolbarExport,
   GridToolbarQuickFilter,
 } from '@mui/x-data-grid'
-
-import { KeyboardArrowDownTwoTone } from '@mui/icons-material'
 
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
@@ -66,13 +62,14 @@ const dataDbipofcacc = {
 
 const dataNull0 = {
   all_nullcase: 0,
-  debit_null: '',
+  debit_null: 0,
 }
 
-const dataNotNull0 = { 
+const dataNotNull0 = {
+  dchdate: '2023-01-01',
   all_notnullcase: 0,
   debit_notnull: 0,
-  recieve: 0,
+  recieve: '',
   sum_diff: 0,
   diffloss: 0,
   diffgain: 0,
@@ -100,10 +97,14 @@ type DataDabitNotNull = {
   diff: number
 }
 
-// const apiUrl = import.meta.env.VITE_API_URL  // localhost
-const apiUrl = import.meta.env.VITE_API_SERVER_URL // server HICM
+const apiUrl = import.meta.env.VITE_API_URL
 
-export default function ReportIpPage() {
+type ReportIp = {
+  title: string
+  acctype: string
+}
+
+export default function ReportIpPage(props: ReportIp) {
   const [dataNull, setDataNull] = useState(dataNull0)
   const [dataNotNull, setDataNotNull] = useState(dataNotNull0)
   const [dataAll, setDataAll] = useState<string>('')
@@ -112,12 +113,8 @@ export default function ReportIpPage() {
   const [dataCaseNull, setDataCaseNull] = useState<GridRowsProp>([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
-  const [title, setTitle] = useState<string>('')
-  const [accCode, setAccCode] = useState<string>('')
-  const [stmFile,setStmFile] = useState<string>('')
   const [getRep, setGetRep] = useState(0)
   const [getCRep, setGetCRep] = useState(0)
-
 
   const columns: GridColDef[] = [
     { field: 'hn', headerName: 'HN', width: 100 },
@@ -138,6 +135,7 @@ export default function ReportIpPage() {
     { field: '', headerName: 'เลขใบเสร็จ', width: 110 },
   ]
 
+  
   const columns_0: GridColDef[] = [
     { field: 'hn', headerName: 'HN', width: 100 },
     { field: 'an', headerName: 'AN', width: 120 },
@@ -156,6 +154,7 @@ export default function ReportIpPage() {
     { field: 'remark_data', headerName: 'remark', width: 200 },
   ]
 
+
   const columns2: GridColDef[] = [
     { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
     { field: 'allcase', headerName: 'จำนวนผู้ป่วย', width: 110 },
@@ -168,6 +167,7 @@ export default function ReportIpPage() {
     { field: 'diff', headerName: 'ผลรวมส่วนต่าง', width: 110 },
   ]
 
+
   const resetValue = () => {
     setDataNull(dataNull0)
     setDataNotNull(dataNotNull0)
@@ -175,8 +175,7 @@ export default function ReportIpPage() {
     setDataByDate([])
     setDataCaseNotNull([])
     setDataCaseNull([])
-    setGetRep(0)
-    setGetCRep(0)
+    
   }
 
   const [isLoading, setIsLoading] = useState(false)
@@ -188,21 +187,45 @@ export default function ReportIpPage() {
 
     let startDate = startDt?.format('YYYY-MM-DD')
     let endDate = endDt?.format('YYYY-MM-DD')
-    let stm_file = stmFile
-    let acc_code = accCode
-   
+
+    console.log(startDt)
+    console.log(endDt)
 
     setIsLoading(true)
 
-    
+    try {
+      const responseNotNull = await axios.post(
+        `${apiUrl}/${props.acctype}/${props.acctype}accnotnull`,
+        { startDate, endDate }
+      )
+
+      console.log(`${apiUrl}/ipofc/ipofcaccnotnull`)
+      console.log(`${startDate}`)
+      console.log(`${endDate}`)
+
+      console.log(responseNotNull.data[0])
+
+      setDataNotNull(responseNotNull.data[0])
+
+      console.log(dataNotNull)
+    } catch (error) {
+      console.log('ERROR', error)
+    }
+
     // Null Cases
 
     try {
-      const responseCaseNull = await axios.post(`${apiUrl}/ipofc/ipofcnull`, { stm_file,acc_code, startDate, endDate })
+      const responseCaseNull = await axios.post(
+        `${apiUrl}/${props.acctype}/${props.acctype}null`,
+        {
+          startDate,
+          endDate,
+        }
+      )
 
-      console.log(responseCaseNull.data.data)
-      setDataCaseNull(responseCaseNull.data.data)
-      console.log('dataCaseNull')
+      console.log(responseCaseNull.data)
+      setDataCaseNull(responseCaseNull.data)
+
       console.log(dataCaseNull)
 
       let count1 = 0
@@ -221,7 +244,6 @@ export default function ReportIpPage() {
 
       setGetRep(count1)
       setGetCRep(count2)
-
     } catch (error) {
       console.log('ERROR', error)
     }
@@ -230,53 +252,34 @@ export default function ReportIpPage() {
 
     try {
       const responseCaseNotNull = await axios.post(
-        `${apiUrl}/ipofc/ipofcnotnull`,
-        { stm_file,acc_code, startDate, endDate }
+        `${apiUrl}/${props.acctype}/${props.acctype}notnull`,
+        { startDate, endDate }
       )
 
       console.log(`${startDate}`)
       console.log(`${endDate}`)
-      console.log(responseCaseNotNull.data.data)
-      setDataCaseNotNull(responseCaseNotNull.data.data)
-      console.log('dataCaseNotNull')
-      console.log(dataCaseNotNull)
-     
+      console.log(responseCaseNotNull.data)
+      setDataCaseNotNull(responseCaseNotNull.data)
     } catch (error) {
       console.log('ERROR', error)
     }
 
-
-// Acc Not Null
- 
-try {
-  const responseNotNull = await axios.post(
-    `${apiUrl}/ipofc/ipofcaccnotnull`,
-    { stm_file,acc_code, startDate, endDate }
-  )  
-  console.log('dataNotNull')
-  console.log(responseNotNull.data.data[0])
-
-  setDataNotNull(responseNotNull.data.data[0])
-  console.log('dataNotNull')
-      console.log(dataNotNull)
- 
-} catch (error) {
-  console.log('ERROR', error)
-}
-
-
-
     // Ofc Acc null
     try {
-      const responseNull = await axios.post(`${apiUrl}/ipofc/ipofcaccnull`, { stm_file,acc_code, startDate, endDate })
+      const responseNull = await axios.post(
+        `${apiUrl}/${props.acctype}/${props.acctype}accnull`,
+        {
+          startDate,
+          endDate,
+        }
+      )
       // setData(jsonData)
 
-      console.log(responseNull.data.data[0])
+      console.log(responseNull.data[0])
 
-      setDataNull(responseNull.data.data[0])
-      console.log('dataNull')
+      setDataNull(responseNull.data[0])
+
       console.log(dataNull)
-     
     } catch (error) {
       console.log('ERROR', error)
     }
@@ -284,29 +287,31 @@ try {
     // Account  by date
     try {
       const responseByDate = await axios.post(
-        `${apiUrl}/ipofc/ipofcaccbydate`,
-        { stm_file,acc_code, startDate, endDate }
+        `${apiUrl}/${props.acctype}/${props.acctype}accbydate`,
+        {
+          startDate,
+          endDate,
+        }
       )
       // setData(jsonData)
       console.log('acc by date')
-      console.log(responseByDate.data.data)
+      console.log(responseByDate.data)
 
-      setDataByDate(responseByDate.data.data)
-      console.log('dataByDate')
+      setDataByDate(responseByDate.data)
+
       console.log(dataByDate)
     } catch (error) {
       console.log('ERROR', error)
     }
 
     setIsLoading(false)
- 
-
 
     const all =
       Number(dataNull.all_nullcase) + Number(dataNotNull.all_notnullcase)
     const allCase = all.toLocaleString('en-US')
     setDataAll(allCase)
   }
+
   const CustomToolbar = () => {
     return (
       <GridToolbarContainer>
@@ -338,47 +343,13 @@ try {
     datasets: [
       {
         // label: ['รอดำเนินการ', 'สำเร็จ'],
-        data: [dataNull.all_nullcase, Number(dataNotNull.all_notnullcase)],
+        data: [dataNull.all_nullcase, dataNotNull.all_notnullcase],
         backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
         borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
         borderWidth: 1,
       },
     ],
   }
-
-  const ipOfcReport = [
-    {
-      id: 1,
-      stmFile: 'stm_ip_ofc',
-      accCode: '1102050101.402',
-      text: 'ผู้ป่วยใน จ่ายตรงกรมบัญชีกลาง',
-    },
-    {
-      id: 2,
-      stmFile: 'stm_ip_ucs',
-      accCode: '1102050101.202',
-      text: 'ผู้ป่วยใน บัตรทอง [UCS]',
-      query: '',
-    },
-    {
-      id: 3,
-      stmFile: 'stm_ip_lgo',
-      accCode: '1102050101.203',
-      text: 'ผู้ป่วยใน จ่ายตรง อปท',
-      query: '',
-    },
-    {
-      id: 4,
-      stmFile: 'stm_ip_stp',
-      accCode: '1102050101.204',
-      text: 'ผู้ป่วยใน STP',
-      query: '',
-    },
-  ]
-
-  const [openPeriod, setOpenMenuPeriod] = useState<boolean>(false)
-  const [period, setPeriod] = useState<string>(ipOfcReport[0].text)
-  const actionRef1 = useRef<any>(null)
 
   return (
     <>
@@ -411,66 +382,15 @@ try {
                 <TextField
                   label="ประเภทลูกหนี้"
                   color="secondary"
-                  value={`${title} ${accCode}`}
+                  value={props.title}
                   sx={{ fontWeight: 'bold' }}
                   focused
                 />
               </Stack>
             </LocalizationProvider>
 
-            <Box sx={{ marginTop: '4px' }}>
-              <Button
-                variant="outlined"
-                ref={actionRef1}
-                onClick={() => setOpenMenuPeriod(true)}
-                fullWidth
-                sx={{
-                  mr: 1,
-                }}
-                endIcon={<KeyboardArrowDownTwoTone fontSize="small" />}
-              >
-                {period}
-              </Button>
-              <Menu
-                disableScrollLock
-                anchorEl={actionRef1.current}
-                onClose={() => setOpenMenuPeriod(false)}
-                open={openPeriod}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-              >
-                {ipOfcReport.map((_period) => (
-                  <MenuItem
-                    key={_period.id}
-                    onClick={() => {
-                      setPeriod(_period.text)
-                      setTitle(_period.text)
-                      setAccCode(_period.accCode)
-                      setStmFile(_period.stmFile)
-                      setOpenMenuPeriod(false)
-                      console.log(_period)
-                    }}
-                  >
-                    {_period.text}
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-
             <CardActions>
-              <Box flexGrow={1} />
-              <Button
-                variant="outlined"
-                onClick={onSubmit}
-                size="small"
-                color="primary"
-              >
+              <Button onClick={onSubmit} size="small" color="primary">
                 Submit
               </Button>
             </CardActions>
@@ -515,6 +435,10 @@ try {
                     (Number(dataNull.all_nullcase) +
                       Number(dataNotNull.all_notnullcase))
                   }
+                  caserep={getRep.toLocaleString('en-US')}
+                  caseerror={getCRep.toLocaleString('en-US')}
+                  caseuncalim={(Number(dataNull.all_nullcase)-getRep).toLocaleString('en-US')}
+                
                 />
               </Stack>
               <Stack direction={'column'} gap={2} marginTop={2}>
@@ -535,7 +459,6 @@ try {
                     บาท
                   </Typography>
                 </Stack>
-
                 <Stack direction={'row'}>
                   <Typography flexGrow={1} fontWeight={'bold'}>
                     ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
@@ -549,7 +472,6 @@ try {
                     บาท
                   </Typography>
                 </Stack>
-
                 <Stack direction={'row'}>
                   <Typography color={'error'} flexGrow={1} fontWeight={'bold'}>
                     ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
@@ -563,21 +485,20 @@ try {
                     บาท
                   </Typography>
                 </Stack>
-              </Stack>
-            <Divider/>
+                <Divider/>
                 <Stack direction={'row'} gap={2}>
-                  <Typography sx={{ marginBottom: '15px' }} fontWeight={'bold'}>
+                  <Typography sx={{ marginBottom: '15px' }} fontWeight={'bold'} color={'primary'} fontSize={'1rem'}>
                     {' '}
-                    บัญชีลูกหนี้ ระหว่างดำเนินการ{' '}
+                    รอดำเนินการ{' '}
                   </Typography>
-                  <Typography fontWeight={'bold'}>
+                  <Typography fontWeight={'bold'} color={'#f24f26'} fontSize={'1rem'}>
                     จำนวน :{' '}
                     {dataNull.all_nullcase === null
                       ? 0
                       : dataNull.all_nullcase.toLocaleString('en-US')}{' '}
                     ราย
                   </Typography>
-                  <Typography fontWeight={'bold'}>
+                  <Typography fontWeight={'bold'} color={'error'} fontSize={'1rem'}>
                     ทั้งหมด :{' '}
                     {dataNull.debit_null === null
                       ? 0
@@ -587,16 +508,17 @@ try {
                         })}{' '}
                     บาท
                   </Typography>
-                  <Typography fontWeight={'bold'}>
+                  <Typography fontWeight={'bold'} color={'error'} fontSize={'1rem'}>
                     มี rep แล้ว : {getRep} ราย
                   </Typography>
-                  <Typography fontWeight={'bold'}>
+                  <Typography fontWeight={'bold'} color={'error'} fontSize={'1rem'}>
                     ติด C : {getCRep} ราย
                   </Typography>
                   <Typography fontWeight={'bold'} color={'error'} fontSize={'1rem'}>
                     ยังไม่ได้ดำเนินการ : {dataNull.all_nullcase - getRep} ราย
                   </Typography>
                 </Stack>{' '}
+              </Stack>
             </Box>
           )}
         </Card>
@@ -615,7 +537,7 @@ try {
             </TabList>
           </Box>
           <TabPanel value="1">
-          <Stack direction={'row'} gap={2}>
+            <Stack direction={'row'} gap={2}>
               <Typography sx={{ marginBottom: '15px' }}>
                 {' '}
                 บัญชีลูกหนี้ ระหว่างดำเนินการ{' '}
@@ -661,7 +583,7 @@ try {
                 บัญชีลูกหนี้ ที่ดำเนินการเสร็จสิ้นแล้ว{' '}
               </Typography>
               <Typography>
-                {/* จำนวน : {dataNotNull.all_notnullcase.toLocaleString('en-US')}{' '} */}
+                จำนวน : {dataNotNull.all_notnullcase.toLocaleString('en-US')}{' '}
                 ราย
               </Typography>
               <Typography>
@@ -750,17 +672,17 @@ try {
               <Stack direction={'column'} gap={2} padding={'10px'}>
                 <Typography variant="body2">
                   จำนวน :{' '}
-                  {/* {(
+                  {(
                     Number(dataNull.all_nullcase) +
                     Number(dataNotNull.all_notnullcase)
-                  ).toLocaleString('en-US')}{' '} */}
+                  ).toLocaleString('en-US')}{' '}
                   ราย
                 </Typography>
                 <Typography variant="body2">
                   รอดำเนินการ :{' '}
-                  {/* {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [ */}
+                  {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [
                   {''}
-                  {/* {(
+                  {(
                     (Number(dataNull.all_nullcase) * 100) /
                     (Number(dataNull.all_nullcase) +
                       Number(dataNotNull.all_notnullcase))
@@ -768,13 +690,13 @@ try {
                     minimumIntegerDigits: 1,
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })} */}
-                  {/* {''}%] */}
+                  })}
+                  {''}%]
                   {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
                 </Typography>
                 <Typography variant="body2">
                   สำเร็จ :{' '}
-                  {/* {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
+                  {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
                   ราย [{''}
                   {(
                     (Number(dataNotNull.all_notnullcase) * 100) /
@@ -785,12 +707,12 @@ try {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
-                  {''}%] */}
+                  {''}%]
                 </Typography>
               </Stack>
               <Box>
-                {/* {' '}
-                <Pie data={dataChart} /> */}
+                {' '}
+                <Pie data={dataChart} />
               </Box>
             </Box>
           </TabPanel>

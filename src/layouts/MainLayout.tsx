@@ -85,8 +85,9 @@ export default function MainLayout() {
           <Routes>
             <Route path="/main" element={<MainPage />} />
             <Route path="/debitip/ipreport" element={<ReportIpAllPage />} />
-            <Route path="/ipofc/report" element={<ReportIpPage acctype = 'ipofc' title = 'ผู้ป่วยใน จ่ายตรงกรมบัญชีกลาง'/>} />
-            <Route path="/ipuc/report" element={<ReportIpPage acctype = 'ipuc' title = 'ผู้ป่วยใน UCS '/>} />
+            <Route path="/ipofc/report" element={<ReportIpPage/>} />
+            {/* <Route path="/ipofc/report" element={<ReportIpPage  acctype = 'ipofc' title = 'ผู้ป่วยใน จ่ายตรงกรมบัญชีกลาง '/>} /> */}
+            {/* <Route path="/ipuc/report" element={<ReportIpPage acctype = 'ipuc' title = 'ผู้ป่วยใน UCS '/>} /> */}
             <Route path="/opofc/report" element={<ReportOpOfcPage />} />
             {/* <Route path="/opofc/report" element={<ReportOpOfcPage />} /> */}
             {/* <Route path="/ipofc/report" element={<ReportIpOfcPage />} /> */}
