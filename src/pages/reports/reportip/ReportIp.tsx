@@ -101,6 +101,42 @@ type DataDabitNotNull = {
   diff: number
 }
 
+const ipOfcReport = [
+  {
+    id: 1,
+    stmFile: 'stm_ip_ofc',
+    repFile: 'rep_ip_ofc',
+    accCode: '1102050101.402',
+    text: 'ผู้ป่วยใน จ่ายตรงกรมบัญชีกลาง',
+    stName: 'IP-OFC',
+  },
+  {
+    id: 2,
+    stmFile: 'stm_ip_ucs',
+    repFile: 'rep_ip_ucs',
+    accCode: '1102050101.202',
+    text: 'ผู้ป่วยใน บัตรทอง [UCS]',
+    stName: 'IP-UC',
+  },
+  {
+    id: 3,
+    stmFile: 'stm_ip_ucs',
+    repFile: 'rep_ip_ucs',
+    accCode: '1102050101.217',
+    text: 'ผู้ป่วยใน บัตรทอง บริการเฉพาะ [CR]',
+    stName: 'IP-UC CR',
+  },
+  {
+    id: 4,
+    stmFile: 'stm_ip_lgo',
+    repFile: 'rep_ip_lgo',
+    accCode: '1102050102.802',
+    text: 'ผู้ป่วยใน เบิกจ่ายตรง อปท. ',
+    stName: 'IP-LGO',
+  },
+]
+
+
 // const apiUrl = import.meta.env.VITE_API_URL  // localhost
 const apiUrl = import.meta.env.VITE_API_SERVER_URL // server HICM
 
@@ -113,16 +149,22 @@ export default function ReportIpPage() {
   const [dataCaseNull, setDataCaseNull] = useState<GridRowsProp>([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
-  const [title, setTitle] = useState<string>('')
-  const [accCode, setAccCode] = useState<string>('')
   const [accStName, setAccStName] = useState<string>('')
-  const [stmFile, setStmFile] = useState<string>('')
-  const [repFile, setRepFile] = useState<string>('')
   const [getRep, setGetRep] = useState(0)
   const [getCRep, setGetCRep] = useState(0)
   const [caseNoRep, setCaseNoRep] = useState<GridRowsProp>([])
   const [caseRepNotC, setCaseRepNotC] = useState<GridRowsProp>([])
   const [caseRepC, setCaseRepC] = useState<GridRowsProp>([])
+
+  const [title, setTitle] = useState<string>(ipOfcReport[0].text)
+  const [accCode, setAccCode] = useState<string>(ipOfcReport[0].accCode)
+  const [stmFile, setStmFile] = useState<string>(ipOfcReport[0].stmFile)
+  const [repFile, setRepFile] = useState<string>(ipOfcReport[0].repFile)
+  const [openPeriod, setOpenMenuPeriod] = useState<boolean>(false)
+  const [period, setPeriod] = useState<string>(ipOfcReport[0].text) 
+  const actionRef1 = useRef<any>(null)
+  
+ 
 
   const columns: GridColDef[] = [
     { field: 'hn', headerName: 'HN', width: 100 },
@@ -201,7 +243,6 @@ export default function ReportIpPage() {
     let endDate = endDt?.format('YYYY-MM-DD')
     let stm_file = stmFile
     let acc_code = accCode
-
     let rep_file = repFile
 
     setIsLoading(true)
@@ -376,44 +417,8 @@ export default function ReportIpPage() {
     ],
   }
 
-  const ipOfcReport = [
-    {
-      id: 1,
-      stmFile: 'stm_ip_ofc',
-      repFile: 'rep_ip_ofc',
-      accCode: '1102050101.402',
-      text: 'ผู้ป่วยใน จ่ายตรงกรมบัญชีกลาง',
-      stName: 'IP-OFC',
-    },
-    {
-      id: 2,
-      stmFile: 'stm_ip_ucs',
-      repFile: 'rep_ip_ucs',
-      accCode: '1102050101.202',
-      text: 'ผู้ป่วยใน บัตรทอง [UCS]',
-      stName: 'IP-UC',
-    },
-    {
-      id: 3,
-      stmFile: 'stm_ip_ucs',
-      repFile: 'rep_ip_ucs',
-      accCode: '1102050101.217',
-      text: 'ผู้ป่วยใน บัตรทอง บริการเฉพาะ [CR]',
-      stName: 'IP-UC CR',
-    },
-    {
-      id: 4,
-      stmFile: 'stm_ip_lgo',
-      repFile: 'rep_ip_lgo',
-      accCode: '1102050102.802',
-      text: 'ผู้ป่วยใน เบิกจ่ายตรง อปท. ',
-      stName: 'IP-LGO',
-    },
-  ]
 
-  const [openPeriod, setOpenMenuPeriod] = useState<boolean>(false)
-  const [period, setPeriod] = useState<string>(ipOfcReport[0].text)
-  const actionRef1 = useRef<any>(null)
+
 
   return (
     <>

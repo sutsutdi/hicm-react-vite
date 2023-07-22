@@ -50,7 +50,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   const menus = [
     { icon: <AutoGraph />, title: 'Dashboard', nav: '/dashboard' },
     { icon: <AutoGraph />, title: 'Eclaim', nav: '/eclaim' },
-    { icon: <Settings />, title: 'Check Data Report', nav: '' },
+    { icon: <Settings />, title: 'Statement Reciept', nav: '/reciept' },
     {
       icon: <InboxIcon />,
       title: 'บัญชีลูกหนี้ ผู้ป่วยใน',

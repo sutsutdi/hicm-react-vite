@@ -17,6 +17,7 @@ import {
 
 import { useTranslation } from 'react-i18next'
 import BusinessTwoToneIcon from '@mui/icons-material/BusinessTwoTone'
+import DomainDisabledIcon from '@mui/icons-material/DomainDisabled';
 import { theme } from '../../../theme/theme'
 import { orange } from '@mui/material/colors'
 
@@ -60,7 +61,7 @@ function UnClaimCaseCard(props: UnClaim) {
           >
             <ListItemAvatar>
               <AvatarError variant="rounded">
-                <BusinessTwoToneIcon fontSize="large" />
+                <DomainDisabledIcon fontSize="large" />
               </AvatarError>
             </ListItemAvatar>
 

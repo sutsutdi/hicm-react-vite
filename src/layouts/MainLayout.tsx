@@ -23,6 +23,7 @@ import FsTelemedPage from '../pages/feeschedules/FsTelemed'
 import ReportIpPage from '../pages/reports/reportip/ReportIp'
 import IpDashboardPage from '../pages/dashboard/IpDashboard'
 import EclaimItemPage from '../pages/eclaim/EclaimItems'
+import RecieptInputPage from '../pages/reciept/ReceiptInput'
 
 const drawerWidth = 240
 
@@ -97,6 +98,7 @@ export default function MainLayout() {
             <Route path="/fs/telemed" element={<FsTelemedPage />} />
             <Route path="/dashboard" element={<IpDashboardPage />} />
             <Route path="/eclaim" element={<EclaimItemPage />} />
+            <Route path="/reciept" element={<RecieptInputPage />} />
  
             <Route path="/barchart" element={<BarChartPage />} />
             <Route path="/piechart" element={<PieChartPage />} />
