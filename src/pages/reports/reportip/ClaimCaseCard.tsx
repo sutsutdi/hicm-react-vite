@@ -43,7 +43,7 @@ function ClaimCaseCard(props: Claim) {
       <Stack direction={'row'} gap={2}>
         <Box ml={2}>
           <Typography variant="overline" color="text.primary">
-            {t('ดำเนินการเสร็จ')}
+            {t('ดำเนินการเสร็จ มี Statement')}
           </Typography>
 
           <ListItem

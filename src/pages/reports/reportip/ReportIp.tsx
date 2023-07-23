@@ -150,12 +150,13 @@ export default function ReportIpPage() {
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [accStName, setAccStName] = useState<string>('')
-  const [getRep, setGetRep] = useState(0)
-  const [getCRep, setGetCRep] = useState(0)
+  const [getRep, setGetRep] = useState<number>(0)
+  const [getCRep, setGetCRep] = useState<number>(0)
   const [caseNoRep, setCaseNoRep] = useState<GridRowsProp>([])
   const [caseRepNotC, setCaseRepNotC] = useState<GridRowsProp>([])
   const [caseRepC, setCaseRepC] = useState<GridRowsProp>([])
-
+  const [receipt, setReceipt] = useState<number>(0)
+  
   const [title, setTitle] = useState<string>(ipOfcReport[0].text)
   const [accCode, setAccCode] = useState<string>(ipOfcReport[0].accCode)
   const [stmFile, setStmFile] = useState<string>(ipOfcReport[0].stmFile)
@@ -181,7 +182,7 @@ export default function ReportIpPage() {
     { field: 'adjrw', headerName: 'AdjRw', width: 110 },
     { field: 'total_summary', headerName: 'ได้รับชดเชย', width: 110 },
     { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
-    { field: '', headerName: 'เลขใบเสร็จ', width: 110 },
+    { field: 'receipt_no', headerName: 'เลขใบเสร็จ', width: 110 },
   ]
 
   const columns_0: GridColDef[] = [
@@ -336,6 +337,16 @@ export default function ReportIpPage() {
       setDataCaseNotNull(responseCaseNotNull.data.data)
       console.log('dataCaseNotNull')
       console.log(dataCaseNotNull)
+
+      let count = 0
+      for (const item of responseCaseNotNull.data.data) {
+        if (item.receipt_no !== null ) {
+          count++
+        }
+      }
+
+      setReceipt(count)
+
     } catch (error) {
       console.log('ERROR', error)
     }
@@ -444,9 +455,10 @@ export default function ReportIpPage() {
   return (
     <>
       {/* <Stack direction={'row'} gap={1} marginTop={2} paddingLeft={10}> */}
+      <Box width={1500}   marginLeft={6}>
       <Grid container spacing={3}>
-        <Grid item xs={1}></Grid>
-        <Grid item xs={2}>
+        
+        <Grid item xs={3}>
           <Card sx={{padding: '10px'}}>
             <Typography
               fontSize={'1.2rem'}
@@ -551,7 +563,7 @@ export default function ReportIpPage() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs = {6}>
+        <Grid item xs = {9}>
           <Card sx={{padding: '25px'}}>
             {isLoading ? (
               <Loading isLoading />
@@ -656,8 +668,10 @@ export default function ReportIpPage() {
             )}
           </Card>
         </Grid>
-        <Grid item xs={2}></Grid>
+       
       </Grid>
+      </Box>
+    
 
       {/* </Stack> */}
 
@@ -761,6 +775,15 @@ export default function ReportIpPage() {
                 mb={1}
               >
                 จำนวน : {dataNotNull.all_notnullcase.toLocaleString('en-US')}{' '}
+                ราย
+              </Typography>
+              <Typography
+                fontStyle={'bold'}
+                fontSize={'1.1rem'}
+                color={'#098f51'}
+                mb={1}
+              >
+                จำนวน ที่ออกใบเสร็จแล้ว : {receipt.toLocaleString('en-US')}{' '}
                 ราย
               </Typography>
             </Stack>
