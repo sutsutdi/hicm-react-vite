@@ -68,10 +68,10 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   ]
 
   const ipMenus = [
-    { icon: <InboxIcon />, title: 'IP OFC', nav: '/ipofc/report' },
-    { icon: <MailIcon />, title: 'IP UCS', nav: '/ipuc/report' },
-    { icon: <MailIcon />, title: 'IP LGO', nav: '' },
-    { icon: <MailIcon />, title: 'IP STP ', nav: '' },
+    { icon: <InboxIcon />, title: 'IP-Rep-Statement', nav: '/ipofc/report' },
+    // { icon: <MailIcon />, title: 'IP UCS', nav: '/ipuc/report' },
+    // { icon: <MailIcon />, title: 'IP LGO', nav: '' },
+    // { icon: <MailIcon />, title: 'IP STP ', nav: '' },
   ]
 
   const opMenus = [

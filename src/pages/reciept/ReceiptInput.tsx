@@ -13,9 +13,9 @@ import {
   TextField,
 } from '@mui/material'
 import axios from 'axios'
-import { useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { Typography } from '@mui/material'
-import CardHeader1 from '../../../assets/amy.jpg'
+
 import {
   DataGrid,
   GridRowsProp,
@@ -34,6 +34,7 @@ import {
   Add,
   ModeEdit,
 } from '@mui/icons-material'
+import CardHeader1 from '../../assets/account.jpg'
 
 import Loading from '../../components/Loading'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
@@ -48,27 +49,6 @@ const columns: GridColDef[] = [
     field: 'date',
     headerName: 'Date',
     width: 120,
-    // valueGetter: (params) => {
-    //   if (!params.value) {
-    //     return params.value
-    //   }
-    //   // Assuming the originalDate is a JavaScript Date object with the value '2023-01-01'
-    //   const originalDate = new Date(params.value)
-
-    //   // Extract day, month, and year components from the Date object
-    //   const day = originalDate.getDate()
-    //   const month = originalDate.getMonth() + 1 // JavaScript months are 0-based
-    //   const year = originalDate.getFullYear()
-
-    //   // Format the components into 'dd-mm-yy' format
-    //   const formattedDateString = `${day < 10 ? '0' : ''}${day}-${
-    //     month < 10 ? '0' : ''
-    //   }${month}-${year.toString().slice(-2)}`
-
-    //   // Create a new Date object using the formatted date string
-    //   const formattedDate = new Date(formattedDateString)
-    //   return formattedDate
-    // },
   },
   { field: 'receipt_no', headerName: 'receipt No', width: 150 },
   { field: 'repno', headerName: 'Rep No', editable: true, width: 150 },
@@ -97,16 +77,18 @@ const columns: GridColDef[] = [
 export default function receiptPage() {
   const [receiptDt, setReceiptDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [rep, setRep] = useState<GridRowsProp>([])
-  const [receiptNo, setreceiptNo] = useState('')
+  const [repno,setRepno] = useState<string>('')
+  const [receiptNo, setReceiptNo] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const onSubmit = async () => {
+  
     // const apiBackendUrl = import.meta.env.VITE_API_BACKEND_URL
 
-    const data = new FormData(event.currentTarget)
+    // const data = new FormData(event.currentTarget)
     const receiptData = {
-      receipt_no: data.get('receipt') as string | null,
+      receipt_no: receiptNo,
+      // receipt_no: data.get('receipt') as string | null,
       receipt_date: receiptDt,
     }
 
@@ -126,6 +108,48 @@ export default function receiptPage() {
     setIsLoading(false)
   }
 
+ const onAddRep = async ()=>{
+  const receiptData = {
+    receipt_date: receiptDt,
+    receipt_no: receiptNo,   
+    repno: repno
+  }
+
+  console.log(receiptData)
+  try {
+    const response1 = await axios.post(
+      `${apiUrl}/receipt/receiptAddRep`,
+      receiptData
+    )
+    // setReceiptDt(response.data[0].receipt_date)
+    setRep(response1.data)
+  } catch (error) {
+    console.log('ERROR', error)
+  }
+
+  try {
+    const response2 = await axios.post(
+      `${apiUrl}/receipt/receiptByNo`,
+      { receiptNo }
+    )
+    // setReceiptDt(response.data[0].receipt_date)
+    setRep(response2.data)
+  } catch (error) {
+    console.log('ERROR', error)
+  }
+
+  setIsLoading(false)
+
+ }
+
+  const handleRepNoChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setRepno(event.target.value);
+  };
+  const handleReceiptNoChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setReceiptNo(event.target.value);
+  };
+
+
   interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void
     setRowModesModel: (
@@ -134,17 +158,8 @@ export default function receiptPage() {
   }
 
   const CustomToolbar = (props: EditToolbarProps) => {
-    const { setRows, setRowModesModel } = props
+    
 
-    const handleAddClick = () => {
-      setRows((oldRows) => [
-        ...oldRows,
-        { date: Date, receipt_no: '', repno: '' },
-      ])
-      setRowModesModel((oldModel) => ({
-        ...oldModel,
-      }))
-    }
     return (
       <GridToolbarContainer>
         <Stack direction={'row'} gap={3} mt={2} mb={1} ml={2}>
@@ -159,9 +174,7 @@ export default function receiptPage() {
               }
             />
           </Box>
-          <Button color="primary" startIcon={<Add />} onClick={handleAddClick}>
-            Add record
-          </Button>
+        
         </Stack>
       </GridToolbarContainer>
     )
@@ -172,23 +185,31 @@ export default function receiptPage() {
       <Stack
         direction={'row'}
         maxWidth={'100%'}
+        height={'500px'}
         justifyContent={'center'}
         alignItems={'center'}
+        gap={3}
       >
-        <Card sx={{ maxWidth: 500, height: 600, padding: '30px' }}>
+        <Card sx={{ padding: '20px' }}>
+          <CardMedia
+            component={'img'}
+            sx={{ height: 140, width: '100%' }}
+            image={CardHeader1}
+            title="green iguana"
+          />
+
           <CardContent>
+            <Typography sx={{ fontSize: '1.1rem' }} color={'#1e77c5'}>
+              ออกใบเสร็จ สำหรับ statement-rep
+            </Typography>
             <Box
               sx={{
-                marginTop: 8,
+                marginTop: 3,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}></Avatar>
-              <Typography component="h1" variant="h5">
-                Login
-              </Typography>
               <Box
                 component="form"
                 onSubmit={onSubmit}
@@ -200,19 +221,12 @@ export default function receiptPage() {
                   required
                   fullWidth
                   id="receipt"
-                  label="receipt No"
+                  label="receipt No เลขที่ใบเสร็จ"
                   name="receipt"
+                  value={receiptNo}
+                  onChange={handleReceiptNoChange}
                   autoFocus
                 />
-
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Login
-                </Button>
               </Box>
               <LocalizationProvider
                 dateAdapter={AdapterDayjs}
@@ -228,9 +242,35 @@ export default function receiptPage() {
                 </Stack>
               </LocalizationProvider>
             </Box>
+
+            <Button             
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              onClick={onSubmit}
+            >
+              Submit
+            </Button>
           </CardContent>
         </Card>
         <Card>
+          <Stack direction={'row'} gap={2} sx={{ paddingLeft: '15px' }}>
+            <TextField
+              type="text"  
+              margin="normal"
+              required
+              id="repno"
+              label="Repno หมายเลข REP"
+              name="repno"
+              value={repno}
+              onChange={handleRepNoChange}
+              color="secondary"
+              autoFocus
+            />
+            <Button color="primary" startIcon={<Add />} onClick={onAddRep}>
+              Add Rep
+            </Button>
+          </Stack>
+
           <Box style={{ height: 500, width: '100%' }}>
             <DataGrid
               rows={rep}
