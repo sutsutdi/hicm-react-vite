@@ -34,7 +34,7 @@ function TotalCaseCard(props: Cases) {
   return (
     <Card sx={{ padding: '10px' }}>
       {/* <CardContentWrapper> */}
-      <Typography variant="overline" color="text.primary">
+      <Typography variant="overline" color="text.primary" fontSize={'1rem'}>
         {t('จำนวน ผู้ป่วยทั้งหมด')}
       </Typography>
 

@@ -144,6 +144,7 @@ export default function receiptPage() {
 
   const handleRepNoChange = (event: ChangeEvent<HTMLInputElement>) => {
     setRepno(event.target.value);
+   
   };
   const handleReceiptNoChange = (event: ChangeEvent<HTMLInputElement>) => {
     setReceiptNo(event.target.value);

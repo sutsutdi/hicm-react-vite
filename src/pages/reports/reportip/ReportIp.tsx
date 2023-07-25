@@ -137,7 +137,7 @@ const ipOfcReport = [
   },
 ]
 
-const apiUrl = import.meta.env.VITE_API_URL  // localhost
+const apiUrl = import.meta.env.VITE_API_URL // localhost
 // const apiUrl = import.meta.env.VITE_API_SERVER_URL // server HICM
 
 export default function ReportIpPage() {
@@ -151,19 +151,20 @@ export default function ReportIpPage() {
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [accStName, setAccStName] = useState<string>('')
   const [getRep, setGetRep] = useState<number>(0)
+  const [totalRepDebt, setTotalRepDebt] = useState<number>(0)
   const [getCRep, setGetCRep] = useState<number>(0)
   const [caseNoRep, setCaseNoRep] = useState<GridRowsProp>([])
   const [caseRepNotC, setCaseRepNotC] = useState<GridRowsProp>([])
   const [caseRepC, setCaseRepC] = useState<GridRowsProp>([])
   const [receipt, setReceipt] = useState<number>(0)
-  
+
   const [title, setTitle] = useState<string>(ipOfcReport[0].text)
   const [accCode, setAccCode] = useState<string>(ipOfcReport[0].accCode)
   const [stmFile, setStmFile] = useState<string>(ipOfcReport[0].stmFile)
   const [repFile, setRepFile] = useState<string>(ipOfcReport[0].repFile)
   const [openPeriod, setOpenMenuPeriod] = useState<boolean>(false)
   const [period, setPeriod] = useState<string>(ipOfcReport[0].text)
-  const [lastestIpd,setLastestIpd] = useState<string>('')
+  const [lastestIpd, setLastestIpd] = useState<string>('')
   const actionRef1 = useRef<any>(null)
 
   const columns: GridColDef[] = [
@@ -247,7 +248,7 @@ export default function ReportIpPage() {
 
     setIsLoading(true)
 
-    // lastetst case 
+    // lastetst case
 
     try {
       const response = await axios.get(`${apiUrl}/ipofc/ipofclastest`)
@@ -256,21 +257,17 @@ export default function ReportIpPage() {
         year: 'numeric', // Full year (e.g., "2566" for 2023)
         month: 'long', // Long month name (e.g., "June")
         day: 'numeric', // Numeric day (e.g., "30")
-      };
-      
-      // Convert the date to Thai date format
-      const thaiDateFormat = response.data.data[0].dchdate.toLocaleString();
+      }
 
+      // Convert the date to Thai date format
+      const thaiDateFormat = response.data.data[0].dchdate.toLocaleString()
 
       setLastestIpd(thaiDateFormat)
-     
 
       // console.log(lastestIpd)
-
     } catch (error) {
       console.log('ERROR', error)
     }
-
 
     // Null Cases
 
@@ -289,22 +286,25 @@ export default function ReportIpPage() {
       console.log('dataCaseNull')
       console.log(dataCaseNull)
 
-      let count1 = 0
+      let rep = 0
       for (const item of responseCaseNull.data.data) {
         if (item.repno !== null) {
-          count1++
+          rep++
         }
       }
 
-      let count2 = 0
+      let repc = 0
       for (const item of responseCaseNull.data.data) {
         if (item.repno !== null && item.error_code !== '-') {
-          count2++
+          repc++
         }
       }
 
-      setGetRep(count1)
-      setGetCRep(count2)
+     
+
+      setGetRep(rep) // มี rep แล้ว
+      setGetCRep(repc) // ติด C
+     
 
       const caseRepNotC = responseCaseNull.data.data.filter(
         (row: any) => row.repno !== null && row.error_code === '-'
@@ -340,13 +340,12 @@ export default function ReportIpPage() {
 
       let count = 0
       for (const item of responseCaseNotNull.data.data) {
-        if (item.receipt_no !== null ) {
+        if (item.receipt_no !== null) {
           count++
         }
       }
 
       setReceipt(count)
-
     } catch (error) {
       console.log('ERROR', error)
     }
@@ -455,223 +454,228 @@ export default function ReportIpPage() {
   return (
     <>
       {/* <Stack direction={'row'} gap={1} marginTop={2} paddingLeft={10}> */}
-      <Box width={1500}   marginLeft={6}>
-      <Grid container spacing={3}>
-        
-        <Grid item xs={3}>
-          <Card sx={{padding: '10px'}}>
-            <Typography
-              fontSize={'1.2rem'}
-              color={'rgba(26, 138, 212, 1)'}
-              mb={1}
-              mt={1.5}
-              ml={1.5}
-            >
-              {`${title}`}
-            </Typography>
-            <CardMedia
-              component={'img'}
-              sx={{ height: 140, width: '100%' }}
-              image={CardHeader1}
-              title="green iguana"
-            />
-
-            <CardContent>
-              <LocalizationProvider
-                dateAdapter={AdapterDayjs}
-                adapterLocale="th"
-                // adapterLocale="th"
+      <Box width={1500} marginLeft={6}>
+        <Grid container spacing={3}>
+          <Grid item xs={3}>
+            <Card sx={{ padding: '10px' }}>
+              <Typography
+                fontSize={'1.2rem'}
+                color={'rgba(26, 138, 212, 1)'}
+                mb={1}
+                mt={1.5}
+                ml={1.5}
               >
-                <Stack direction={'column'} gap={2}>
-                  <DatePicker
-                    label="Start Date"
-                    value={startDt}
-                    onChange={(newValue) => setStartDt(newValue)}
-                  />
-                  <DatePicker
-                    label="End Date"
-                    value={endDt}
-                    onChange={(newValue) => setEndDt(newValue)}
-                  />
-                 </Stack>
-              </LocalizationProvider>
+                {`${title}`}
+              </Typography>
+              <CardMedia
+                component={'img'}
+                sx={{ height: 140, width: '100%' }}
+                image={CardHeader1}
+                title="green iguana"
+              />
 
-              <Box sx={{ marginTop: '4px' }}>
-                <Button
-                  variant="outlined"
-                  ref={actionRef1}
-                  onClick={() => setOpenMenuPeriod(true)}
-                  fullWidth
-                  sx={{
-                    mr: 1,
-                  }}
-                  endIcon={<KeyboardArrowDownTwoTone fontSize="small" />}
+              <CardContent>
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  adapterLocale="th"
+                  // adapterLocale="th"
                 >
-                  {period}
-                </Button>
-                <Menu
-                  disableScrollLock
-                  anchorEl={actionRef1.current}
-                  onClose={() => setOpenMenuPeriod(false)}
-                  open={openPeriod}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                >
-                  {ipOfcReport.map((_period) => (
-                    <MenuItem
-                      key={_period.id}
-                      onClick={() => {
-                        setPeriod(_period.text)
-                        setTitle(_period.text)
-                        setAccCode(_period.accCode)
-                        setStmFile(_period.stmFile)
-                        setRepFile(_period.repFile)
-                        setAccStName(_period.stName)
-                        setOpenMenuPeriod(false)
-                        console.log(_period)
-                      }}
-                    >
-                      {_period.text}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
+                  <Stack direction={'column'} gap={2}>
+                    <DatePicker
+                      label="Start Date"
+                      value={startDt}
+                      onChange={(newValue) => setStartDt(newValue)}
+                    />
+                    <DatePicker
+                      label="End Date"
+                      value={endDt}
+                      onChange={(newValue) => setEndDt(newValue)}
+                    />
+                  </Stack>
+                </LocalizationProvider>
 
-              <CardActions>
-                <Box flexGrow={1} />
-                <Button
-                  variant="contained"
-                  onClick={onSubmit}
-                  size="small"
-                  color= 'primary' 
-                >
-                  Submit
-                </Button>
-              </CardActions>
-              <Stack direction={'row'} gap={2} mt={2}>
-                  <Box flexGrow={1}/>
-                  <Typography>
-                    {`update : ${lastestIpd} `}
-                  </Typography>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs = {9}>
-          <Card sx={{padding: '25px'}}>
-            {isLoading ? (
-              <Loading isLoading />
-            ) : (
-              <Box>
-                <Stack direction={'row'} gap={2}>
-                  <TotalCaseCard
-                    cases={(
-                      Number(dataNull.all_nullcase) +
-                      Number(dataNotNull.all_notnullcase)
-                    ).toLocaleString('en-US')}
-                    values={(
-                      Number(dataNull.debit_null) +
-                      Number(dataNotNull.debit_notnull)
-                    ).toLocaleString('en-US')}
-                  />
-                  <ClaimCaseCard
-                    cases={Number(dataNotNull.all_notnullcase).toLocaleString(
-                      'en-US'
-                    )}
-                    values={Number(dataNotNull.debit_notnull).toLocaleString(
-                      'en-US'
-                    )}
-                    recieve={Number(dataNotNull.recieve).toLocaleString(
-                      'en-US'
-                    )}
-                    percent={
-                      (Number(dataNotNull.all_notnullcase) * 100) /
-                      (Number(dataNull.all_nullcase) +
-                        Number(dataNotNull.all_notnullcase))
-                    }
-                  />
-                  <UnClaimCaseCard
-                    cases={Number(dataNull.all_nullcase).toLocaleString(
-                      'en-US'
-                    )}
-                    values={Number(dataNull.debit_null).toLocaleString('en-US')}
-                    percent={
-                      (Number(dataNull.all_nullcase) * 100) /
-                      (Number(dataNull.all_nullcase) +
-                        Number(dataNotNull.all_notnullcase))
-                    }
-                    caserep={(getRep - getCRep).toLocaleString('en-US')}
-                    caseerror={getCRep.toLocaleString('en-US')}
-                    caseuncalim={(
-                      Number(dataNull.all_nullcase) - getRep
-                    ).toLocaleString('en-US')}
-                  />
+                <Box sx={{ marginTop: '4px' }}>
+                  <Button
+                    variant="outlined"
+                    ref={actionRef1}
+                    onClick={() => setOpenMenuPeriod(true)}
+                    fullWidth
+                    sx={{
+                      mr: 1,
+                    }}
+                    endIcon={<KeyboardArrowDownTwoTone fontSize="small" />}
+                  >
+                    {period}
+                  </Button>
+                  <Menu
+                    disableScrollLock
+                    anchorEl={actionRef1.current}
+                    onClose={() => setOpenMenuPeriod(false)}
+                    open={openPeriod}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                  >
+                    {ipOfcReport.map((_period) => (
+                      <MenuItem
+                        key={_period.id}
+                        onClick={() => {
+                          setPeriod(_period.text)
+                          setTitle(_period.text)
+                          setAccCode(_period.accCode)
+                          setStmFile(_period.stmFile)
+                          setRepFile(_period.repFile)
+                          setAccStName(_period.stName)
+                          setOpenMenuPeriod(false)
+                          console.log(_period)
+                        }}
+                      >
+                        {_period.text}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </Box>
+
+                <CardActions>
+                  <Box flexGrow={1} />
+                  <Button
+                    variant="contained"
+                    onClick={onSubmit}
+                    size="small"
+                    color="primary"
+                  >
+                    Submit
+                  </Button>
+                </CardActions>
+                <Stack direction={'row'} gap={2} mt={2}>
+                  <Box flexGrow={1} />
+                  <Typography>{`update : ${lastestIpd} `}</Typography>
                 </Stack>
-                <Stack direction={'column'} gap={2} marginTop={2}>
-                  <Stack direction={'row'}>
-                    <Typography
-                      flexGrow={1}
-                      fontWeight={'bold'}
-                      color={'primary'}
-                    >
-                      ส่วนต่าง ค่ารักษา :{' '}
-                    </Typography>
-                    <Typography mr={5} fontWeight={'bold'}>
-                      {dataNotNull.sum_diff === null
-                        ? 0
-                        : Number(dataNotNull.sum_diff).toLocaleString(
-                            'en-US'
-                          )}{' '}
-                      บาท
-                    </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={9}>
+            <Card sx={{ padding: '25px' }}>
+              {isLoading ? (
+                <Loading isLoading />
+              ) : (
+                <Box>
+                  <Stack direction={'row'} gap={2}>
+                    <TotalCaseCard
+                      cases={(
+                        Number(dataNull.all_nullcase) +
+                        Number(dataNotNull.all_notnullcase)
+                      ).toLocaleString('en-US')}
+                      values={(
+                        Number(dataNull.debit_null) +
+                        Number(dataNotNull.debit_notnull)
+                      ).toLocaleString('en-US')}
+                    />
+                    <ClaimCaseCard
+                      cases={Number(dataNotNull.all_notnullcase).toLocaleString(
+                        'en-US'
+                      )}
+                      values={Number(dataNotNull.debit_notnull).toLocaleString(
+                        'en-US'
+                      )}
+                      recieve={Number(dataNotNull.recieve).toLocaleString(
+                        'en-US'
+                      )}
+                      percent={
+                        (Number(dataNotNull.all_notnullcase) * 100) /
+                        (Number(dataNull.all_nullcase) +
+                          Number(dataNotNull.all_notnullcase))
+                      }
+                      caserep={(getRep - getCRep).toLocaleString('en-US')}
+                      percentrep={
+                        ((getRep - getCRep) * 100) /
+                        (Number(dataNull.all_nullcase) +
+                          Number(dataNotNull.all_notnullcase))
+                      }
+                      totalrepdebt={totalRepDebt.toLocaleString('en-US')}
+                    />
+                    <UnClaimCaseCard
+                      cases={Number(dataNull.all_nullcase).toLocaleString(
+                        'en-US'
+                      )}
+                      values={Number(dataNull.debit_null).toLocaleString(
+                        'en-US'
+                      )}
+                      percent={
+                        ((getCRep+Number(dataNull.all_nullcase) - getRep) * 100) /
+                        (Number(dataNull.all_nullcase) +
+                          Number(dataNotNull.all_notnullcase))
+                      }
+                      caserep={(getRep - getCRep).toLocaleString('en-US')}
+                      caseerror={getCRep.toLocaleString('en-US')}
+                      caseuncalim={(
+                        Number(dataNull.all_nullcase) - getRep
+                      ).toLocaleString('en-US')}
+                      caseerrorunclaim={(getCRep+Number(dataNull.all_nullcase) - getRep).toLocaleString('en-US')}
+                    />
                   </Stack>
+                  <Stack direction={'column'} gap={2} marginTop={2}>
+                    <Stack direction={'row'}>
+                      <Typography
+                        flexGrow={1}
+                        fontWeight={'bold'}
+                        color={'primary'}
+                      >
+                        ส่วนต่าง ค่ารักษา :{' '}
+                      </Typography>
+                      <Typography mr={5} fontWeight={'bold'}>
+                        {dataNotNull.sum_diff === null
+                          ? 0
+                          : Number(dataNotNull.sum_diff).toLocaleString(
+                              'en-US'
+                            )}{' '}
+                        บาท
+                      </Typography>
+                    </Stack>
 
-                  <Stack direction={'row'}>
-                    <Typography flexGrow={1} fontWeight={'bold'}>
-                      ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
-                    </Typography>
-                    <Typography mr={5} fontWeight={'bold'}>
-                      {dataNotNull.diffloss === null
-                        ? 0
-                        : Number(dataNotNull.diffloss).toLocaleString(
-                            'en-US'
-                          )}{' '}
-                      บาท
-                    </Typography>
-                  </Stack>
+                    <Stack direction={'row'}>
+                      <Typography flexGrow={1} fontWeight={'bold'}>
+                        ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
+                      </Typography>
+                      <Typography mr={5} fontWeight={'bold'}>
+                        {dataNotNull.diffloss === null
+                          ? 0
+                          : Number(dataNotNull.diffloss).toLocaleString(
+                              'en-US'
+                            )}{' '}
+                        บาท
+                      </Typography>
+                    </Stack>
 
-                  <Stack direction={'row'}>
-                    <Typography
-                      color={'error'}
-                      flexGrow={1}
-                      fontWeight={'bold'}
-                    >
-                      ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
-                    </Typography>
-                    <Typography color={'error'} mr={5} fontWeight={'bold'}>
-                      {dataNotNull.diffgain === null
-                        ? 0
-                        : Number(dataNotNull.diffgain).toLocaleString(
-                            'en-US'
-                          )}{' '}
-                      บาท
-                    </Typography>
+                    <Stack direction={'row'}>
+                      <Typography
+                        color={'error'}
+                        flexGrow={1}
+                        fontWeight={'bold'}
+                      >
+                        ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
+                      </Typography>
+                      <Typography color={'error'} mr={5} fontWeight={'bold'}>
+                        {dataNotNull.diffgain === null
+                          ? 0
+                          : Number(dataNotNull.diffgain).toLocaleString(
+                              'en-US'
+                            )}{' '}
+                        บาท
+                      </Typography>
+                    </Stack>
                   </Stack>
-                </Stack>
-              </Box>
-            )}
-          </Card>
+                </Box>
+              )}
+            </Card>
+          </Grid>
         </Grid>
-       
-      </Grid>
       </Box>
-    
 
       {/* </Stack> */}
 
@@ -697,7 +701,8 @@ export default function ReportIpPage() {
                 color={'error'}
                 mb={1}
               >
-                ยังไม่ได้ดำเนินการ : {(dataNull.all_nullcase - getRep).toLocaleString('en-US')} ราย
+                ยังไม่ได้ดำเนินการ :{' '}
+                {(dataNull.all_nullcase - getRep).toLocaleString('en-US')} ราย
               </Typography>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
@@ -783,8 +788,7 @@ export default function ReportIpPage() {
                 color={'#098f51'}
                 mb={1}
               >
-                จำนวน ที่ออกใบเสร็จแล้ว : {receipt.toLocaleString('en-US')}{' '}
-                ราย
+                จำนวน ที่ออกใบเสร็จแล้ว : {receipt.toLocaleString('en-US')} ราย
               </Typography>
             </Stack>
 

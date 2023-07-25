@@ -11,7 +11,7 @@ const themeColors = {
   primary: '#045c6c',
   secondary: '#6E759F',
   success: '#57CA22',
-  warning: '#FFA319',
+  warning: '#e8910f',
   error: '#FF1943',
   info: '#33C2FF',
   black: '#223354',
