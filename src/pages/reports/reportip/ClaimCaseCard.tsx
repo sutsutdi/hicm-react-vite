@@ -32,10 +32,10 @@ const AvatarSuccess = styled(Avatar)(
 const AvatarWarning = styled(Avatar)(
   ({ theme }) => `
         background-color: ${theme.colors.warning.main};
-        color: ${theme.palette.primary.contrastText};
+        color: ${theme.palette.warning.contrastText};
         width: ${theme.spacing(8)};
         height: ${theme.spacing(8)};
-        box-shadow: ${theme.colors.shadows.success};
+        box-shadow: ${theme.colors.shadows.warning};
   `
 )
 
@@ -95,7 +95,7 @@ function ClaimCaseCard(props: Claim) {
             <ListItemText
               primary={
                 <>
-                  <Box fontWeight="bold">
+                  <Box fontWeight="bold" fontSize={'1rem'}>
                     {t(`ทั้งหมด ${props.values} บาท`)}
                   </Box>
 
@@ -105,6 +105,7 @@ function ClaimCaseCard(props: Claim) {
                       pl: 0.5,
                       fontWeight: 'bold',
                       color: 'primary',
+                      fontSize: '1rem'
                     }}
                   >
                     {t(`ชดเชย ${props.recieve}  บาท`)}

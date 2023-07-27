@@ -149,7 +149,7 @@ export default function ReportIpPage() {
   const [dataCaseNull, setDataCaseNull] = useState<GridRowsProp>([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
-  const [accStName, setAccStName] = useState<string>('')
+  const [accStName, setAccStName] = useState<string>('IP-OFC')
   const [getRep, setGetRep] = useState<number>(0)
   const [totalRepDebt, setTotalRepDebt] = useState<number>(0)
   const [getCRep, setGetCRep] = useState<number>(0)
@@ -207,9 +207,37 @@ export default function ReportIpPage() {
     { field: 'repno', headerName: 'RepNo', width: 110 },
     { field: 'error_code', headerName: 'error_code', width: 100 },
     { field: 'error_name', headerName: 'error', width: 280 },
-    { field: 'remark_data', headerName: 'remark', width: 280 },
+    { field: 'remark_data', headerName: 'remark', width: 280 },    
   ]
 
+  const columns_1: GridColDef[] = [
+    { field: 'hn', headerName: 'HN', width: 100 },
+    { field: 'an', headerName: 'AN', width: 120 },
+    { field: 'cid', headerName: 'CID', width: 150 },
+    { field: 'fullname', headerName: 'ชื่อ นามสสกุล', width: 150 },
+    { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
+    { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
+    { field: 'l_stay', headerName: 'วันนอน', width: 70 },
+    { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
+    { field: 'paid', headerName: 'ชำระ', width: 110 },
+    { field: 'debt', headerName: 'คงเหลือ', width: 110 },
+    { field: 'total_paid', headerName: 'ชดเชย_rep', width: 280 },
+    { field: 'rep_diff', headerName: 'ส่วนต่างชดเชย', width: 280 }, 
+    { field: 'rest_debt', headerName: 'หนี้คงเหลือหลังชดเชย', width: 280 }, 
+
+    {
+      field: 'customField', // Use a custom field name for the constant value
+      headerName: 'สิทธิ์',
+      width: 120,
+      renderCell: (params) => <strong>{accStName}</strong>, // Replace the field with a constant value
+    },
+    { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 300 },
+    { field: 'repno', headerName: 'RepNo', width: 110 },
+    { field: 'error_code', headerName: 'error_code', width: 100 },
+ 
+       
+  ]
+  
   const columns2: GridColDef[] = [
     { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
     { field: 'allcase', headerName: 'จำนวนผู้ป่วย', width: 110 },
@@ -231,6 +259,7 @@ export default function ReportIpPage() {
     setDataCaseNull([])
     setGetRep(0)
     setGetCRep(0)
+    setReceipt(0)
   }
 
   const [isLoading, setIsLoading] = useState(false)
@@ -622,25 +651,58 @@ export default function ReportIpPage() {
                   <Stack direction={'column'} gap={2} marginTop={2}>
                     <Stack direction={'row'}>
                       <Typography
-                        flexGrow={1}
+                        // flexGrow={1}
                         fontWeight={'bold'}
                         color={'primary'}
                       >
-                        ส่วนต่าง ค่ารักษา :{' '}
+                        ส่วนต่าง ค่ารักษา :{' '}{dataNotNull.sum_diff === null
+                          ? 0
+                          : Number(dataNotNull.sum_diff).toLocaleString(
+                              'en-US'
+                            )}{' '}
+                        บาท{'   '}
                       </Typography>
-                      <Typography mr={5} fontWeight={'bold'}>
+                      <Typography flexGrow={1} fontWeight={'bold'} paddingLeft={2}>
+                        {'  '} ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}{dataNotNull.diffloss === null
+                          ? 0
+                          : Number(dataNotNull.diffloss).toLocaleString(
+                              'en-US'
+                            )}{' '}
+                        บาท{'   '}
+                      </Typography>
+                      <Typography
+                        color={'error'}
+                        // flexGrow={1}
+                        fontWeight={'bold'}
+                      >
+                        ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
+                      </Typography>
+                      <Typography color={'error'} mr={5} fontWeight={'bold'} marginLeft={1}>
+                        {dataNotNull.diffgain === null
+                          ? 0
+                          : Number(dataNotNull.diffgain).toLocaleString(
+                              'en-US'
+                            )}{' '}
+                        บาท{'  '}
+                      </Typography>
+                      {/* <Typography mr={5} fontWeight={'bold'}>
                         {dataNotNull.sum_diff === null
                           ? 0
                           : Number(dataNotNull.sum_diff).toLocaleString(
                               'en-US'
                             )}{' '}
                         บาท
-                      </Typography>
+                      </Typography> */}
                     </Stack>
 
-                    <Stack direction={'row'}>
+                    {/* <Stack direction={'row'}>
                       <Typography flexGrow={1} fontWeight={'bold'}>
-                        ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
+                        ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}{dataNotNull.diffloss === null
+                          ? 0
+                          : Number(dataNotNull.diffloss).toLocaleString(
+                              'en-US'
+                            )}{' '}
+                        บาท{'   '}
                       </Typography>
                       <Typography mr={5} fontWeight={'bold'}>
                         {dataNotNull.diffloss === null
@@ -650,8 +712,8 @@ export default function ReportIpPage() {
                             )}{' '}
                         บาท
                       </Typography>
-                    </Stack>
-
+                    </Stack> */}
+{/* 
                     <Stack direction={'row'}>
                       <Typography
                         color={'error'}
@@ -668,7 +730,7 @@ export default function ReportIpPage() {
                             )}{' '}
                         บาท
                       </Typography>
-                    </Stack>
+                    </Stack> */}
                   </Stack>
                 </Box>
               )}
@@ -731,7 +793,7 @@ export default function ReportIpPage() {
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={caseRepNotC}
-                columns={columns_0}
+                columns={columns_1}
                 getRowId={(row) => row.an}
                 slots={{
                   toolbar: CustomToolbar,

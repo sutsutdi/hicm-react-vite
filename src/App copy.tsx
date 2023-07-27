@@ -8,7 +8,7 @@ import DrawerMenu from './layouts/DrawerMenu'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
-import StockPage from './pages/StockPage'
+
 import { useSelector } from 'react-redux'
 import { loginSelector } from './store/slices/loginSlice'
 import PublicRoutes from './router/public.routes'
@@ -99,7 +99,7 @@ export default function App() {
             <Route path="/debit/edit" element={<DebitEditPage />} />
             <Route path="/fs/erquality" element={<FsErQualityPage />} />
             <Route path="/fs/telemed" element={<FsTelemedPage />} /> */}
-            <Route path="/stock" element={<StockPage />} />
+          
             <Route path="/barchart" element={<BarChartPage />} />
             <Route path="/piechart" element={<PieChartPage />} />
             <Route path="/" element={<Navigate to={'/login'} />} />

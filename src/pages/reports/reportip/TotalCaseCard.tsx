@@ -73,7 +73,7 @@ function TotalCaseCard(props: Cases) {
         <ListItemText
           primary={
             <>
-              <Box fontWeight="bold" >
+              <Box fontWeight="bold" fontSize={'1rem'}>
                 {t(`จำนวน ${props.values} บาท`)}
               </Box>
               <Box
