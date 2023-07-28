@@ -15,9 +15,9 @@ import { PieChartPage } from '../pages/PieChart'
 import MainPage from '../pages/MainPage'
 import StmIpOfcPage from '../pages/statements/StmIpOfc'
 import ReportIpAllPage from '../pages/reports/ReportIpAll'
-// import ReportIpOfcPage from '../pages/reports/reportip/ReportIpOfc'
-import ReportOpOfcPage from '../pages/reports/ReportOpOfc'
-// import ReportIpUcPage from '../pages/reports/ReportIpUc'
+
+import ReportOpPage from '../pages/reports/reportop/ReportOp'
+
 import FsErQualityPage from '../pages/feeschedules/FsErQuality'
 import FsTelemedPage from '../pages/feeschedules/FsTelemed'
 import ReportIpPage from '../pages/reports/reportip/ReportIp'
@@ -89,7 +89,7 @@ export default function MainLayout() {
             <Route path="/ipofc/report" element={<ReportIpPage/>} />
             {/* <Route path="/ipofc/report" element={<ReportIpPage  acctype = 'ipofc' title = 'ผู้ป่วยใน จ่ายตรงกรมบัญชีกลาง '/>} /> */}
             {/* <Route path="/ipuc/report" element={<ReportIpPage acctype = 'ipuc' title = 'ผู้ป่วยใน UCS '/>} /> */}
-            <Route path="/opofc/report" element={<ReportOpOfcPage />} />
+            <Route path="/op/report" element={<ReportOpPage />} />
             {/* <Route path="/opofc/report" element={<ReportOpOfcPage />} /> */}
             {/* <Route path="/ipofc/report" element={<ReportIpOfcPage />} /> */}
             <Route path="/stmipofc/report" element={<StmIpOfcPage />} />
