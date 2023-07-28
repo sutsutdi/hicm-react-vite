@@ -221,10 +221,9 @@ export default function ReportIpPage() {
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
     { field: 'debt', headerName: 'คงเหลือ', width: 110 },
-    { field: 'total_paid', headerName: 'ชดเชย_rep', width: 280 },
-    { field: 'rep_diff', headerName: 'ส่วนต่างชดเชย', width: 280 }, 
-    { field: 'rest_debt', headerName: 'หนี้คงเหลือหลังชดเชย', width: 280 }, 
-
+    { field: 'total_paid', headerName: 'ชดเชย_rep', width: 110 },
+    { field: 'rep_diff', headerName: 'ส่วนต่างชดเชย', width: 110 }, 
+    { field: 'rest_debt', headerName: 'หนี้คงเหลือหลังชดเชย', width: 150 }, 
     {
       field: 'customField', // Use a custom field name for the constant value
       headerName: 'สิทธิ์',

@@ -16,6 +16,7 @@ import {theme} from './theme/theme'
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <Provider store={store}>
     <ThemeProvider theme={theme}>
+      {/* <BrowserRouter> */}
       <BrowserRouter basename={'/hicm'}>
         <CssBaseline />
         <App />

@@ -8,8 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
-  "homepage": "https://203.114.123.214/hicm/index.html",
- 
+  "homepage": "http://203.114.123.210:6002", 
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
