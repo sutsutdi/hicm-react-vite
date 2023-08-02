@@ -51,33 +51,34 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
     { icon: <AutoGraph />, title: 'Dashboard', nav: '/dashboard' },
     { icon: <AutoGraph />, title: 'Eclaim', nav: '/eclaim' },
     { icon: <Settings />, title: 'Statement Reciept', nav: '/reciept' },
-    {
-      icon: <InboxIcon />,
-      title: 'บัญชีลูกหนี้ ผู้ป่วยใน',
-      nav: '/debitip/ipreport',
-    },
-    {
-      icon: <InboxIcon />,
-      title: 'บัญชีลูกหนี้ ผู้ป่วยนอก',
-      nav: '/debitop/opreport',
-    },
-    { icon: <InboxIcon />, title: 'Debit Edit', nav: '/debit/edit' },
-    { icon: <MailIcon />, title: 'Stock Edit', nav: '/stockedit' },
+    // {
+    //   icon: <InboxIcon />,
+    //   title: 'บัญชีลูกหนี้ ผู้ป่วยใน',
+    //   nav: '/debitip/ipreport',
+    // },
+    // {
+    //   icon: <InboxIcon />,
+    //   title: 'บัญชีลูกหนี้ ผู้ป่วยนอก',
+    //   nav: '/debitop/opreport',
+    // },
+    // // { icon: <InboxIcon />, title: 'พรบ อุบัติเหตุ', nav: '/acciinsure' },
+    // { icon: <InboxIcon />, title: 'Debit Edit', nav: '/debit/edit' },
+    // { icon: <MailIcon />, title: 'Stock Edit', nav: '/stockedit' },
     { icon: <MailIcon />, title: 'Pie Chart', nav: '/piechart' },
     { icon: <MailIcon />, title: 'Bar Chart', nav: '/barchart' },
   ]
 
   const ipMenus = [
     { icon: <InboxIcon />, title: 'IP-REP-STATEMENT', nav: '/ipofc/report' },
-    // { icon: <MailIcon />, title: 'IP UCS', nav: '/ipuc/report' },
+    { icon: <MailIcon />, title: 'IP พรบ', nav: '' },
     // { icon: <MailIcon />, title: 'IP LGO', nav: '' },
     // { icon: <MailIcon />, title: 'IP STP ', nav: '' },
   ]
 
   const opMenus = [
     { icon: <InboxIcon />, title: 'OP-REP-STATEMENT', nav: '/op/report' },
-    { icon: <MailIcon />, title: 'OP LGO', nav: '' },
-    { icon: <MailIcon />, title: 'OP STP', nav: '' },
+    { icon: <MailIcon />, title: 'OP พรบ', nav: '' },
+    { icon: <MailIcon />, title: 'OP Virtual Account', nav: '' },
   ]
 
   const stmMenus = [
@@ -113,19 +114,22 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
     { icon: <MailIcon />, title: 'INST', nav: '' },
   ]
 
-  const checkReportMenus = [
-    { icon: <MailIcon />, title: 'UC เปลี่ยนสิทธิทันที', nav: '' },
+  const acciInsureMenus = [
+    { icon: <MailIcon />, title: 'Claim พรบ IPD', nav: '/acciinsure/ip' },
+    { icon: <MailIcon />, title: 'บันทึก Claim พรบ IPD', nav: '/acciinsure/addip' },
   ]
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null)
   const [anchorEl3, setAnchorEl3] = React.useState<null | HTMLElement>(null)
   const [anchorEl4, setAnchorEl4] = React.useState<null | HTMLElement>(null)
+  const [anchorEl5, setAnchorEl5] = React.useState<null | HTMLElement>(null)
 
   const openMenu = Boolean(anchorEl)
   const openMenu2 = Boolean(anchorEl2)
   const openMenu3 = Boolean(anchorEl3)
   const openMenu4 = Boolean(anchorEl4)
+  const openMenu5 = Boolean(anchorEl5)
 
   // Debit-statment
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -157,6 +161,13 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   }
   const handleClose3 = () => {
     setAnchorEl3(null)
+  }
+  // Acci Insure Menu
+  const handleClick5 = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl5(event.currentTarget)
+  }
+  const handleClose5 = () => {
+    setAnchorEl5(null)
   }
 
   const navigate = useNavigate()
@@ -227,6 +238,13 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
             <SummarizeIcon />
           </ListItemIcon>
           <ListItemText primary={'Opd Eclaim'} />
+        </ListItemButton>
+        {/* // Opd Eclaim Menu */}
+        <ListItemButton onClick={handleClick5}>
+          <ListItemIcon>
+            <SummarizeIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Claim พรบ อุบัติเหตุ'} />
         </ListItemButton>
       </List>
 
@@ -427,6 +445,51 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         {opEclaimMenus.map((menu, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton onClick={() => navigate(menu.nav)}>
+              <ListItemIcon>{menu.icon}</ListItemIcon>
+              <ListItemText primary={menu.title} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </Menu>
+      {/*Acci Insure menu submenus*/}
+      <Menu
+        anchorEl={anchorEl5}
+        id="acci-insure-menu"
+        open={openMenu5}
+        onClose={handleClose5}
+        onClick={handleClose5}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        {acciInsureMenus.map((menu, index) => (
           <ListItem key={index} disablePadding>
             <ListItemButton onClick={() => navigate(menu.nav)}>
               <ListItemIcon>{menu.icon}</ListItemIcon>

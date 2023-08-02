@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
-  "homepage": "http://203.114.123.210:6002", 
+  "homepage": "http://203.114.123.210:6002",
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
@@ -26,6 +26,8 @@
     "chart.js": "^4.3.0",
     "dayjs": "^1.11.8",
     "faker": "^6.6.6",
+    "formik": "^2.4.2",
+    "formik-material-ui": "^4.0.0-alpha.2",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",

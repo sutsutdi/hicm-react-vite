@@ -24,6 +24,8 @@ import ReportIpPage from '../pages/reports/reportip/ReportIp'
 import IpDashboardPage from '../pages/dashboard/IpDashboard'
 import EclaimItemPage from '../pages/eclaim/EclaimItems'
 import RecieptInputPage from '../pages/reciept/ReceiptInput'
+import AcciInsurePage from '../pages/acciinsure/AcciInsurePage/AcciInsurePage'
+import AcciInsureIpAddPage from '../pages/acciinsure/IpCreatePage/AcciInsureIpAddPage'
 
 const drawerWidth = 240
 
@@ -99,7 +101,10 @@ export default function MainLayout() {
             <Route path="/dashboard" element={<IpDashboardPage />} />
             <Route path="/eclaim" element={<EclaimItemPage />} />
             <Route path="/reciept" element={<RecieptInputPage />} />
- 
+            <Route path="/acciinsure" element={<AcciInsurePage />} />
+            <Route path="/acciinsure/ip" element={<AcciInsurePage />} />
+            <Route path="/acciinsure/addip" element={<AcciInsureIpAddPage />} />
+      
             <Route path="/barchart" element={<BarChartPage />} />
             <Route path="/piechart" element={<PieChartPage />} />
             <Route path="/" element={<Navigate to={'/login'} />} />

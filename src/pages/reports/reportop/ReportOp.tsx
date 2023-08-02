@@ -32,7 +32,6 @@ import {
 } from '@mui/x-data-grid'
 
 import { KeyboardArrowDownTwoTone } from '@mui/icons-material'
-
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
@@ -71,27 +70,43 @@ const opReport = [
   },
   {
     id: 2,
-    stmFile: 'stm_ip_ucs',
-    repFile: 'rep_ip_ucs',
-    accCode: '1102050101.202',
+    stmFile: 'stm_op_ucs',
+    repFile: 'rep_op_ucs',
+    accCode: '1102050101.209', // 1102050101.209
     text: 'ผู้ป่วยนอก บัตรทอง [UCS] PP',
     stName: 'OP-PP',
   },
   {
     id: 3,
-    stmFile: 'stm_ip_ucs',
-    repFile: 'rep_ip_ucs',
-    accCode: '1102050101.217',
+    stmFile: 'stm_op_ucs',
+    repFile: 'rep_op_ucs',
+    accCode: '1102050101.216',
     text: 'ผู้ป่วยนอก บัตรทอง บริการเฉพาะ [CR]',
     stName: 'OP-UC CR',
   },
   {
     id: 4,
-    stmFile: 'stm_ip_lgo',
+    stmFile: 'stm_op_ucs',
+    repFile: 'rep_op_ucs',
+    accCode: '1102050101.203',
+    text: 'ผู้ป่วยนอก บัตรทองนอก CUP ใน จว.',
+    stName: 'OP-นอก CUP',
+  },
+  {
+    id: 5,
+    stmFile: 'stm_op_ofc',
     repFile: 'rep_ip_lgo',
-    accCode: '1102050102.802',
+    accCode: '1102050102.801',
     text: 'ผู้ป่วยนอก เบิกจ่ายตรง อปท. ',
     stName: 'OP-LGO',
+  },
+  {
+    id: 6,
+    stmFile: 'stm_ip_ofc',
+    repFile: 'rep_ip_ofc',
+    accCode: '1102050102.803',
+    text: 'ผู้ป่วยนอก เบิกจ่ายตรง อปท.พิเศษ ',
+    stName: 'OP-ฺBKK',
   },
 ]
 
@@ -115,7 +130,6 @@ export default function ReportIpPage() {
   const [caseRepNotC, setCaseRepNotC] = useState<GridRowsProp>([])
   const [caseRepC, setCaseRepC] = useState<GridRowsProp>([])
   const [receipt, setReceipt] = useState<number>(0)
-
   const [title, setTitle] = useState<string>(opReport[0].text)
   const [accCode, setAccCode] = useState<string>(opReport[0].accCode)
   const [stmFile, setStmFile] = useState<string>(opReport[0].stmFile)
@@ -134,7 +148,15 @@ export default function ReportIpPage() {
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
     { field: 'debt', headerName: 'คงเหลือ', width: 110 },
+    {
+      field: 'customField', // Use a custom field name for the constant value
+      headerName: 'ลูกหนี้สิทธิ์ย่อ',
+      width: 120,
+      renderCell: (params) => <strong>{accStName}</strong>, // Replace the field with a constant value
+    },
     { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 300 },
+    { field: 'pttype_code', headerName: 'ระหัสสิทธิ์', width: 60 },
+    { field: 'pttype_name', headerName: 'สิทธิ์', width: 300 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
     { field: 'total_summary', headerName: 'ได้รับชดเชย', width: 110 },
     { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
@@ -152,11 +174,13 @@ export default function ReportIpPage() {
     { field: 'debt', headerName: 'คงเหลือ', width: 110 },
     {
       field: 'customField', // Use a custom field name for the constant value
-      headerName: 'สิทธิ์',
+      headerName: 'ลูกหนี้สิทธิ์ย่อ',
       width: 120,
       renderCell: (params) => <strong>{accStName}</strong>, // Replace the field with a constant value
     },
     { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 300 },
+    { field: 'pttype_code', headerName: 'ระหัสสิทธิ์', width: 60 },
+    { field: 'pttype_name', headerName: 'สิทธิ์', width: 300 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
     { field: 'error_code', headerName: 'error_code', width: 100 },
     { field: 'error_name', headerName: 'error', width: 280 },
@@ -182,14 +206,14 @@ export default function ReportIpPage() {
       renderCell: (params) => <strong>{accStName}</strong>, // Replace the field with a constant value
     },
     { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 300 },
+    { field: 'pttype_code', headerName: 'ระหัสสิทธิ์', width: 60 },
+    { field: 'pttype_name', headerName: 'สิทธิ์', width: 300 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
-    { field: 'error_code', headerName: 'error_code', width: 100 },
- 
-       
+    { field: 'error_code', headerName: 'error_code', width: 100 },   
   ]
   
   const columns2: GridColDef[] = [
-    { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
+    { field: 'visit_date', headerName: 'วันที่', width: 110 },
     { field: 'allcase', headerName: 'จำนวนผู้ป่วย', width: 110 },
     { field: 'debit', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'nullcase', headerName: 'รอดำเนินการ', width: 110 },
