@@ -48,24 +48,12 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   }
 
   const menus = [
-    { icon: <AutoGraph />, title: 'Dashboard', nav: '/dashboard' },
-    { icon: <AutoGraph />, title: 'Eclaim', nav: '/eclaim' },
-    { icon: <Settings />, title: 'Statement Reciept', nav: '/reciept' },
-    // {
-    //   icon: <InboxIcon />,
-    //   title: 'บัญชีลูกหนี้ ผู้ป่วยใน',
-    //   nav: '/debitip/ipreport',
-    // },
-    // {
-    //   icon: <InboxIcon />,
-    //   title: 'บัญชีลูกหนี้ ผู้ป่วยนอก',
-    //   nav: '/debitop/opreport',
-    // },
-    // // { icon: <InboxIcon />, title: 'พรบ อุบัติเหตุ', nav: '/acciinsure' },
-    // { icon: <InboxIcon />, title: 'Debit Edit', nav: '/debit/edit' },
-    // { icon: <MailIcon />, title: 'Stock Edit', nav: '/stockedit' },
-    { icon: <MailIcon />, title: 'Pie Chart', nav: '/piechart' },
-    { icon: <MailIcon />, title: 'Bar Chart', nav: '/barchart' },
+    // { icon: <AutoGraph />, title: 'Dashboard', nav: '/dashboard' },
+    // { icon: <AutoGraph />, title: 'Eclaim', nav: '/eclaim' },
+    { icon: <Settings />, title: 'ออกใบเสร็จ Statement', nav: '/reciept' },
+    { icon: <Settings />, title: 'รายงาน เพื่อการจัดการ', nav: '/reciept' },
+    // { icon: <MailIcon />, title: 'Pie Chart', nav: '/piechart' },
+    // { icon: <MailIcon />, title: 'Bar Chart', nav: '/barchart' },
   ]
 
   const ipMenus = [
@@ -89,29 +77,36 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   ]
 
   const feeScheduleMenus = [
-    { icon: <MailIcon />, title: 'ANC', nav: '' },
+    { icon: <MailIcon />, title: 'ANC', nav: '/fs/anc' },
     { icon: <MailIcon />, title: 'ANC ทันตกรรม', nav: '' },
-    { icon: <MailIcon />, title: 'เคลือบ Fluoride', nav: '' },
-    { icon: <InboxIcon />, title: 'Telemedicine', nav: '/fs/telemed' },
-    { icon: <MailIcon />, title: 'Palliative', nav: '' },
-    { icon: <MailIcon />, title: 'CA Anywhere', nav: '' },
-    { icon: <MailIcon />, title: 'CA Chemo', nav: '' },
-    { icon: <MailIcon />, title: 'CANCER', nav: '' },
+    { icon: <MailIcon />, title: 'เคลือบ Fluoride', nav: '' },    
     { icon: <MailIcon />, title: 'วางแผนครอบครัว ยาฝัง', nav: '' },
+    
+  ]
+  const drugMenus = [  
     { icon: <MailIcon />, title: 'ยาสมุนไพร', nav: '' },
+    { icon: <MailIcon />, title: 'Clopidrogel', nav: '' },
+    { icon: <MailIcon />, title: 'SK MI', nav: '' },
+    { icon: <MailIcon />, title: 'SK Stroke', nav: '' },
+    { icon: <MailIcon />, title: 'DMISHD', nav: '' },
+    { icon: <MailIcon />, title: 'INST ฟันปลอม', nav: '' },
+    { icon: <MailIcon />, title: 'Dent รากฟันเทียม', nav: '' },
+    { icon: <MailIcon />, title: 'INST', nav: '' },
   ]
 
   const opEclaimMenus = [
-    { icon: <MailIcon />, title: 'UC เปลี่ยนสิทธิทันที', nav: '' },
-    { icon: <MailIcon />, title: 'UCS พิการ', nav: '' },
+    { icon: <MailIcon />, title: 'UC เปลี่ยนสิทธิทันที', nav: '/fs/changeright' },
+    { icon: <MailIcon />, title: 'UCS พิการ (ปกส)', nav: '' },
     { icon: <MailIcon />, title: 'Walk in', nav: '' },
-    { icon: <MailIcon />, title: 'AE สิทธิ์ว่าง', nav: '' },
-    { icon: <MailIcon />, title: 'AE นอกเขต', nav: '' },
-    { icon: <MailIcon />, title: 'DMISHD', nav: '' },
-    { icon: <MailIcon />, title: 'DMISCR', nav: '' },
+    { icon: <MailIcon />, title: 'AE สิทธิ์ว่าง', nav: '/fs/aenullright' },
+    { icon: <MailIcon />, title: 'AE นอกเขต', nav: '' },    
+    { icon: <MailIcon />, title: 'DMISRC', nav: '' },
     { icon: <MailIcon />, title: 'ER คุณภาพ', nav: '/fs/erquality' },
-    { icon: <MailIcon />, title: 'INST ฟันปลอม', nav: '' },
-    { icon: <MailIcon />, title: 'INST', nav: '' },
+    { icon: <MailIcon />, title: 'UCEP', nav: '/fs/ucep' },  
+    { icon: <InboxIcon />, title:'Telemedicine', nav: '/fs/telemed' },
+    { icon: <MailIcon />, title: 'Palliative', nav: '/fs/palliative' },
+    { icon: <MailIcon />, title: 'CA Anywhere', nav: '/fs/caanywhere' },
+    { icon: <MailIcon />, title: 'CA Chemo', nav: '/fs/cachemo' },
   ]
 
   const acciInsureMenus = [
@@ -124,12 +119,14 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   const [anchorEl3, setAnchorEl3] = React.useState<null | HTMLElement>(null)
   const [anchorEl4, setAnchorEl4] = React.useState<null | HTMLElement>(null)
   const [anchorEl5, setAnchorEl5] = React.useState<null | HTMLElement>(null)
+  const [anchorEl6, setAnchorEl6] = React.useState<null | HTMLElement>(null)
 
   const openMenu = Boolean(anchorEl)
   const openMenu2 = Boolean(anchorEl2)
   const openMenu3 = Boolean(anchorEl3)
   const openMenu4 = Boolean(anchorEl4)
   const openMenu5 = Boolean(anchorEl5)
+  const openMenu6 = Boolean(anchorEl6)
 
   // Debit-statment
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -168,6 +165,14 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   }
   const handleClose5 = () => {
     setAnchorEl5(null)
+  }
+
+  // instrument eclaim 
+  const handleClick6 = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl6(event.currentTarget)
+  }
+  const handleClose6 = () => {
+    setAnchorEl6(null)
   }
 
   const navigate = useNavigate()
@@ -239,7 +244,15 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
           </ListItemIcon>
           <ListItemText primary={'Opd Eclaim'} />
         </ListItemButton>
+        <ListItemButton onClick={handleClick6}>
+          <ListItemIcon>
+            <SummarizeIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Instrument Drug Eclaim'} />
+        </ListItemButton>
         {/* // Opd Eclaim Menu */}
+
+        <Divider/>
         <ListItemButton onClick={handleClick5}>
           <ListItemIcon>
             <SummarizeIcon />
@@ -445,6 +458,51 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         {opEclaimMenus.map((menu, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton onClick={() => navigate(menu.nav)}>
+              <ListItemIcon>{menu.icon}</ListItemIcon>
+              <ListItemText primary={menu.title} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </Menu>
+      {/*instrument drug*/}
+      <Menu
+        anchorEl={anchorEl6}
+        id="op-eclaim-menu"
+        open={openMenu6}
+        onClose={handleClose6}
+        onClick={handleClose6}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        {drugMenus.map((menu, index) => (
           <ListItem key={index} disablePadding>
             <ListItemButton onClick={() => navigate(menu.nav)}>
               <ListItemIcon>{menu.icon}</ListItemIcon>

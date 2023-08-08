@@ -89,8 +89,8 @@ export default function FsTelemedPage() {
       })
       // setData(jsonData)
 
-      setDataCase(responseTele.data)
-      setDataTable(responseTele.data)
+      setDataCase(responseTele.data.data)
+      setDataTable(responseTele.data.data)
       console.log(dataCase)
     } catch (error) {
       console.log('ERROR', error)
@@ -100,7 +100,7 @@ export default function FsTelemedPage() {
       const responseTeleSum = await axios.get(`${apiHiUrl}/fs/telemedsum`, )
       // setData(jsonData)
 
-      setDataGroup(responseTeleSum.data)
+      setDataGroup(responseTeleSum.data.data)
      
       console.log(dataGroup)
     } catch (error) {

@@ -39,9 +39,8 @@ import { Chart as ChartJS, BarElement, CategoryScale, Legend, LinearScale, Title
 
 const apiHiUrl = import.meta.env.VITE_API_HI_URL
 
-export default function FsErQualityPage() {
-  const [dataCase, setDataCase] = useState<GridRowsProp>([])
-  const [dataGroup, setDataGroup] = useState<GridRowsProp>([])
+export default function FsUcepPage() {
+  const [dataCase, setDataCase] = useState<GridRowsProp>([])  
   const [dataTable, setDataTable] = useState([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
@@ -50,6 +49,7 @@ export default function FsErQualityPage() {
   const columns: GridColDef[] = [
     { field: 'vn', headerName: 'VN', width: 100 },
     { field: 'hn', headerName: 'HN', width: 100 },
+    { field: 'pop_id', headerName: 'Pop_ID', width: 100 },
     { field: 'fname', headerName: 'ชื่อ', width: 150 },
     { field: 'lname', headerName: 'นามสกุล', width: 150 },
     { field: 'dateserv', headerName: 'วันที่', width: 110 },
@@ -58,8 +58,8 @@ export default function FsErQualityPage() {
     { field: 'namepttype', headerName: 'สิทธิ์', width: 200 },
     { field: 'inscl', headerName: 'inscl', width: 80 },
     { field: 'triage', headerName: 'triage', width: 80 },
-    { field: 'nametri', headerName: 'name', width: 110 },
-    { field: 'cday', headerName: 'cday', width: 110 },
+    { field: 'icd10', headerName: 'ICD10', width: 280 },
+    { field: 'icd9cm', headerName: 'ICD9CM', width: 280 },
   ]
 
   const onSubmit = async () => {
@@ -71,12 +71,11 @@ export default function FsErQualityPage() {
     setIsLoading(true)
 
     try {
-      const response = await axios.post(`${apiHiUrl}/fs/erquality`, {
+      const response = await axios.post(`${apiHiUrl}/fs/ucep`, {
         startDate,
         endDate,
       })
      
-      console.log(response.data.data)
       setDataCase(response.data.data)
       setDataTable(response.data.data)
       
@@ -84,16 +83,7 @@ export default function FsErQualityPage() {
       console.log('ERROR', error)
     }
 
-    try {
-      const responseErqSum = await axios.get(`${apiHiUrl}/fs/erqualitysum`, )
-      // setData(jsonData)
-
-      setDataGroup(responseErqSum.data.data)
-     
-      console.log(dataGroup)
-    } catch (error) {
-      console.log('ERROR', error)
-    }
+ 
 
     
     console.log(dataCase)
@@ -102,7 +92,7 @@ export default function FsErQualityPage() {
   }
 
   const totalCases = dataCase.length
-  const totalClaim = dataCase.length * 150
+
 
 
 
@@ -112,8 +102,6 @@ export default function FsErQualityPage() {
     setValueTab(newValue)
   }
 
-  const labels = dataGroup.map((item) => item.month)
-  const data1 = dataGroup.map((item) => item.case_count)
     
   ChartJS.register(
     CategoryScale,
@@ -132,23 +120,12 @@ export default function FsErQualityPage() {
       },
       title: {
         display: true,
-        text: 'ER Qaulity',
+        text: 'ER UCEP',
       },
     },
   }
 
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: 'Cases',
-        data: data1,
-        backgroundColor: ['rgba(122, 58, 241, 0.2)'],
-        borderColor: ['rgba(54, 152, 205, 1)'],
-        borderWidth: 1,
-      },
-    ],
-  }
+  
 
   return (
     <>
@@ -186,7 +163,7 @@ export default function FsErQualityPage() {
                 <TextField
                   label="Fee Schedule"
                   color="secondary"
-                  value={'Fee Schedule ER Quality'}
+                  value={'Eclaim UCEP'}
                   focused
                 />
               </Stack>
@@ -208,7 +185,7 @@ export default function FsErQualityPage() {
           <Card sx={{ width: 645, marginLeft: '50px' }}>
             <Stack direction={'row'} gap={2} padding={'10px'}>
               <Typography variant="h6">
-                Case ER Triage ระดับ 2-5 นอกเวลาราชการ
+                Case ER UCEP
               </Typography>
             </Stack>
             <Divider />
@@ -217,9 +194,7 @@ export default function FsErQualityPage() {
               <Typography variant="h6">
                 {totalCases.toLocaleString('en-US')} ราย
               </Typography>
-              <Typography variant="h6">
-                Estimate Claim : {totalClaim.toLocaleString('en-US')} บาท
-              </Typography>
+              
             </Stack>
           </Card>
         )}
@@ -234,7 +209,7 @@ export default function FsErQualityPage() {
               onChange={handleChangeTab}
               aria-label="lab API tabs example"
             >
-              <Tab label="Case ER Triage ระดับ 2-5  นอกเวลาราชการ" value="1" />
+              <Tab label="Case ER UCEP" value="1" />
               <Tab label="Chart" value="2" />
             </TabList>
           </Box>
@@ -243,33 +218,14 @@ export default function FsErQualityPage() {
               <Typography sx={{ marginBottom: '15px' }}>
                 Total Cases :{''} {totalCases.toLocaleString('en-US')} ราย
               </Typography>
-              <Typography sx={{ marginBottom: '15px' }}>
-                Total Estimat :{''} {totalClaim.toLocaleString('en-US')} บาท
-              </Typography>
+             
             </Stack>{' '}
-            {/* <Box style={{ height: 500, width: '100%' }}>
-              <DataGrid
-                rows={dataCase}
-                columns={columns}
-                getRowId={(row) => row.vn}
-                slots={{
-                  toolbar: CustomToolbar,
-                }}
-              />
-            </Box> */}
+           
             <DataGridTable rows={dataTable} columns={columns} />
           </TabPanel>
 
           <TabPanel value="2">
-          <Box
-              width={'100%'}
-              height={500}
-              display={'flex'}
-              alignItems={'center'}
-              justifyContent={'center'}
-            >
-              <Bar options={options} data={data} />
-            </Box>
+        
           </TabPanel>
         </TabContext>
       </Box>

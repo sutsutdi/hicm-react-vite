@@ -26,6 +26,13 @@ import EclaimItemPage from '../pages/eclaim/EclaimItems'
 import RecieptInputPage from '../pages/reciept/ReceiptInput'
 import AcciInsurePage from '../pages/acciinsure/AcciInsurePage/AcciInsurePage'
 import AcciInsureIpAddPage from '../pages/acciinsure/IpCreatePage/AcciInsureIpAddPage'
+import FsCaAnyWherePage from '../pages/feeschedules/FsCaAnyWhere'
+import FsCaChemoPage from '../pages/feeschedules/FsCaChemo'
+import FsPalliativePage from '../pages/feeschedules/FsPalliative'
+import FsUcepPage from '../pages/feeschedules/FsUcep'
+import FsChangeRightPage from '../pages/feeschedules/FsChangeRight'
+import FsAncPage from '../pages/feeschedules/FsAnc'
+import FsAeNullRightPage from '../pages/feeschedules/FsAeNullRight'
 
 const drawerWidth = 240
 
@@ -97,7 +104,14 @@ export default function MainLayout() {
             <Route path="/stmipofc/report" element={<StmIpOfcPage />} />
             <Route path="/debit/edit" element={<DebitEditPage />} />
             <Route path="/fs/erquality" element={<FsErQualityPage />} />
+            <Route path="/fs/ucep" element={<FsUcepPage />} />
             <Route path="/fs/telemed" element={<FsTelemedPage />} />
+            <Route path="/fs/caanywhere" element={<FsCaAnyWherePage />} />
+            <Route path="/fs/cachemo" element={<FsCaChemoPage />} />
+            <Route path="/fs/palliative" element={<FsPalliativePage />} />
+            <Route path="/fs/anc" element={<FsAncPage />} />
+            <Route path="/fs/changeright" element={<FsChangeRightPage />} />
+            <Route path="/fs/aenullright" element={<FsAeNullRightPage />} />
             <Route path="/dashboard" element={<IpDashboardPage />} />
             <Route path="/eclaim" element={<EclaimItemPage />} />
             <Route path="/reciept" element={<RecieptInputPage />} />
