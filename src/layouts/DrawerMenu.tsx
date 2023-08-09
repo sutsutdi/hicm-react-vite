@@ -250,6 +250,12 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
           </ListItemIcon>
           <ListItemText primary={'Instrument Drug Eclaim'} />
         </ListItemButton>
+        <ListItemButton onClick={()=>navigate('/eclaim/eclaimreport')}>
+          <ListItemIcon>
+            <SummarizeIcon />
+          </ListItemIcon>
+          <ListItemText primary={'ECLAIM REPORT'} />
+        </ListItemButton>
         {/* // Opd Eclaim Menu */}
 
         <Divider/>

@@ -33,6 +33,7 @@ import FsUcepPage from '../pages/feeschedules/FsUcep'
 import FsChangeRightPage from '../pages/feeschedules/FsChangeRight'
 import FsAncPage from '../pages/feeschedules/FsAnc'
 import FsAeNullRightPage from '../pages/feeschedules/FsAeNullRight'
+import EclaimReportPage from './../pages/eclaim/EclaimReport';
 
 const drawerWidth = 240
 
@@ -114,14 +115,15 @@ export default function MainLayout() {
             <Route path="/fs/aenullright" element={<FsAeNullRightPage />} />
             <Route path="/dashboard" element={<IpDashboardPage />} />
             <Route path="/eclaim" element={<EclaimItemPage />} />
+            <Route path="/eclaim/eclaimreport" element={<EclaimReportPage />} />
             <Route path="/reciept" element={<RecieptInputPage />} />
             <Route path="/acciinsure" element={<AcciInsurePage />} />
             <Route path="/acciinsure/ip" element={<AcciInsurePage />} />
-            <Route path="/acciinsure/addip" element={<AcciInsureIpAddPage />} />
-      
+            <Route path="/acciinsure/addip" element={<AcciInsureIpAddPage />} />      
             <Route path="/barchart" element={<BarChartPage />} />
             <Route path="/piechart" element={<PieChartPage />} />
-            <Route path="/" element={<Navigate to={'/login'} />} />
+            {/* <Route path="/" element={<Navigate to={'/login'} />} /> */}
+            <Route path="/" element={<Navigate to={'/main'} />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Main>
