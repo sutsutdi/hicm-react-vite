@@ -93,7 +93,7 @@ import {
     const totalCases = dataCase.length
     const totalClaim = dataCase.length * 150
   
-  
+    const title = 'UCS AE  สิทธิ์ว่าง'
   
     const [valueTab, setValueTab] = useState('1')
   
@@ -141,7 +141,7 @@ import {
                   <TextField
                     label="Fee Schedule"
                     color="secondary"
-                    value={'UCS AE  สิทธิ์ว่าง'}
+                    value={title}
                     focused
                   />
                 </Stack>
@@ -163,7 +163,7 @@ import {
             <Card sx={{ width: 645, marginLeft: '50px' }}>
               <Stack direction={'row'} gap={2} padding={'10px'}>
                 <Typography variant="h6">
-                  Case UCS AE  สิทธิ์ว่าง
+                  Case {title}
                 </Typography>
               </Stack>
               <Divider />
@@ -187,7 +187,7 @@ import {
                 onChange={handleChangeTab}
                 aria-label="lab API tabs example"
               >
-                <Tab label="Case UCS AE  สิทธิ์ว่าง" value="1" />
+                <Tab label={`Case ${title}`} value="1" />
                
               </TabList>
             </Box>

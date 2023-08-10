@@ -75,23 +75,23 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
     { icon: <MailIcon />, title: 'IP LGO', nav: '' },
     { icon: <MailIcon />, title: 'IP STP ', nav: '' },
   ]
-
+// 
   const feeScheduleMenus = [
     { icon: <MailIcon />, title: 'ANC', nav: '/fs/anc' },
-    { icon: <MailIcon />, title: 'ANC ทันตกรรม', nav: '' },
-    { icon: <MailIcon />, title: 'เคลือบ Fluoride', nav: '' },    
+    { icon: <MailIcon />, title: 'ANC ทันตกรรม', nav: '/fs/ancdent' },
+    { icon: <MailIcon />, title: 'เคลือบ Fluoride', nav: '/fs/fluoride' },    
     { icon: <MailIcon />, title: 'วางแผนครอบครัว ยาฝัง', nav: '' },
     
   ]
   const drugMenus = [  
-    { icon: <MailIcon />, title: 'ยาสมุนไพร', nav: '' },
+    { icon: <MailIcon />, title: 'ยาสมุนไพร', nav: '/fs/herb' },
     { icon: <MailIcon />, title: 'Clopidrogel', nav: '' },
-    { icon: <MailIcon />, title: 'SK MI', nav: '' },
+    { icon: <MailIcon />, title: 'SK MI', nav: '/fs/skmi' },
     { icon: <MailIcon />, title: 'SK Stroke', nav: '' },
-    { icon: <MailIcon />, title: 'DMISHD', nav: '' },
-    { icon: <MailIcon />, title: 'INST ฟันปลอม', nav: '' },
+    { icon: <MailIcon />, title: 'DMISHD', nav: '/fs/dmishd' },
+    { icon: <MailIcon />, title: 'INST ฟันปลอม', nav: '/fs/instdent' },
     { icon: <MailIcon />, title: 'Dent รากฟันเทียม', nav: '' },
-    { icon: <MailIcon />, title: 'INST', nav: '' },
+    { icon: <MailIcon />, title: 'INST', nav: '/fs/inst' },
   ]
 
   const opEclaimMenus = [
@@ -99,8 +99,8 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
     { icon: <MailIcon />, title: 'UCS พิการ (ปกส)', nav: '' },
     { icon: <MailIcon />, title: 'Walk in', nav: '' },
     { icon: <MailIcon />, title: 'AE สิทธิ์ว่าง', nav: '/fs/aenullright' },
-    { icon: <MailIcon />, title: 'AE นอกเขต', nav: '' },    
-    { icon: <MailIcon />, title: 'DMISRC', nav: '' },
+    { icon: <MailIcon />, title: 'AE นอกเขต', nav: '/fs/aeoutuc' },    
+    { icon: <MailIcon />, title: 'DMISRC', nav: '/fs/dmisrc' },
     { icon: <MailIcon />, title: 'ER คุณภาพ', nav: '/fs/erquality' },
     { icon: <MailIcon />, title: 'UCEP', nav: '/fs/ucep' },  
     { icon: <InboxIcon />, title:'Telemedicine', nav: '/fs/telemed' },

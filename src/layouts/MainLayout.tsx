@@ -34,6 +34,15 @@ import FsChangeRightPage from '../pages/feeschedules/FsChangeRight'
 import FsAncPage from '../pages/feeschedules/FsAnc'
 import FsAeNullRightPage from '../pages/feeschedules/FsAeNullRight'
 import EclaimReportPage from './../pages/eclaim/EclaimReport';
+import FsAeOutUcPage from '../pages/feeschedules/FsAeOutUc'
+import FsSkMiPage from '../pages/feeschedules/FsSkMi'
+import FsHerbPage from '../pages/feeschedules/FsHerb'
+import FsFluoridePage from '../pages/feeschedules/FsFluoride'
+import FsInstDentPage from '../pages/feeschedules/FsInstDent'
+import FsDmisRcPage from '../pages/feeschedules/FsDmisRc'
+import FsDmisHdPage from '../pages/feeschedules/FsDmisHd'
+import FsInstPage from '../pages/feeschedules/FsInst'
+import FsAncDentPage from '../pages/feeschedules/FsAncDent'
 
 const drawerWidth = 240
 
@@ -111,8 +120,18 @@ export default function MainLayout() {
             <Route path="/fs/cachemo" element={<FsCaChemoPage />} />
             <Route path="/fs/palliative" element={<FsPalliativePage />} />
             <Route path="/fs/anc" element={<FsAncPage />} />
+            <Route path="/fs/ancdent" element={<FsAncDentPage />} />
             <Route path="/fs/changeright" element={<FsChangeRightPage />} />
             <Route path="/fs/aenullright" element={<FsAeNullRightPage />} />
+            <Route path="/fs/aeoutuc" element={<FsAeOutUcPage />} />
+            <Route path="/fs/skmi" element={<FsSkMiPage />} />
+            <Route path="/fs/herb" element={<FsHerbPage />} />
+            <Route path="/fs/fluoride" element={<FsFluoridePage />} />
+            <Route path="/fs/instdent" element={<FsInstDentPage />} />
+            <Route path="/fs/stp" element={<FsAeNullRightPage />} />
+            <Route path="/fs/dmisrc" element={<FsDmisRcPage />} />
+            <Route path="/fs/dmishd" element={<FsDmisHdPage />} />
+            <Route path="/fs/inst" element={<FsInstPage />} />           
             <Route path="/dashboard" element={<IpDashboardPage />} />
             <Route path="/eclaim" element={<EclaimItemPage />} />
             <Route path="/eclaim/eclaimreport" element={<EclaimReportPage />} />

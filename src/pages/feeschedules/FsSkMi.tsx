@@ -18,7 +18,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import 'dayjs/locale/th'
 import dayjs, { Dayjs } from 'dayjs'
-import CardHeader1 from '../../assets/anc.jpg'
+import CardHeader1 from '../../assets/emergency.webp'
 import {
   DataGrid,
   GridRowsProp,
@@ -35,20 +35,12 @@ import TabPanel from '@mui/lab/TabPanel'
 import { Pie, Bar } from 'react-chartjs-2'
 import Loading from '../../components/Loading'
 import DataGridTable from '../../components/DataGridTable'
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  Legend,
-  LinearScale,
-  Title,
-  Tooltip,
-} from 'chart.js'
+import { Chart as ChartJS, BarElement, CategoryScale, Legend, LinearScale, Title, Tooltip } from 'chart.js'
 
 const apiHiUrl = import.meta.env.VITE_API_HI_URL
 
-export default function FsAncPage() {
-  const [dataCase, setDataCase] = useState<GridRowsProp>([])
+export default function FsSkMiPage() {
+  const [dataCase, setDataCase] = useState<GridRowsProp>([])  
   const [dataTable, setDataTable] = useState([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
@@ -57,61 +49,85 @@ export default function FsAncPage() {
   const columns: GridColDef[] = [
     { field: 'vn', headerName: 'VN', width: 100 },
     { field: 'hn', headerName: 'HN', width: 100 },
-    { field: 'pop_id', headerName: 'CID', width: 100 },
+    { field: 'pop_id', headerName: 'Pop_ID', width: 100 },
     { field: 'fname', headerName: 'ชื่อ', width: 150 },
     { field: 'lname', headerName: 'นามสกุล', width: 150 },
-    { field: 'dateserv', headerName: 'วันที่', width: 110 },
-    { field: 'timeserv', headerName: 'เวลา', width: 110 },
+    { field: 'date_serv', headerName: 'วันที่', width: 110 },
+    { field: 'time_time', headerName: 'เวลา', width: 110 },
     { field: 'pttype', headerName: 'pttype', width: 80 },
     { field: 'namepttype', headerName: 'สิทธิ์', width: 200 },
-    { field: 'inscl', headerName: 'inscl', width: 80 },
-    { field: 'new', headerName: 'new', width: 50 },
-    { field: 'lmp', headerName: 'LMP', width: 110 },
-    { field: 'g', headerName: 'G', width: 50 },
-    { field: 'p', headerName: 'P', width: 50 },
-    { field: 'a', headerName: 'A', width: 50 },
-    { field: 'l', headerName: 'L', width: 50 },
-    { field: 'ga', headerName: 'GA', width: 80 },
+    { field: 'inscl', headerName: 'inscl', width: 80 },   
+    { field: 'icd10', headerName: 'ICD10', width: 280 },
+    { field: 'procedure_opd', headerName: 'ICD9CM', width: 280 },
+    { field: 'meditem', headerName: 'meditem', width: 280 },
+    { field: 'nameprscdt', headerName: 'ชื่อหัตถการ', width: 280 },
+    { field: 'qty', headerName: 'จำนวน', width: 280 },
   ]
 
   const onSubmit = async () => {
+   
+
     let startDate = startDt?.format('YYYYMMDD')
     let endDate = endDt?.format('YYYYMMDD')
 
     setIsLoading(true)
 
     try {
-      const response = await axios.post(`${apiHiUrl}/fs/anc`, {
+      const response = await axios.post(`${apiHiUrl}/fs/skmi`, {
         startDate,
         endDate,
       })
-
-      console.log(`${apiHiUrl}/fs/anc`)
-
+     
       setDataCase(response.data.data)
       setDataTable(response.data.data)
+      
     } catch (error) {
       console.log('ERROR', error)
     }
 
+ 
+
+    
     console.log(dataCase)
-
-  
-  
-
+    
     setIsLoading(false)
   }
 
-
-  const title = "PPFS ANC"
-
   const totalCases = dataCase.length
+
+
+  const  titleClaim = "Drug SK MI"
 
   const [valueTab, setValueTab] = useState('1')
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValueTab(newValue)
   }
+
+    
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  )
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: {titleClaim},
+      },
+    },
+  }
+
+  
 
   return (
     <>
@@ -149,7 +165,7 @@ export default function FsAncPage() {
                 <TextField
                   label="Fee Schedule"
                   color="secondary"
-                  value={title}
+                  value={'Eclaim UCEP'}
                   focused
                 />
               </Stack>
@@ -170,7 +186,9 @@ export default function FsAncPage() {
         ) : (
           <Card sx={{ width: 645, marginLeft: '50px' }}>
             <Stack direction={'row'} gap={2} padding={'10px'}>
-              <Typography variant="h6">Case {title}</Typography>
+              <Typography variant="h6">
+                Case {titleClaim}
+              </Typography>
             </Stack>
             <Divider />
             <Stack direction={'row'} gap={2} padding={'10px'}>
@@ -178,6 +196,7 @@ export default function FsAncPage() {
               <Typography variant="h6">
                 {totalCases.toLocaleString('en-US')} ราย
               </Typography>
+              
             </Stack>
           </Card>
         )}
@@ -192,7 +211,8 @@ export default function FsAncPage() {
               onChange={handleChangeTab}
               aria-label="lab API tabs example"
             >
-              <Tab label={`Case ${title}`} value="1" />
+              <Tab label={`Case ${titleClaim}`} value="1" />
+              <Tab label="Chart" value="2" />
             </TabList>
           </Box>
           <TabPanel value="1">
@@ -200,8 +220,14 @@ export default function FsAncPage() {
               <Typography sx={{ marginBottom: '15px' }}>
                 Total Cases :{''} {totalCases.toLocaleString('en-US')} ราย
               </Typography>
+             
             </Stack>{' '}
+           
             <DataGridTable rows={dataTable} columns={columns} />
+          </TabPanel>
+
+          <TabPanel value="2">
+        
           </TabPanel>
         </TabContext>
       </Box>
