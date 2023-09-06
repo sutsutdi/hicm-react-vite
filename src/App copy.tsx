@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux'
 import { loginSelector } from './store/slices/loginSlice'
 import PublicRoutes from './router/public.routes'
 import ProtectedRoutes from './router/protected.routes'
-import ReportIpAllPage from './pages/reports/ReportIpAll'
+
 // import ReportIpOfcPage from './pages/ReportIpOfc'
 // import ReportOpOfcPage from './pages/ReportOpOfc'
 // import ReportIpUcPage from './pages/ReportIpUc'
@@ -92,7 +92,7 @@ export default function App() {
           {/* </Route> */}
           {/* <Route path="/" element={<ProtectedRoutes />}> */}
             <Route path="/main" element={<MainPage/>}/>
-            <Route path="/debitip/ipreport" element={<ReportIpAllPage />} />
+           
             {/* <Route path="/ipofc/report" element={<ReportIpOfcPage />} />
             <Route path="/opofc/report" element={<ReportOpOfcPage />} />
             <Route path="/ipuc/report" element={<ReportIpUcPage />} />

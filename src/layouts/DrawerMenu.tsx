@@ -50,6 +50,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   const menus = [
     // { icon: <AutoGraph />, title: 'Dashboard', nav: '/dashboard' },
     // { icon: <AutoGraph />, title: 'Eclaim', nav: '/eclaim' },
+    { icon: <Settings />, title: 'Map Statement-rep', nav: '/mapstmrep' },
     { icon: <Settings />, title: 'ออกใบเสร็จ Statement', nav: '/reciept' },
     { icon: <Settings />, title: 'รายงาน เพื่อการจัดการ', nav: '/reciept' },
     // { icon: <MailIcon />, title: 'Pie Chart', nav: '/piechart' },
@@ -57,7 +58,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
   ]
 
   const ipMenus = [
-    { icon: <InboxIcon />, title: 'IP-REP-STATEMENT', nav: '/ipofc/report' },
+    { icon: <InboxIcon />, title: 'IP-REP-STATEMENT', nav: '/ip/report' },
     { icon: <MailIcon />, title: 'IP พรบ', nav: '' },
     // { icon: <MailIcon />, title: 'IP LGO', nav: '' },
     // { icon: <MailIcon />, title: 'IP STP ', nav: '' },
@@ -65,6 +66,7 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
 
   const opMenus = [
     { icon: <InboxIcon />, title: 'OP-REP-STATEMENT', nav: '/op/report' },
+    { icon: <InboxIcon />, title: 'OP-UC-CR/PP', nav: '/op/reportopuccr' },
     { icon: <MailIcon />, title: 'OP พรบ', nav: '' },
     { icon: <MailIcon />, title: 'OP Virtual Account', nav: '' },
   ]
@@ -227,6 +229,21 @@ export default function DrawerMenu({ open, onDrawerClose }: DrawerMenu) {
             <SummarizeIcon />
           </ListItemIcon>
           <ListItemText primary={'Statement Report'} />
+        </ListItemButton>
+
+        <Divider />
+        <ListItemButton onClick={()=>navigate('/debitip')}>
+          <ListItemIcon>
+            <Grading />
+          </ListItemIcon>
+          <ListItemText primary={'บัญชีลูกหนี้ ผู้ป่วยใน'} />
+        </ListItemButton>
+
+        <ListItemButton onClick={()=>navigate('/debitop')}>
+          <ListItemIcon>
+            <Grading />
+          </ListItemIcon>
+          <ListItemText primary={'บัญชีลูกหนี้ ผู้ป่วยนอก'} />
         </ListItemButton>
 
         <Divider />

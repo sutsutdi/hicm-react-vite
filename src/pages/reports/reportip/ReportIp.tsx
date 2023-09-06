@@ -8,6 +8,8 @@ import {
   CardMedia,
   Divider,
   Grid,
+  Icon,
+  IconButton,
   Menu,
   MenuItem,
   Stack,
@@ -29,9 +31,10 @@ import {
   GridToolbarContainer,
   GridToolbarExport,
   GridToolbarQuickFilter,
+  GridRenderCellParams,
 } from '@mui/x-data-grid'
 
-import { KeyboardArrowDownTwoTone } from '@mui/icons-material'
+import { KeyboardArrowDownTwoTone, SystemUpdateAlt } from '@mui/icons-material'
 
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
@@ -41,29 +44,80 @@ import TotalCaseCard from './TotalCaseCard'
 import ClaimCaseCard from './ClaimCaseCard'
 import UnClaimCaseCard from './UnClaimCaseCard'
 import Loading from '../../../components/Loading'
+import { saveAs } from 'file-saver'
+import * as XLSX from 'xlsx' // for exporting to Excel
 
-type DataType = {
-  startDt: Date
-  endDate: Date
-  firstName: string
-  category: string
-  aboutYou: string
+type dataCaseNotNullProp = {
+  hn: string
+  an: string
+  cid: string
+  fullname: string
+  admitdate: string
+  dchdate: string
+  l_stay: number
+  charge: string
+  paid: string
+  debt: string
+  acc_name: string
+  repno: string
+  adjrw: string
+  total_summary: string
+  diff: string
+  receipt_no: string
 }
 
-type FormValues = {
-  startDt: Date
-  endDate: Date
+type caseRepNotCProp = {
+  hn: string
+  an: string
+  cid: string
+  fullname: string
+  admitdate: string
+  dchdate: string
+  l_stay: number
+  charge: string
+  paid: string
+  debt: string
+  total_paid: string
+  rep_diff: string
+  high: string
+  low: string
+  rep_diff2: string
+  rest_debt: string
+  accStName: string
+  acc_name: string
+  repno: string
+  error_code: string
 }
 
-const dataDbipofcacc = {
-  all_case: 0,
-  debit_all: 0,
-  notnull_case: 0,
-  null_case: 0,
-  debit_null: 0,
-  debit_notnull: 0,
-  recieve: '',
-  sum_diff: 0,
+type caseRepCProp = {
+  hn: string
+  an: string
+  cid: string
+  fullname: string
+  admitdate: string
+  dchdate: string
+  l_stay: number
+  charge: string
+  paid: string
+  debt: string
+  accStName: string
+  acc_name: string
+  repno: string
+  error_code: string
+  error_name: string
+  remark_data: string
+}
+
+type dataByDateProp = {
+  dchdate: string
+  allcase: string
+  debit: string
+  nullcase: string
+  nulldebit: string
+  notnullcase: string
+  notnulldebit: string
+  recieve: string
+  diff: string
 }
 
 const dataNull0 = {
@@ -80,29 +134,7 @@ const dataNotNull0 = {
   diffgain: 0,
 }
 
-const dataBydate0 = {
-  allcase: 0,
-  debit: 0,
-  recieve: '',
-  sum_diff: 0,
-}
-
-type DataDabitNotNull = {
-  hn: string
-  an: string
-  cid: string
-  fname: string
-  admitdate: string
-  dchdate: string
-  charge: string
-  paid: string
-  outstanding: string
-  repno: string
-  total_summary: string
-  diff: number
-}
-
-const ipOfcReport = [
+const ipReport = [
   {
     id: 1,
     stmFile: 'stm_ip_ofc',
@@ -144,28 +176,34 @@ export default function ReportIpPage() {
   const [dataNull, setDataNull] = useState(dataNull0)
   const [dataNotNull, setDataNotNull] = useState(dataNotNull0)
   const [dataAll, setDataAll] = useState<string>('')
-  const [dataByDate, setDataByDate] = useState<GridRowsProp>([])
-  const [dataCaseNotNull, setDataCaseNotNull] = useState<GridRowsProp>([])
+  const [dataByDate, setDataByDate] = useState<dataByDateProp[]>([])
+  const [dataCaseNotNull, setDataCaseNotNull] = useState<dataCaseNotNullProp[]>(
+    []
+  )
+  // const [dataCaseNotNull, setDataCaseNotNull] = useState<GridRowsProp>([])
   const [dataCaseNull, setDataCaseNull] = useState<GridRowsProp>([])
   const [startDt, setStartDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [endDt, setEndDt] = useState<Dayjs | null>(dayjs(new Date()))
   const [accStName, setAccStName] = useState<string>('IP-OFC')
   const [getRep, setGetRep] = useState<number>(0)
   const [totalRepDebt, setTotalRepDebt] = useState<number>(0)
+  const [totalRepReceive, setTotalRepReceive] = useState<number>(0)
+  const [totalRepHigh, setTotalRepHigh] = useState<number>(0)
+  
   const [getCRep, setGetCRep] = useState<number>(0)
   const [repCCharge, setRepCCharge] = useState<number>(0)
   const [repCharge, setRepCharge] = useState<number>(0)
   const [caseNoRep, setCaseNoRep] = useState<GridRowsProp>([])
-  const [caseRepNotC, setCaseRepNotC] = useState<GridRowsProp>([])
-  const [caseRepC, setCaseRepC] = useState<GridRowsProp>([])
+  const [caseRepNotC, setCaseRepNotC] = useState<caseRepNotCProp[]>([])
+  const [caseRepC, setCaseRepC] = useState<caseRepCProp[]>([])
   const [receipt, setReceipt] = useState<number>(0)
 
-  const [title, setTitle] = useState<string>(ipOfcReport[0].text)
-  const [accCode, setAccCode] = useState<string>(ipOfcReport[0].accCode)
-  const [stmFile, setStmFile] = useState<string>(ipOfcReport[0].stmFile)
-  const [repFile, setRepFile] = useState<string>(ipOfcReport[0].repFile)
+  const [title, setTitle] = useState<string>(ipReport[0].text)
+  const [accCode, setAccCode] = useState<string>(ipReport[0].accCode)
+  const [stmFile, setStmFile] = useState<string>(ipReport[0].stmFile)
+  const [repFile, setRepFile] = useState<string>(ipReport[0].repFile)
   const [openPeriod, setOpenMenuPeriod] = useState<boolean>(false)
-  const [period, setPeriod] = useState<string>(ipOfcReport[0].text)
+  const [period, setPeriod] = useState<string>(ipReport[0].text)
   const [lastestIpd, setLastestIpd] = useState<string>('')
   const actionRef1 = useRef<any>(null)
 
@@ -177,14 +215,83 @@ export default function ReportIpPage() {
     { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
     { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
     { field: 'l_stay', headerName: 'วันนอน', width: 70 },
-    { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
-    { field: 'paid', headerName: 'ชำระ', width: 110 },
-    { field: 'debt', headerName: 'คงเหลือ', width: 110 },
+    {
+      field: 'charge',
+      headerName: 'ค่าใช้จ่าย',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
+    {
+      field: 'paid',
+      headerName: 'ชำระ',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
+    {
+      field: 'debt',
+      headerName: 'คงเหลือ',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
     { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 300 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
     { field: 'adjrw', headerName: 'AdjRw', width: 110 },
-    { field: 'total_summary', headerName: 'ได้รับชดเชย', width: 110 },
-    { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
+    {
+      field: 'total_summary',
+      headerName: 'ได้รับชดเชย',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
+    {
+      field: 'diff',
+      headerName: 'ส่วนต่าง',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return (
+          <Typography color={params.value > 0 ? 'black' : 'red'}>
+            {formattedNumber} ฿
+          </Typography>
+        )
+      },
+    },
     { field: 'receipt_no', headerName: 'เลขใบเสร็จ', width: 110 },
   ]
 
@@ -196,20 +303,59 @@ export default function ReportIpPage() {
     { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
     { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
     { field: 'l_stay', headerName: 'วันนอน', width: 70 },
-    { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
-    { field: 'paid', headerName: 'ชำระ', width: 110 },
-    { field: 'debt', headerName: 'คงเหลือ', width: 110 },
+    {
+      field: 'charge',
+      headerName: 'ค่าใช้จ่าย',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
+    {
+      field: 'paid',
+      headerName: 'ชำระ',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
+    {
+      field: 'debt',
+      headerName: 'คงเหลือ',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
     {
       field: 'customField', // Use a custom field name for the constant value
       headerName: 'สิทธิ์',
       width: 120,
-      renderCell: (params) => <strong>{accStName}</strong>, // Replace the field with a constant value
+      renderCell: () => <strong>{accStName}</strong>, // Replace the field with a constant value
     },
     { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 300 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
     { field: 'error_code', headerName: 'error_code', width: 100 },
     { field: 'error_name', headerName: 'error', width: 280 },
-    { field: 'remark_data', headerName: 'remark', width: 280 },    
+    { field: 'remark_data', headerName: 'remark', width: 280 },
   ]
 
   const columns_1: GridColDef[] = [
@@ -220,26 +366,155 @@ export default function ReportIpPage() {
     { field: 'admitdate', headerName: 'วันที่ admit', width: 110 },
     { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
     { field: 'l_stay', headerName: 'วันนอน', width: 70 },
-    { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
-    { field: 'paid', headerName: 'ชำระ', width: 110 },
-    { field: 'debt', headerName: 'คงเหลือ', width: 110 },
-    { field: 'total_paid', headerName: 'ชดเชย_rep', width: 110 },
-    { field: 'rep_diff', headerName: 'ส่วนต่างชดเชย', width: 180 }, 
-    { field: 'rep_diff2', headerName: 'หนี้คงเหลือหลังตัดส่วนต่าง', width: 180 }, 
-    { field: 'rest_debt', headerName: 'ค้างรับ', width: 150 }, 
+    {
+      field: 'charge',
+      headerName: 'ค่าใช้จ่าย',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
+    {
+      field: 'paid',
+      headerName: 'ชำระ',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
+    {
+      field: 'debt',
+      headerName: 'คงเหลือ',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
+    {
+      field: 'total_paid',
+      headerName: 'ชดเชย_rep',
+      width: 110,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
+    {
+      field: 'rep_diff',
+      headerName: 'ส่วนต่างชดเชย',
+      width: 180,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return (
+          <Typography color={params.value > 0 ? 'black' : 'red'}>
+            {formattedNumber} ฿
+          </Typography>
+        )
+      },
+    },
+    {
+      field: 'high',
+      headerName: 'ส่วนสูง',
+      width: 180,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return (
+          <Typography color={params.value > 0 ? 'black' : 'red'}>
+            {formattedNumber} ฿
+          </Typography>
+        )
+      },
+    },
+    {
+      field: 'low',
+      headerName: 'ส่วนต่ำ',
+      width: 180,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return (
+          <Typography color={params.value > 0 ? 'black' : 'red'}>
+            {formattedNumber} ฿
+          </Typography>
+        )
+      },
+    },
+    {
+      field: 'rep_diff2',
+      headerName: 'หนี้คงเหลือหลังตัดส่วนต่าง',
+      width: 180,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
+    {
+      field: 'rest_debt',
+      headerName: 'ค้างรับ',
+      width: 150,
+      renderCell: (params) => {
+        if (isNaN(params.value)) {
+          return ''
+        }
+
+        const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+        return `${formattedNumber} ฿`
+      },
+    },
     {
       field: 'customField', // Use a custom field name for the constant value
       headerName: 'สิทธิ์',
       width: 120,
-      renderCell: (params) => <strong>{accStName}</strong>, // Replace the field with a constant value
+      renderCell: () => <strong>{accStName}</strong>, // Replace the field with a constant value
     },
     { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 300 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
     { field: 'error_code', headerName: 'error_code', width: 100 },
- 
-       
   ]
-  
+
   const columns2: GridColDef[] = [
     { field: 'dchdate', headerName: 'วันที่ DC', width: 110 },
     { field: 'allcase', headerName: 'จำนวนผู้ป่วย', width: 110 },
@@ -259,6 +534,9 @@ export default function ReportIpPage() {
     setDataByDate([])
     setDataCaseNotNull([])
     setDataCaseNull([])
+    setCaseNoRep([])
+    setCaseRepNotC([])
+    setCaseRepC([])
     setGetRep(0)
     setGetCRep(0)
     setReceipt(0)
@@ -270,7 +548,7 @@ export default function ReportIpPage() {
     resetValue()
 
     console.log({ startDt, endDt })
-
+    console.log({ apiUrl })
     let startDate = startDt?.format('YYYY-MM-DD')
     let endDate = endDt?.format('YYYY-MM-DD')
     let stm_file = stmFile
@@ -282,16 +560,10 @@ export default function ReportIpPage() {
     // lastetst case
 
     try {
-      const response = await axios.get(`${apiUrl}/ipofc/ipofclastest`)
-
-      const options = {
-        year: 'numeric', // Full year (e.g., "2566" for 2023)
-        month: 'long', // Long month name (e.g., "June")
-        day: 'numeric', // Numeric day (e.g., "30")
-      }
+      const response = await axios.get(`${apiUrl}/ip/iplastest`)
 
       // Convert the date to Thai date format
-      const thaiDateFormat = response.data.data[0].dchdate.toLocaleString()
+      const thaiDateFormat = response.data.data[0].dchdate1
 
       setLastestIpd(thaiDateFormat)
 
@@ -303,7 +575,7 @@ export default function ReportIpPage() {
     // Null Cases
 
     try {
-      const responseCaseNull = await axios.post(`${apiUrl}/ipofc/ipofcnull`, {
+      const responseCaseNull = await axios.post(`${apiUrl}/ip/ipnull`, {
         stm_file,
         rep_file,
         acc_code,
@@ -322,7 +594,7 @@ export default function ReportIpPage() {
       for (const item of responseCaseNull.data.data) {
         if (item.repno !== null) {
           rep++
-          repcharge = repcharge+Number(item.debt2)
+          repcharge = repcharge + Number(item.debt2)
         }
       }
 
@@ -333,43 +605,63 @@ export default function ReportIpPage() {
       for (const item of responseCaseNull.data.data) {
         if (item.repno !== null && item.error_code !== '-') {
           repc++
-          repccharge = repccharge+Number(item.debt2)
+          repccharge = repccharge + Number(item.debt2)
         }
       }
 
       console.log(repccharge)
-  
-
 
       setGetRep(rep) // มี rep แล้ว
       setGetCRep(repc) // ติด C
       setRepCCharge(repccharge)
       setRepCharge(repcharge)
 
-      const caseRepNotC = responseCaseNull.data.data.filter(
+      const caseRepNotC0 = responseCaseNull.data.data.filter(
         (row: any) => row.repno !== null && row.error_code === '-'
       )
-      const caseRepC = responseCaseNull.data.data.filter(
+      const caseRepC0 = responseCaseNull.data.data.filter(
         (row: any) => row.repno !== null && row.error_code !== '-'
       )
-      const caseNoRep = responseCaseNull.data.data.filter(
+      const caseNoRep0 = responseCaseNull.data.data.filter(
         (row: any) => row.repno === null
       )
 
-      setCaseRepNotC(caseRepNotC)
-      setCaseRepC(caseRepC)
-      setCaseNoRep(caseNoRep)
+      setCaseRepNotC(caseRepNotC0)
+      setCaseRepC(caseRepC0)
+      setCaseNoRep(caseNoRep0)
+
+    
+      let repDebt = 0
+      let repRecieve = 0
+      let repHigh = 0
+      for (const item of caseRepNotC) {
+          console.log(item.debt)
+          console.log(Number(item.high))
+          repDebt = repDebt+Number(item.debt)
+          repRecieve = repRecieve + Number(item.total_paid)
+          repHigh = repHigh+ Number(item.high)
+      }
+  
+      setTotalRepDebt(repDebt)
+      setTotalRepReceive(repRecieve)
+      setTotalRepHigh(repHigh)
+
     } catch (error) {
       console.log('ERROR', error)
     }
 
+
+
     // Not Null Cases
 
     try {
-      const responseCaseNotNull = await axios.post(
-        `${apiUrl}/ipofc/ipofcnotnull`,
-        { stm_file, rep_file, acc_code, startDate, endDate }
-      )
+      const responseCaseNotNull = await axios.post(`${apiUrl}/ip/ipnotnull`, {
+        stm_file,
+        rep_file,
+        acc_code,
+        startDate,
+        endDate,
+      })
 
       console.log(`${startDate}`)
       console.log(`${endDate}`)
@@ -393,10 +685,13 @@ export default function ReportIpPage() {
     // Acc Not Null
 
     try {
-      const responseNotNull = await axios.post(
-        `${apiUrl}/ipofc/ipofcaccnotnull`,
-        { stm_file, rep_file, acc_code, startDate, endDate }
-      )
+      const responseNotNull = await axios.post(`${apiUrl}/ip/ipaccnotnull`, {
+        stm_file,
+        rep_file,
+        acc_code,
+        startDate,
+        endDate,
+      })
 
       console.log('dataNotNull')
       console.log(responseNotNull.data.data[0])
@@ -410,7 +705,7 @@ export default function ReportIpPage() {
 
     // Ofc Acc null
     try {
-      const responseNull = await axios.post(`${apiUrl}/ipofc/ipofcaccnull`, {
+      const responseNull = await axios.post(`${apiUrl}/ip/ipaccnull`, {
         stm_file,
         rep_file,
         acc_code,
@@ -430,10 +725,13 @@ export default function ReportIpPage() {
 
     // Account  by date
     try {
-      const responseByDate = await axios.post(
-        `${apiUrl}/ipofc/ipofcaccbydate`,
-        { stm_file, rep_file, acc_code, startDate, endDate }
-      )
+      const responseByDate = await axios.post(`${apiUrl}/ip/ipaccbydate`, {
+        stm_file,
+        rep_file,
+        acc_code,
+        startDate,
+        endDate,
+      })
       // setData(jsonData)
       console.log('acc by date')
       console.log(responseByDate.data.data)
@@ -452,6 +750,156 @@ export default function ReportIpPage() {
     const allCase = all.toLocaleString('en-US')
     setDataAll(allCase)
   }
+
+  const exportNotNullToExcel = () => {
+    const formattedData = dataCaseNotNull.map((row) => ({
+      hn: row.hn,
+      an: row.an,
+      cid: row.cid,
+      fullname: row.fullname,
+      admitdate: row.admitdate,
+      dchdate: row.dchdate,
+      l_stay: row.l_stay,
+      charge: parseFloat(row.charge),
+      paid: parseFloat(row.paid),
+      debt: parseFloat(row.debt),
+      acc_name: row.acc_name,
+      repno: row.repno,
+      adjrw: row.adjrw,
+      total_summary: parseFloat(row.total_summary),
+      diff: parseFloat(row.diff),
+      receipt_no: row.receipt_no,
+    }))
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data')
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'buffer',
+    })
+
+    saveAs(new Blob([excelBuffer]), 'data.xlsx')
+  }
+
+  const exportCaseRepNotCToExcel = () => {
+    const formattedData = caseRepNotC.map((row) => ({
+      hn: row.hn,
+      an: row.an,
+      cid: row.cid,
+      fullname: row.fullname,
+      admitdate: row.admitdate,
+      dchdate: row.dchdate,
+      l_stay: row.l_stay,
+      charge: parseFloat(row.charge),
+      paid: parseFloat(row.paid),
+      debt: parseFloat(row.debt),
+      ชดเชย: parseFloat(row.total_paid),
+      ส่วนต่าง: parseFloat(row.rep_diff),
+      ส่วนสูง: parseFloat(row.high),
+      ส่วนต่ำ: parseFloat(row.low),
+      หนี้คงเหลือ: parseFloat(row.rep_diff2),
+      ค้างรับ: parseFloat(row.rest_debt),
+      accStName: row.accStName,
+      acc_name: row.acc_name,
+      repno: row.repno,
+      error_code: row.error_code,
+    }))
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data')
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'buffer',
+    })
+
+    saveAs(new Blob([excelBuffer]), 'data.xlsx')
+  }
+
+  const exportCaseRepCToExcel = () => {
+    const formattedData = caseRepC.map((row) => ({
+      hn: row.hn,
+      an: row.an,
+      cid: row.cid,
+      fullname: row.fullname,
+      admitdate: row.admitdate,
+      dchdate: row.dchdate,
+      l_stay: row.l_stay,
+      charge: parseFloat(row.charge),
+      paid: parseFloat(row.paid),
+      debt: parseFloat(row.debt),
+      acc_name: row.acc_name,
+      repno: row.repno,
+      error_code: row.error_code,
+      error_name: row.error_name,
+      remark_date: row.remark_data,
+    }))
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data')
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'buffer',
+    })
+
+    saveAs(new Blob([excelBuffer]), 'data.xlsx')
+  }
+  const exportCaseNoRepToExcel = () => {
+    const formattedData = caseNoRep.map((row) => ({
+      hn: row.hn,
+      an: row.an,
+      cid: row.cid,
+      fullname: row.fullname,
+      admitdate: row.admitdate,
+      dchdate: row.dchdate,
+      l_stay: row.l_stay,
+      charge: parseFloat(row.charge),
+      paid: parseFloat(row.paid),
+      debt: parseFloat(row.debt),
+      acc_name: row.acc_name,
+      repno: row.repno,
+      error_code: row.error_code,
+      error_name: row.error_name,
+      remark_date: row.remark_data,
+    }))
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data')
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'buffer',
+    })
+
+    saveAs(new Blob([excelBuffer]), 'data.xlsx')
+  }
+
+  const exportCaseByDateToExcel = () => {
+    const formattedData = dataByDate.map((row) => ({
+      dchdate: row.dchdate,
+      allcase: row.allcase,
+      debit: row.debit,
+      รอstm: row.nullcase,
+      หนี้รอstm: row.nulldebit,
+      มีstmแล้ว: row.notnullcase,
+      หนี้ดำเนินการแล้ว: row.notnulldebit,
+      ชดเชยทั้งหมด: row.recieve,
+      ส่วนต่าง: row.diff,
+    }))
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data')
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'buffer',
+    })
+
+    saveAs(new Blob([excelBuffer]), 'data.xlsx')
+  }
+
   const CustomToolbar = () => {
     return (
       <GridToolbarContainer>
@@ -476,19 +924,6 @@ export default function ReportIpPage() {
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValueTab(newValue)
-  }
-
-  const dataChart = {
-    labels: ['รอดำเนินการ', 'สำเร็จ'],
-    datasets: [
-      {
-        // label: ['รอดำเนินการ', 'สำเร็จ'],
-        data: [dataNull.all_nullcase, Number(dataNotNull.all_notnullcase)],
-        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
-        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
-        borderWidth: 1,
-      },
-    ],
   }
 
   return (
@@ -561,7 +996,7 @@ export default function ReportIpPage() {
                       horizontal: 'right',
                     }}
                   >
-                    {ipOfcReport.map((_period) => (
+                    {ipReport.map((_period) => (
                       <MenuItem
                         key={_period.id}
                         onClick={() => {
@@ -644,11 +1079,12 @@ export default function ReportIpPage() {
                       cases={Number(dataNull.all_nullcase).toLocaleString(
                         'en-US'
                       )}
-                      values={(Number(dataNull.debit_null)-repCharge).toLocaleString(
-                        'en-US'
-                      )}
+                      values={(
+                        Number(dataNull.debit_null) - repCharge
+                      ).toLocaleString('en-US')}
                       percent={
-                        ((getCRep+Number(dataNull.all_nullcase) - getRep) * 100) /
+                        ((getCRep + Number(dataNull.all_nullcase) - getRep) *
+                          100) /
                         (Number(dataNull.all_nullcase) +
                           Number(dataNotNull.all_notnullcase))
                       }
@@ -657,7 +1093,11 @@ export default function ReportIpPage() {
                       caseuncalim={(
                         Number(dataNull.all_nullcase) - getRep
                       ).toLocaleString('en-US')}
-                      caseerrorunclaim={(getCRep+Number(dataNull.all_nullcase) - getRep).toLocaleString('en-US')}
+                      caseerrorunclaim={(
+                        getCRep +
+                        Number(dataNull.all_nullcase) -
+                        getRep
+                      ).toLocaleString('en-US')}
                     />
                   </Stack>
                   <Stack direction={'column'} gap={2} marginTop={2}>
@@ -667,15 +1107,21 @@ export default function ReportIpPage() {
                         fontWeight={'bold'}
                         color={'primary'}
                       >
-                        ส่วนต่าง ค่ารักษา :{' '}{dataNotNull.sum_diff === null
+                        ส่วนต่าง ค่ารักษา :{' '}
+                        {dataNotNull.sum_diff === null
                           ? 0
                           : Number(dataNotNull.sum_diff).toLocaleString(
                               'en-US'
                             )}{' '}
                         บาท{'   '}
                       </Typography>
-                      <Typography flexGrow={1} fontWeight={'bold'} paddingLeft={2}>
-                        {'  '} ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}{dataNotNull.diffloss === null
+                      <Typography
+                        flexGrow={1}
+                        fontWeight={'bold'}
+                        paddingLeft={2}
+                      >
+                        {'  '} ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
+                        {dataNotNull.diffloss === null
                           ? 0
                           : Number(dataNotNull.diffloss).toLocaleString(
                               'en-US'
@@ -689,7 +1135,12 @@ export default function ReportIpPage() {
                       >
                         ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
                       </Typography>
-                      <Typography color={'error'} mr={5} fontWeight={'bold'} marginLeft={1}>
+                      <Typography
+                        color={'error'}
+                        mr={5}
+                        fontWeight={'bold'}
+                        marginLeft={1}
+                      >
                         {dataNotNull.diffgain === null
                           ? 0
                           : Number(dataNotNull.diffgain).toLocaleString(
@@ -725,7 +1176,7 @@ export default function ReportIpPage() {
                         บาท
                       </Typography>
                     </Stack> */}
-{/* 
+                    {/* 
                     <Stack direction={'row'}>
                       <Typography
                         color={'error'}
@@ -778,6 +1229,23 @@ export default function ReportIpPage() {
                 ยังไม่ได้ดำเนินการ :{' '}
                 {(dataNull.all_nullcase - getRep).toLocaleString('en-US')} ราย
               </Typography>
+              <Stack direction={'row'} gap={2} marginTop={0}>
+                <Typography
+                  fontStyle={'bold'}
+                  fontSize={'1.1rem'}
+                  color={'#2e4ad8'}
+                  mb={1}
+                >
+                  export Exel
+                </Typography>
+                <IconButton
+                  aria-label="export"
+                  color="primary"
+                  onClick={exportCaseNoRepToExcel}
+                >
+                  <SystemUpdateAlt />
+                </IconButton>
+              </Stack>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
@@ -801,6 +1269,50 @@ export default function ReportIpPage() {
                 ส่งแล้ว มี rep รอ statement :{' '}
                 {(getRep - getCRep).toLocaleString('en-US')} ราย
               </Typography>
+              {/* <Typography
+                fontStyle={'bold'}
+                fontSize={'1.1rem'}
+                color={'#3c48ee'}
+                mb={1}
+              >
+                รวมหนี้ :{' '}
+                {(totalRepDebt).toLocaleString('en-US')} {' '} บาท
+              </Typography>
+              <Typography
+                fontStyle={'bold'}
+                fontSize={'1.1rem'}
+                color={'#3c48ee'}
+                mb={1}
+              >
+                รวมชดเชย :{' '}
+                {(totalRepReceive).toLocaleString('en-US')} {' '} บาท
+              </Typography>
+              <Typography
+                fontStyle={'bold'}
+                fontSize={'1.1rem'}
+                color={'#3c48ee'}
+                mb={1}
+              >
+                รวมส่วนสูง :{' '}
+                {(totalRepHigh).toLocaleString('en-US')} {' '} บาท
+              </Typography> */}
+              <Stack direction={'row'} gap={2} marginTop={0}>
+                <Typography
+                  fontStyle={'bold'}
+                  fontSize={'1.1rem'}
+                  color={'#ed1757'}
+                  mb={1}
+                >
+                  export Exel
+                </Typography>
+                <IconButton
+                  aria-label="export"
+                  color="primary"
+                  onClick={exportCaseRepNotCToExcel}
+                >
+                  <SystemUpdateAlt />
+                </IconButton>
+              </Stack>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
@@ -823,6 +1335,23 @@ export default function ReportIpPage() {
               >
                 ติด C ทั้งหมด : {getCRep} ราย
               </Typography>
+              <Stack direction={'row'} gap={2} marginTop={0}>
+                <Typography
+                  fontStyle={'bold'}
+                  fontSize={'1.1rem'}
+                  color={'#2e4ad8'}
+                  mb={1}
+                >
+                  export Exel
+                </Typography>
+                <IconButton
+                  aria-label="export"
+                  color="primary"
+                  onClick={exportCaseRepCToExcel}
+                >
+                  <SystemUpdateAlt />
+                </IconButton>
+              </Stack>
             </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
@@ -864,6 +1393,23 @@ export default function ReportIpPage() {
               >
                 จำนวน ที่ออกใบเสร็จแล้ว : {receipt.toLocaleString('en-US')} ราย
               </Typography>
+              <Stack direction={'row'} gap={2} marginTop={0}>
+                <Typography
+                  fontStyle={'bold'}
+                  fontSize={'1.1rem'}
+                  color={'#2e4ad8'}
+                  mb={1}
+                >
+                  export Exel
+                </Typography>
+                <IconButton
+                  aria-label="export"
+                  color="primary"
+                  onClick={exportNotNullToExcel}
+                >
+                  <SystemUpdateAlt />
+                </IconButton>
+              </Stack>
             </Stack>
 
             <Box style={{ height: 500, width: '100%' }}>
@@ -878,6 +1424,25 @@ export default function ReportIpPage() {
             </Box>
           </TabPanel>
           <TabPanel value="5">
+            <Stack direction={'row'} gap={2}>
+              <Stack direction={'row'} gap={2} marginTop={0}>
+                <Typography
+                  fontStyle={'bold'}
+                  fontSize={'1.1rem'}
+                  color={'#2e4ad8'}
+                  mb={1}
+                >
+                  export Exel
+                </Typography>
+                <IconButton
+                  aria-label="export"
+                  color="primary"
+                  onClick={exportCaseByDateToExcel}
+                >
+                  <SystemUpdateAlt />
+                </IconButton>
+              </Stack>
+            </Stack>{' '}
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={dataByDate}
@@ -906,37 +1471,8 @@ export default function ReportIpPage() {
                   ).toLocaleString('en-US')}{' '} */}
                   ราย
                 </Typography>
-                <Typography variant="body2">
-                  รอดำเนินการ :{' '}
-                  {/* {Number(dataNull.all_nullcase).toLocaleString('en-US')} ราย [ */}
-                  {''}
-                  {/* {(
-                    (Number(dataNull.all_nullcase) * 100) /
-                    (Number(dataNull.all_nullcase) +
-                      Number(dataNotNull.all_notnullcase))
-                  ).toLocaleString('en-US', {
-                    minimumIntegerDigits: 1,
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })} */}
-                  {/* {''}%] */}
-                  {/* รอดำเนินการ : {dataNull.all_nullcase.toLocaleString('en-US')} */}
-                </Typography>
-                <Typography variant="body2">
-                  สำเร็จ :{' '}
-                  {/* {Number(dataNotNull.all_notnullcase).toLocaleString('en-US')}{' '}
-                  ราย [{''}
-                  {(
-                    (Number(dataNotNull.all_notnullcase) * 100) /
-                    (Number(dataNull.all_nullcase) +
-                      Number(dataNotNull.all_notnullcase))
-                  ).toLocaleString('en-US', {
-                    minimumIntegerDigits: 1,
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                  {''}%] */}
-                </Typography>
+                <Typography variant="body2">รอดำเนินการ : </Typography>
+                <Typography variant="body2">สำเร็จ : </Typography>
               </Stack>
               <Box>
                 {/* {' '}

@@ -29,162 +29,244 @@ import {
   GridRowModesModel,
 } from '@mui/x-data-grid'
 
-import { Delete, Add, ModeEdit } from '@mui/icons-material'
+import { Delete, Add, ModeEdit, Troubleshoot } from '@mui/icons-material'
 import CardHeader1 from '../../assets/account.jpg'
 
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs, { Dayjs } from 'dayjs'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
+import toast, { ToastBar, Toaster } from 'react-hot-toast'
 
 const apiUrl = import.meta.env.VITE_API_URL // localhost
 // const apiUrl = import.meta.env.VITE_API_SERVER_URL // server HICM
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'Id', width: 100 },
-  {
-    field: 'date',
-    headerName: 'Date',
-    width: 120,
-  },
+  { field: 'statement', headerName: 'statement', width: 150 },
   { field: 'receipt_no', headerName: 'receipt No', width: 150 },
+  { field: 'receipt_date', headerName: 'receipt Date', width: 150 },
   { field: 'repno', headerName: 'Rep No', editable: true, width: 150 },
-  { field: 'amount', headerName: 'amount', editable: true, width: 150 },
   {
-    field: '.',
-    headerName: 'Action',
-    width: 200,
-    renderCell: ({ row }: GridRenderCellParams<any>) => (
-      <Stack direction={'row'}>
-        <IconButton aria-label="edit" size="large" color="primary">
-          <ModeEdit />
-        </IconButton>
-        <IconButton
-          aria-label="delete"
-          size="large"
-          color="error"
-          onClick={() => alert(JSON.stringify(row))}
-        >
-          <Delete />
-        </IconButton>
-      </Stack>
-    ),
+    field: 'amount',
+    headerName: 'ยอดชดเชย',
+    width: 120,
+    renderCell: (params) => {
+      if (isNaN(params.value)) {
+        return ''
+      }
+
+      const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+      return `${formattedNumber} ฿`
+    },
   },
 ]
 
+const columns2: GridColDef[] = [
+  { field: 'id', headerName: 'id', width: 150 },
+  { field: 'receipt_no', headerName: 'Receipt No', width: 200 },
+  { field: 'receiptdt', headerName: 'Receipt Date', width: 150 },
+  { field: 'statement', headerName: 'Statement No', width: 150 },
+  { field: 'repno', headerName: 'Rep No', editable: true, width: 150 },
+  {
+    field: 'amount',
+    headerName: 'จำนวนเงินชดเชย',
+    width: 110,
+    renderCell: (params) => {
+      if (isNaN(params.value)) {
+        return ''
+      }
+
+      const formattedNumber = Number(params.value).toLocaleString('en-US')
+
+      return `${formattedNumber} ฿`
+    },
+  },
+  {
+    field: 'stm_date',
+    headerName: 'Statement Date',
+    width: 120,
+  },
+]
+
+type Repx = {
+  id: number
+  receipt_no: string
+  repno: string
+  receipt_date: Dayjs | null
+  statement: string
+  amount: number
+}
+
+const repx = {
+  id: 0,
+  receiptno: '',
+  repno: '',
+  receipt_date: '',
+}
+
 export default function receiptPage() {
   const [receiptDt, setReceiptDt] = useState<Dayjs | null>(dayjs(new Date()))
-  const [rep, setRep] = useState<GridRowsProp>([])
+  const [rep, setRep] = useState<Repx[]>([])
   const [receipt, setReceipt] = useState<GridRowsProp>([])
+  const [statement, setStatement] = useState<string>('')
   const [repno, setRepno] = useState<string>('')
   const [receiptNo, setReceiptNo] = useState('')
   const [amount, setAmount] = useState(0.0)
   const [openDialog, setOpenDialog] = useState<boolean>(false)
+  const [openDialog2, setOpenDialog2] = useState<boolean>(false)
   const [lastNo, setLastNo] = useState<number>(0)
   const [isAdd, setIsAdd] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/receipt`);
-        // const arrayData = response.data.data.sort((a: any, b: any) => b.id - a.id);
-        const ls = response.data.data[0].id + 1;
-        setLastNo(ls);
-        setReceipt(response.data.data)
-        console.log(ls);
-        console.log(receipt)
-        setIsAdd(false)
-      } catch (error) {
-        console.log('ERROR', error);
-      }
-    };
-
-    fetchData();
-  }, [isAdd]); // Empty dependency array to run this effect only once on mount
-
-  useEffect(() => {
-    console.log('lastNo updated:', lastNo);
-  }, [lastNo]); 
-
-
+  const [visibleStm, setVisibleStm] = useState(true)
+  const [visibleReceiptNo, setVisibleReceiptNo] = useState(false)
+  const [visibleSave, setVisibleSave] = useState(false)
 
   const onSubmit = async () => {
-    // const apiBackendUrl = import.meta.env.VITE_API_BACKEND_URL
+    console.log(rep)
 
-    // const data = new FormData(event.currentTarget)
     const receiptData = {
       receipt_no: receiptNo,
-      // receipt_no: data.get('receipt') as string | null,
       receipt_date: receiptDt,
+      statement: statement,
     }
 
     console.log(receiptData)
 
     try {
-      const response = await axios.post(
-        `${apiUrl}/receipt/receiptByNo`,
+      const response = await axios.put(
+        `${apiUrl}/receipt/receiptupdreceiptno`,
         receiptData
       )
       // setReceiptDt(response.data[0].receipt_date)
-      setRep(response.data)
-    } catch (error) {
-      console.log('ERROR', error)
-    }
-
-    setIsLoading(false)
-  }
-
-
-
-  const onAddRep = async () => {
-    
-    setIsAdd(true)
-    // let receipt_Dt = receiptDt?.format('YYYY-MM-DD')
-    let receipt_No = receiptNo.toString()
-
-    try {
-      const receiptData = {
-        id: lastNo,
-        receiptdate: receiptDt,
-        receiptno: receipt_No,
-        rep_no: repno,
-        amount: amount,
-      }
-
-      console.log(receiptData)
-      const response1 = await axios.post(
-        `${apiUrl}/receipt/receiptaddrep`,
-        receiptData
+      console.log(response.data.data)
+      toast.success(
+        (t) => (
+          <>
+            <span>
+              <Box>Successfully Add Recept No: {receiptNo}</Box>
+              <Button
+                onClick={() => toast.dismiss(t.id)}
+                sx={{ marginLeft: '3px', marginTop: '3px' }}
+              >
+                Dismiss
+              </Button>
+            </span>
+          </>
+        ),
+        {
+          duration: 4000,
+          style: {
+            border: '1px solid #713200',
+            padding: '16px',
+            color: '#713200',
+          },
+          iconTheme: {
+            primary: '#0ce445',
+            secondary: '#FFFAEE',
+          },
+        }
       )
-      // setReceiptDt(response.data[0].receipt_date)
-      setRep(response1.data.data)
     } catch (error) {
       console.log('ERROR', error)
+      toast.error(`Not Successfully Recept No: ${receiptNo}`)
     }
 
+    getReceipt()
+
+    // setIsLoading(false)
+    setOpenDialog2(false)
+    setVisibleSave(false)
+    setVisibleStm(true)
+    setVisibleReceiptNo(false)
+  }
+
+  const getReceipt = async () => {
     try {
-      const response2 = await axios.post(`${apiUrl}/receipt/receiptByNo`, {
-        receiptNo,
-      })
+      const response = await axios.get(`${apiUrl}/receipt`)
       // setReceiptDt(response.data[0].receipt_date)
-      setRep(response2.data.data)
+      console.log(response.data.data)
+      setReceipt(response.data.data)
     } catch (error) {
       console.log('ERROR', error)
     }
 
-    setIsLoading(false)
-    setOpenDialog(false)
+    // setIsLoading(false)
   }
 
-  const handleRepNoChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setRepno(event.target.value)
-  }
   const handleReceiptNoChange = (event: ChangeEvent<HTMLInputElement>) => {
     setReceiptNo(event.target.value)
   }
-  const handleAmountChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setAmount(Number(event.target.value))
+
+  const handleStatementChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setStatement(event.target.value)
+    console.log(statement)
   }
+
+  const onGetData = async () => {
+    console.log('statement')
+    console.log(statement)
+    try {
+      const response = await axios.post(`${apiUrl}/receipt/receiptbystm`, {
+        statement: statement,
+      })
+
+      // setReceiptDt(response.data[0].receipt_date)
+      setRep(response.data.data)
+      console.log(rep)
+      setVisibleReceiptNo(true)
+      setVisibleStm(false)
+      setVisibleSave(false)
+    } catch (error) {
+      console.log('ERROR', error)
+    }
+  }
+
+  const onAddReceiptNo = () => {
+    const array = rep
+    console.log(array)
+    for (let i = 0; i < array.length; i++) {
+      if (array[i].statement === statement) {
+        array[i].receipt_no = receiptNo
+        array[i].receipt_date = receiptDt
+      }
+    }
+
+    setRep(array)
+
+    console.log(rep)
+    setVisibleSave(true)
+    setOpenDialog(false)
+  }
+
+  const notify = () =>
+    toast.success(
+      (t) => (
+        <>
+          <span>
+            <Box>Successfully Add Recept No: {receiptNo}</Box>
+            <Button
+              onClick={() => toast.dismiss(t.id)}
+              sx={{ marginLeft: '3px', marginTop: '3px' }}
+            >
+              Dismiss
+            </Button>
+          </span>
+        </>
+      ),
+      {
+        duration: 4000,
+        style: {
+          border: '1px solid #713200',
+          padding: '16px',
+          color: '#713200',
+        },
+        iconTheme: {
+          primary: '#0ce445',
+          secondary: '#FFFAEE',
+        },
+      }
+    )
 
   interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void
@@ -219,12 +301,14 @@ export default function receiptPage() {
     setValueTab(newValue)
   }
 
-
-  
-
   return (
     <>
       <Box sx={{ width: '100%', height: '500px', typography: 'body1' }}>
+        {/* Toast */}
+        <Box>
+          <Toaster position="top-right" reverseOrder={false} />
+        </Box>
+        <Button onClick={notify}>Notify</Button>;
         <TabContext value={valueTab}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList
@@ -232,75 +316,49 @@ export default function receiptPage() {
               aria-label="lab API tabs example"
             >
               <Tab label="ออกใบเสร็จ" value="1" />
-              <Tab label="แก้ไขใบเสร็จ" value="2" />
+              <Tab label="รายการใบเสร็จ" value="2" />
             </TabList>
           </Box>
 
           <TabPanel value="1">
-            <Stack
-              direction={'row'}
-              gap={2}
-              alignItems={'center'}
-              paddingLeft={5}
-            >
-              <TextField
-                type="text"
-                margin="normal"
-                required
-                id="receiptno"
-                label="หมายเลขใบเสร็จ"
-                name="receiptno"
-                value={receiptNo}
-                onChange={handleReceiptNoChange}
-                color="secondary"
-                autoFocus
-              />
-              <LocalizationProvider
-                dateAdapter={AdapterDayjs}
-                adapterLocale="th"
-                // adapterLocale="th"
+            {visibleReceiptNo && (
+              <Stack
+                direction={'row'}
+                gap={2}
+                alignItems={'center'}
+                paddingLeft={5}
               >
-                <Stack direction={'column'} gap={2}>
-                  <DatePicker
-                    label="วันที่ออกใบเสร็จ"
-                    value={receiptDt}
-                    onChange={(newValue) => setReceiptDt(newValue)}
-                  />
-                </Stack>
-              </LocalizationProvider>
-            </Stack>{' '}
-            <Card>
-              <Stack direction={'row'} gap={2} paddingLeft={5}>
                 <TextField
                   type="text"
                   margin="normal"
                   required
-                  id="repno"
-                  label="Repno หมายเลข REP"
-                  name="repno"
-                  value={repno}
-                  onChange={handleRepNoChange}
+                  id="receiptno"
+                  label="หมายเลขใบเสร็จ"
+                  name="receiptno"
+                  value={receiptNo}
+                  onChange={handleReceiptNoChange}
                   color="secondary"
                   autoFocus
                 />
-                <TextField
-                  type="number"
-                  margin="normal"
-                  required
-                  id="amount"
-                  label="จำนวนเงิน"
-                  name="repno"
-                  value={amount}
-                  onChange={handleAmountChange}
-                  color="secondary"
-                  autoFocus
-                />
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  adapterLocale="th"
+                  // adapterLocale="th"
+                >
+                  <Stack direction={'column'} gap={2}>
+                    <DatePicker
+                      label="วันที่ออกใบเสร็จ"
+                      value={receiptDt}
+                      onChange={(newValue) => setReceiptDt(newValue)}
+                    />
+                  </Stack>
+                </LocalizationProvider>
                 <Button
                   color="primary"
                   startIcon={<Add />}
                   onClick={() => setOpenDialog(true)}
                 >
-                  Add Rep
+                  ลงหมายเลขใบเสร็จ Map statement
                 </Button>
                 <Dialog
                   open={openDialog}
@@ -313,22 +371,75 @@ export default function receiptPage() {
                   </DialogTitle>
                   <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                      receipt NO : {receiptNo} repno : {repno} receipt_date:{' '}
-                      {receiptDt?.format('YYYY-MM-DD')}
-                      amount: {amount}
+                      Add Receipt No : {receiptNo}
                     </DialogContentText>
                   </DialogContent>
                   <DialogActions>
                     <Button onClick={() => setOpenDialog(false)} color="error">
                       Cancel
                     </Button>
-                    <Button onClick={onAddRep} autoFocus>
-                      Add Rep
+                    <Button onClick={onAddReceiptNo} autoFocus>
+                      Add Receipt No
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+                <Box flexGrow={1} />
+                <Button
+                  variant="contained"
+                  onClick={() => setOpenDialog2(true)}
+                >
+                  Save
+                </Button>
+                <Dialog
+                  open={openDialog2}
+                  onClose={() => setOpenDialog2(false)}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">
+                    {"Use Google's location service?"}
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      Save Receipt No : {receiptNo} to Statement : {statement}
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setOpenDialog2(false)} color="error">
+                      Cancel
+                    </Button>
+                    <Button onClick={onSubmit} autoFocus>
+                      Save
                     </Button>
                   </DialogActions>
                 </Dialog>
               </Stack>
+            )}
+            <Card>
+              {visibleStm && (
+                <Stack direction={'row'} gap={2} paddingLeft={5}>
+                  <TextField
+                    type="text"
+                    margin="normal"
+                    required
+                    id="statement"
+                    label="statement"
+                    name="statement"
+                    value={statement}
+                    onChange={handleStatementChange}
+                    color="secondary"
+                    autoFocus
+                  />
 
+                  <Button
+                    color="primary"
+                    startIcon={<Troubleshoot />}
+                    onClick={() => onGetData()}
+                  >
+                    Get Data
+                  </Button>
+                </Stack>
+              )}
               <Box style={{ height: 500, width: '100%' }}>
                 <DataGrid
                   rows={rep}
@@ -343,70 +454,17 @@ export default function receiptPage() {
           </TabPanel>
 
           <TabPanel value="2">
-            <Stack direction={'row'} gap={2}>
-              <Typography sx={{ marginBottom: '15px' }}></Typography>
-            </Stack>{' '}
-            <Card sx={{ padding: '20px' }}>
-              <CardMedia
-                component={'img'}
-                sx={{ height: 140, width: '100%' }}
-                image={CardHeader1}
-                title="green iguana"
-              />
-
-              <CardContent>
-                <Typography sx={{ fontSize: '1.1rem' }} color={'#1e77c5'}>
-                  ออกใบเสร็จ สำหรับ statement-rep
-                </Typography>
-                <Box
-                  sx={{
-                    marginTop: 3,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
+            <Card>
+              <Box style={{ height: 500, width: '100%' }}>
+                <DataGrid
+                  rows={receipt}
+                  columns={columns2}
+                  getRowId={(row) => row.id}
+                  slots={{
+                    toolbar: CustomToolbar,
                   }}
-                >
-                  <Box
-                    component="form"
-                    onSubmit={onSubmit}
-                    noValidate
-                    sx={{ mt: 1 }}
-                  >
-                    <TextField
-                      margin="normal"
-                      required
-                      fullWidth
-                      id="receipt"
-                      label="receipt No เลขที่ใบเสร็จ"
-                      name="receipt"
-                      value={receiptNo}
-                      onChange={handleReceiptNoChange}
-                      autoFocus
-                    />
-                  </Box>
-                  <LocalizationProvider
-                    dateAdapter={AdapterDayjs}
-                    adapterLocale="th"
-                    // adapterLocale="th"
-                  >
-                    <Stack direction={'column'} gap={2}>
-                      <DatePicker
-                        label="Start Date"
-                        value={receiptDt}
-                        onChange={(newValue) => setReceiptDt(newValue)}
-                      />
-                    </Stack>
-                  </LocalizationProvider>
-                </Box>
-
-                <Button
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                  onClick={onSubmit}
-                >
-                  Submit
-                </Button>
-              </CardContent>
+                />
+              </Box>
             </Card>
           </TabPanel>
         </TabContext>

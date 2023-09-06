@@ -41,8 +41,6 @@ import ClaimCaseCard from './ClaimCaseCard'
 import UnClaimCaseCard from './UnClaimCaseCard'
 import Loading from '../../../components/Loading'
 
-
-
 const dataNull0 = {
   all_nullcase: 0,
   debit_null: '',
@@ -57,63 +55,147 @@ const dataNotNull0 = {
   diffgain: 0,
 }
 
-
-
 const opReport = [
   {
     id: 1,
-    stmFile: 'stm_op_ofc',
-    repFile: 'rep_op_ofc',
-    accCode: '1102050101.401',
-    text: 'ผู้ป่วยนอก จ่ายตรงกรมบัญชีกลาง',
-    stName: 'OP-OFC',
+    service_name: 'AE นอกเขต',
+    acc_code: '1102050101.216',
   },
   {
     id: 2,
-    stmFile: 'stm_op_ucs',
-    repFile: 'rep_op_ucs',
-    accCode: '1102050101.209', // 1102050101.209
-    text: 'ผู้ป่วยนอก บัตรทอง [UCS] PP',
-    stName: 'OP-PP',
+    service_name: 'AE สิทธิว่าง',
+    acc_code: '1102050101.216',
   },
   {
     id: 3,
-    stmFile: 'stm_op_ucs',
-    repFile: 'rep_op_ucs',
-    accCode: '1102050101.216',
-    text: 'ผู้ป่วยนอก บัตรทอง บริการเฉพาะ [CR]',
-    stName: 'OP-UC CR',
+    service_name: 'ANC',
+    acc_code: '1102050101.209',
   },
   {
+    id: 26,
+    service_name: 'anc ทันตกรรม ปกส',
+    acc_code: '1102050101.209',
+  },
+  
+
+  {
     id: 4,
-    stmFile: 'stm_op_ucs',
-    repFile: 'rep_op_ucs',
-    accCode: '1102050101.203',
-    text: 'ผู้ป่วยนอก บัตรทองนอก CUP ใน จว.',
-    stName: 'OP-นอก CUP',
+    service_name: 'CA anywhere',
+    acc_code: '1102050101.216',
   },
   {
     id: 5,
-    stmFile: 'stm_op_ofc',
-    repFile: 'rep_ip_lgo',
-    accCode: '1102050102.801',
-    text: 'ผู้ป่วยนอก เบิกจ่ายตรง อปท. ',
-    stName: 'OP-LGO',
+    service_name: 'CA chemotherapy',
+    acc_code: '1102050101.216',
   },
   {
     id: 6,
-    stmFile: 'stm_ip_ofc',
-    repFile: 'rep_ip_ofc',
-    accCode: '1102050102.803',
-    text: 'ผู้ป่วยนอก เบิกจ่ายตรง อปท.พิเศษ ',
-    stName: 'OP-ฺBKK',
+    service_name: 'DMISHD',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 7,
+    service_name: 'DMISRC',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 8,
+    service_name: 'ER-EXT',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 9,
+    service_name: 'UCEP24',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 10,
+    service_name: 'INST',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 11,
+    service_name: 'Palliative',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 12,
+    service_name: 'STP',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 13,
+    service_name: 'Telemed',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 14,
+    service_name: 'UCS ผู้พิการ',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 15,
+    service_name: 'WALKIN',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 16,
+    service_name: 'ANC ทันตกรรม',
+    acc_code: '1102050101.209',
+  },
+  {
+    id: 17,
+    service_name: 'INST ฟันปลอม',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 18,
+    service_name: 'INST รากฟันเทียม',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 19,
+    service_name: 'เคลือบฟลูออไรด์',
+    acc_code: '1102050101.209',
+  },
+  {
+    id: 20,
+    service_name: 'clopidogerl',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 21,
+    service_name: 'ยา SK MI',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 22,
+    service_name: 'ยา SK',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 23,
+    service_name: 'ย้ายสิทธิเกิดทันที',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 24,
+    service_name: 'ยาสมุนไพร',
+    acc_code: '1102050101.216',
+  },
+  {
+    id: 25,
+    service_name: 'วางแผนครอบครัว ยาฝัง',
+    acc_code: '1102050101.209',
   },
 ]
+
+const stm_file = 'opuc_cr'
 
 const apiUrl = import.meta.env.VITE_API_URL // localhost
 // const apiUrl = import.meta.env.VITE_API_SERVER_URL // server HICM
 
-export default function ReportIpPage() {
+export default function ReportOpUcCrPage() {
   const [dataNull, setDataNull] = useState(dataNull0)
   const [dataNotNull, setDataNotNull] = useState(dataNotNull0)
   const [dataAll, setDataAll] = useState<string>('')
@@ -130,33 +212,38 @@ export default function ReportIpPage() {
   const [caseRepNotC, setCaseRepNotC] = useState<GridRowsProp>([])
   const [caseRepC, setCaseRepC] = useState<GridRowsProp>([])
   const [receipt, setReceipt] = useState<number>(0)
-  const [title, setTitle] = useState<string>(opReport[0].text)
-  const [accCode, setAccCode] = useState<string>(opReport[0].accCode)
-  const [stmFile, setStmFile] = useState<string>(opReport[0].stmFile)
-  const [repFile, setRepFile] = useState<string>(opReport[0].repFile)
+  const [title, setTitle] = useState<string>(opReport[0].service_name)
+  const [accCode, setAccCode] = useState<string>(opReport[0].acc_code)
+  const [stmFile, setStmFile] = useState<string>(stm_file)
+  // const [repFile, setRepFile] = useState<string>(opReport[0].repFile)
   const [openPeriod, setOpenMenuPeriod] = useState<boolean>(false)
-  const [period, setPeriod] = useState<string>(opReport[0].text)
+  const [period, setPeriod] = useState<string>(opReport[0].service_name)
   const [lastestIpd, setLastestIpd] = useState<string>('')
   const actionRef1 = useRef<any>(null)
 
   const columns: GridColDef[] = [
     { field: 'hn', headerName: 'HN', width: 100 },
     { field: 'vn', headerName: 'VN', width: 120 },
-    { field: 'cid', headerName: 'CID', width: 150 },
+    { field: 'pid', headerName: 'CID', width: 150 },
     { field: 'fullname', headerName: 'ชื่อ นามสสกุล', width: 150 },
-    { field: 'visit_date', headerName: 'วันที่รับบริการ', width: 110 },
+    { field: 'dateserv', headerName: 'วันที่รับบริการ', width: 110 },
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
-    { field: 'debt', headerName: 'คงเหลือ', width: 110 },
+    { field: 'charge', headerName: 'คงเหลือ', width: 110 },
     {
       field: 'customField', // Use a custom field name for the constant value
       headerName: 'ลูกหนี้สิทธิ์ย่อ',
       width: 120,
       renderCell: (params) => <strong>{accStName}</strong>, // Replace the field with a constant value
     },
-    { field: 'acc_name', headerName: 'ลูกหนี้สิทธิ์', width: 300 },
-    { field: 'pttype_code', headerName: 'ระหัสสิทธิ์', width: 60 },
-    { field: 'pttype_name', headerName: 'สิทธิ์', width: 300 },
+    {
+      field: 'acc_code',
+      headerName: 'ลูกหนี้สิทธิ์',
+      width: 300,
+      renderCell: (params) => <strong>{accCode}</strong>,
+    },
+    // { field: 'pttype_code', headerName: 'ระหัสสิทธิ์', width: 60 },
+    // { field: 'pttype_name', headerName: 'สิทธิ์', width: 300 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
     { field: 'total_summary', headerName: 'ได้รับชดเชย', width: 110 },
     { field: 'diff', headerName: 'ส่วนต่าง', width: 110 },
@@ -184,7 +271,7 @@ export default function ReportIpPage() {
     { field: 'repno', headerName: 'RepNo', width: 110 },
     { field: 'error_code', headerName: 'error_code', width: 100 },
     { field: 'error_name', headerName: 'error', width: 280 },
-    { field: 'remark_data', headerName: 'remark', width: 280 },    
+    { field: 'remark_data', headerName: 'remark', width: 280 },
   ]
 
   const columns_1: GridColDef[] = [
@@ -195,10 +282,10 @@ export default function ReportIpPage() {
     { field: 'visit_date', headerName: 'วันที่รับบริการ', width: 110 },
     { field: 'charge', headerName: 'ค่าใช้จ่าย', width: 110 },
     { field: 'paid', headerName: 'ชำระ', width: 110 },
-    { field: 'debt', headerName: 'คงเหลือ', width: 110 },
+    { field: 'charge', headerName: 'คงเหลือ', width: 110 },
     { field: 'total_paid', headerName: 'ชดเชย_rep', width: 110 },
-    { field: 'rep_diff', headerName: 'ส่วนต่างชดเชย', width: 110 }, 
-    { field: 'rest_debt', headerName: 'หนี้คงเหลือหลังชดเชย', width: 150 }, 
+    { field: 'rep_diff', headerName: 'ส่วนต่างชดเชย', width: 110 },
+    { field: 'rest_debt', headerName: 'หนี้คงเหลือหลังชดเชย', width: 150 },
     {
       field: 'customField', // Use a custom field name for the constant value
       headerName: 'สิทธิ์',
@@ -209,9 +296,9 @@ export default function ReportIpPage() {
     { field: 'pttype_code', headerName: 'ระหัสสิทธิ์', width: 60 },
     { field: 'pttype_name', headerName: 'สิทธิ์', width: 300 },
     { field: 'repno', headerName: 'RepNo', width: 110 },
-    { field: 'error_code', headerName: 'error_code', width: 100 },   
+    { field: 'error_code', headerName: 'error_code', width: 100 },
   ]
-  
+
   const columns2: GridColDef[] = [
     { field: 'visit_date', headerName: 'วันที่', width: 110 },
     { field: 'allcase', headerName: 'จำนวนผู้ป่วย', width: 110 },
@@ -245,16 +332,14 @@ export default function ReportIpPage() {
 
     let startDate = startDt?.format('YYYY-MM-DD')
     let endDate = endDt?.format('YYYY-MM-DD')
-    let stm_file = stmFile
-    let acc_code = accCode
-    let rep_file = repFile
+    let serviceName = title
 
     setIsLoading(true)
 
     // lastetst case
 
     try {
-      const response = await axios.get(`${apiUrl}/op/oplastest`)
+      const response = await axios.get(`${apiUrl}/opuccr/opuccrlastest`)
 
       const options = {
         year: 'numeric', // Full year (e.g., "2566" for 2023)
@@ -263,11 +348,11 @@ export default function ReportIpPage() {
       }
 
       // Convert the date to Thai date format
-      const thaiDateFormat = response.data.data[0].visit_date.toLocaleString()
+      const thaiDateFormat = response.data.data[0].dateserv.toLocaleString()
 
       setLastestIpd(thaiDateFormat)
 
-      // console.log(lastestIpd)
+      console.log(lastestIpd)
     } catch (error) {
       console.log('ERROR', error)
     }
@@ -275,15 +360,12 @@ export default function ReportIpPage() {
     // Null Cases
 
     try {
-      const responseCaseNull = await axios.post(`${apiUrl}/op/opnull`, {
-        stm_file,
-        rep_file,
-        acc_code,
+      const responseCaseNull = await axios.post(`${apiUrl}/opuccr/opuccrnull`, {
+        serviceName,
         startDate,
         endDate,
       })
 
-      console.log(rep_file)
       console.log(responseCaseNull.data.data)
       setDataCaseNull(responseCaseNull.data.data)
       console.log('dataCaseNull')
@@ -303,11 +385,8 @@ export default function ReportIpPage() {
         }
       }
 
-     
-
       setGetRep(rep) // มี rep แล้ว
       setGetCRep(repc) // ติด C
-     
 
       const caseRepNotC = responseCaseNull.data.data.filter(
         (row: any) => row.repno !== null && row.error_code === '-'
@@ -330,8 +409,8 @@ export default function ReportIpPage() {
 
     try {
       const responseCaseNotNull = await axios.post(
-        `${apiUrl}/op/opnotnull`,
-        { stm_file, rep_file, acc_code, startDate, endDate }
+        `${apiUrl}/opuccr/opuccrnotnull`,
+        { serviceName, startDate, endDate }
       )
 
       console.log(`${startDate}`)
@@ -357,8 +436,8 @@ export default function ReportIpPage() {
 
     try {
       const responseNotNull = await axios.post(
-        `${apiUrl}/op/opaccnotnull`,
-        { stm_file, rep_file, acc_code, startDate, endDate }
+        `${apiUrl}/opuccr/opuccraccnotnull`,
+        { serviceName, startDate, endDate }
       )
 
       console.log('dataNotNull')
@@ -373,10 +452,8 @@ export default function ReportIpPage() {
 
     // Ofc Acc null
     try {
-      const responseNull = await axios.post(`${apiUrl}/op/opaccnull`, {
-        stm_file,
-        rep_file,
-        acc_code,
+      const responseNull = await axios.post(`${apiUrl}/opuccr/opuccraccnull`, {
+        serviceName,
         startDate,
         endDate,
       })
@@ -394,8 +471,8 @@ export default function ReportIpPage() {
     // Account  by date
     try {
       const responseByDate = await axios.post(
-        `${apiUrl}/op/opaccbydate`,
-        { stm_file, rep_file, acc_code, startDate, endDate }
+        `${apiUrl}/opuccr/opuccraccbydate`,
+        { serviceName, startDate, endDate }
       )
       // setData(jsonData)
       console.log('acc by date')
@@ -528,17 +605,16 @@ export default function ReportIpPage() {
                       <MenuItem
                         key={_period.id}
                         onClick={() => {
-                          setPeriod(_period.text)
-                          setTitle(_period.text)
-                          setAccCode(_period.accCode)
-                          setStmFile(_period.stmFile)
-                          setRepFile(_period.repFile)
-                          setAccStName(_period.stName)
+                          setPeriod(_period.service_name)
+                          setTitle(_period.service_name)
+                          setAccCode(_period.acc_code)
+                          setStmFile(stmFile)
+                          setAccStName(_period.service_name)
                           setOpenMenuPeriod(false)
                           console.log(_period)
                         }}
                       >
-                        {_period.text}
+                        {_period.service_name}
                       </MenuItem>
                     ))}
                   </Menu>
@@ -610,7 +686,8 @@ export default function ReportIpPage() {
                         'en-US'
                       )}
                       percent={
-                        ((getCRep+Number(dataNull.all_nullcase) - getRep) * 100) /
+                        ((getCRep + Number(dataNull.all_nullcase) - getRep) *
+                          100) /
                         (Number(dataNull.all_nullcase) +
                           Number(dataNotNull.all_notnullcase))
                       }
@@ -619,7 +696,11 @@ export default function ReportIpPage() {
                       caseuncalim={(
                         Number(dataNull.all_nullcase) - getRep
                       ).toLocaleString('en-US')}
-                      caseerrorunclaim={(getCRep+Number(dataNull.all_nullcase) - getRep).toLocaleString('en-US')}
+                      caseerrorunclaim={(
+                        getCRep +
+                        Number(dataNull.all_nullcase) -
+                        getRep
+                      ).toLocaleString('en-US')}
                     />
                   </Stack>
                   <Stack direction={'column'} gap={2} marginTop={2}>
@@ -629,15 +710,21 @@ export default function ReportIpPage() {
                         fontWeight={'bold'}
                         color={'primary'}
                       >
-                        ส่วนต่าง ค่ารักษา :{' '}{dataNotNull.sum_diff === null
+                        ส่วนต่าง ค่ารักษา :{' '}
+                        {dataNotNull.sum_diff === null
                           ? 0
                           : Number(dataNotNull.sum_diff).toLocaleString(
                               'en-US'
                             )}{' '}
                         บาท{'   '}
                       </Typography>
-                      <Typography flexGrow={1} fontWeight={'bold'} paddingLeft={2}>
-                        {'  '} ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}{dataNotNull.diffloss === null
+                      <Typography
+                        flexGrow={1}
+                        fontWeight={'bold'}
+                        paddingLeft={2}
+                      >
+                        {'  '} ส่วนต่างค่ารักษาที่ต่ำกว่าชดเชย :{' '}
+                        {dataNotNull.diffloss === null
                           ? 0
                           : Number(dataNotNull.diffloss).toLocaleString(
                               'en-US'
@@ -651,7 +738,12 @@ export default function ReportIpPage() {
                       >
                         ส่วนต่างค่ารักษาที่สูงกว่าชดเชย :{' '}
                       </Typography>
-                      <Typography color={'error'} mr={5} fontWeight={'bold'} marginLeft={1}>
+                      <Typography
+                        color={'error'}
+                        mr={5}
+                        fontWeight={'bold'}
+                        marginLeft={1}
+                      >
                         {dataNotNull.diffgain === null
                           ? 0
                           : Number(dataNotNull.diffgain).toLocaleString(
@@ -659,10 +751,7 @@ export default function ReportIpPage() {
                             )}{' '}
                         บาท{'  '}
                       </Typography>
-                    
                     </Stack>
-
-               
                   </Stack>
                 </Box>
               )}
@@ -683,8 +772,8 @@ export default function ReportIpPage() {
               <Tab label="บัญชีลูกหนี้ ส่งมี Rep รอ statement" value="2" />
               <Tab label="บัญชีลูกหนี้ ส่งมี Rep ติด C" value="3" />
               <Tab label="บัญชีลูกหนี้ ที่ดำเนินการเสร็จสิ้นแล้ว" value="4" />
-              <Tab label="สรุปการตัดหนี้รายวัน" value="5" />
-              <Tab label="Chart " value="6" />
+              {/* <Tab label="สรุปการตัดหนี้รายวัน" value="5" /> */}
+              {/* <Tab label="Chart " value="6" /> */}
             </TabList>
           </Box>
           <TabPanel value="1">
@@ -703,7 +792,7 @@ export default function ReportIpPage() {
               <DataGrid
                 rows={caseNoRep}
                 columns={columns_0}
-                getRowId={(row) => row.vn}
+                getRowId={(row) => row.hn + row.dateserv}
                 slots={{
                   toolbar: CustomToolbar,
                 }}
@@ -790,14 +879,14 @@ export default function ReportIpPage() {
               <DataGrid
                 rows={dataCaseNotNull}
                 columns={columns}
-                getRowId={(row) => row.vn}
+                getRowId={(row) => row.pid + row.dateserv}
                 slots={{
                   toolbar: CustomToolbar,
                 }}
               />
             </Box>
           </TabPanel>
-          <TabPanel value="5">
+          {/* <TabPanel value="5">
             <Box style={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={dataByDate}
@@ -808,8 +897,8 @@ export default function ReportIpPage() {
                 }}
               />
             </Box>
-          </TabPanel>
-          <TabPanel value="6">
+          </TabPanel> */}
+          {/* <TabPanel value="6">
             <Box
               width={'100%'}
               height={500}
@@ -833,11 +922,11 @@ export default function ReportIpPage() {
                 </Typography>
               </Stack>
               <Box>
-                {/* {' '}
-                <Pie data={dataChart} /> */}
+                {' '}
+                <Pie data={dataChart} />
               </Box>
             </Box>
-          </TabPanel>
+          </TabPanel> */}
         </TabContext>
       </Box>
     </>
